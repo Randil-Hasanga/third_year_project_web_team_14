@@ -23,7 +23,7 @@ class _SideMenuWidgetState extends State<SideMenuWidget> {
       constraints: BoxConstraints(
         minWidth: 200,
       ),
-      color: backgroundColor,
+      color: Color(0xFF21222D),
       padding: EdgeInsets.symmetric(vertical: _deviceHeight! * 0.1, horizontal: _deviceWidth! * 0.02),
       child: ListView.builder(
         itemCount: data.menu.length,
@@ -36,7 +36,7 @@ class _SideMenuWidgetState extends State<SideMenuWidget> {
     final isSelected = seletedIndex == index;
     return Column(
       children: [
-        SizedBox(height: _deviceHeight! * 0.02,),
+        // SizedBox(height: _deviceHeight! * 0.02,),
         AnimatedContainer(
           
           
