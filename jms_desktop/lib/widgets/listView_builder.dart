@@ -35,7 +35,7 @@ class ListViewBuilderWidget extends StatelessWidget {
           width: _deviceWidth! * 0.175,
           decoration: BoxDecoration(
             color: cardBackgroundColor,
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(_widthXheight! * 0.66),
             boxShadow: const [
               BoxShadow(
                 color: Colors.black12,

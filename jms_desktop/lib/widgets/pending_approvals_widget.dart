@@ -27,7 +27,7 @@ class _ApprovalListWidgetState extends State<ApprovalListWidget> {
       decoration: BoxDecoration(
         //color: Color.fromARGB(172, 255, 255, 255),
         color: cardBackgroundColorLayer2,
-        borderRadius: BorderRadius.circular(30),
+        borderRadius: BorderRadius.circular(_widthXheight! * 1),
         boxShadow: const [
           BoxShadow(
             color: Colors.black12,
