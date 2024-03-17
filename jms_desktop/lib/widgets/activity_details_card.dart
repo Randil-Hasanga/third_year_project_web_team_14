@@ -31,7 +31,7 @@ class _ActivityDetailsCardState extends State<ActivityDetailsCardWidget> {
             decoration: BoxDecoration(
               //color: Color.fromARGB(172, 255, 255, 255),
               color: cardBackgroundColorLayer2,
-              borderRadius: BorderRadius.circular(30),
+              borderRadius: BorderRadius.circular(_widthXheight! * 1),
               boxShadow: const [
                 BoxShadow(
                   color: Colors.black12,
@@ -79,7 +79,7 @@ class _ActivityDetailsCardState extends State<ActivityDetailsCardWidget> {
                           duration: Duration(milliseconds: 300),
                           decoration: BoxDecoration(
                             color: cardBackgroundColor,
-                            borderRadius: BorderRadius.circular(20),
+                            borderRadius: BorderRadius.circular(_widthXheight! * 0.66),
                             boxShadow: const [
                               BoxShadow(
                                 color: Colors.black12,
@@ -132,7 +132,7 @@ class _ActivityDetailsCardState extends State<ActivityDetailsCardWidget> {
                           duration: Duration(milliseconds: 300),
                           decoration: BoxDecoration(
                             color: cardBackgroundColor,
-                            borderRadius: BorderRadius.circular(20),
+                            borderRadius: BorderRadius.circular(_widthXheight! * 0.66),
                             boxShadow: const [
                               BoxShadow(
                                 color: Colors.black12,
@@ -191,7 +191,7 @@ class _ActivityDetailsCardState extends State<ActivityDetailsCardWidget> {
             decoration: BoxDecoration(
               //color: Color.fromARGB(172, 255, 255, 255),
               color: cardBackgroundColorLayer2,
-              borderRadius: BorderRadius.circular(30),
+              borderRadius: BorderRadius.circular(_widthXheight! * 1),
               boxShadow: const [
                 BoxShadow(
                   color: Colors.black12,
@@ -239,7 +239,7 @@ class _ActivityDetailsCardState extends State<ActivityDetailsCardWidget> {
                           duration: Duration(milliseconds: 300),
                           decoration: BoxDecoration(
                             color: cardBackgroundColor,
-                            borderRadius: BorderRadius.circular(20),
+                            borderRadius: BorderRadius.circular(_widthXheight! * 0.66),
                             boxShadow: const [
                               BoxShadow(
                                 color: Colors.black12,
