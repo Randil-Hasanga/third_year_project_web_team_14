@@ -39,7 +39,21 @@ class _MainScreenState extends State<MainScreen> {
             ),
             Expanded(
               flex: 7,
-              child: DashboardWidget(),
+              child: Navigator(
+              initialRoute: '/',
+              onGenerateRoute: (RouteSettings settings) {
+                WidgetBuilder builder;
+                // Manage your route names here
+                switch (settings.name) {
+                  case '/':
+                    builder = (BuildContext _) => DashboardWidget();
+                    break;
+                  default:
+                    throw Exception('Invalid route: ${settings.name}');
+                }
+                return MaterialPageRoute(builder: builder, settings: settings);
+              },
+            ),
             ),
             Expanded(
               flex: 3,

@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:jms_desktop/models/menu_model.dart';
 
-class SideMenuData{
-  final menu = <MenuModel>[
-    MenuModel(icon: Icons.home, title: 'Dashboard'),
-    MenuModel(icon: Icons.person, title: 'Profile'),
-    MenuModel(icon: Icons.search, title: 'Job Seekers'),
-    MenuModel(icon: Icons.handshake, title: 'Job Providers'),
-    MenuModel(icon: Icons.settings, title: 'Settings'),
-    MenuModel(icon: Icons.logout, title: 'Logout'),
+class SideMenuData {
+  final List<SideMenuItem> menu = [
+    SideMenuItem(icon: Icons.home, title: 'Dashboard', routeName: '/dashboard'),
+    SideMenuItem(icon: Icons.person, title: 'Profile', routeName: '/profile'),
+    SideMenuItem(icon: Icons.search, title: 'Job Seekers', routeName: '/job_seekers'),
+    SideMenuItem(icon: Icons.handshake, title: 'Job Providers', routeName: '/job_providers'),
+    SideMenuItem(icon: Icons.settings, title: 'Settings', routeName: '/settings'),
+    SideMenuItem(icon: Icons.logout, title: 'Logout', routeName: '/logout'),
   ];
+}
+
+class SideMenuItem {
+  final IconData icon;
+  final String title;
+  final String routeName;
+
+  SideMenuItem({required this.icon, required this.title, required this.routeName});
 }
