@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:jms_desktop/const/constants.dart';
 import 'package:jms_desktop/data/side_menu_data.dart';
 import 'package:jms_desktop/pages/main_screen.dart';
+import 'package:jms_desktop/pages/profile_page.dart';
 import 'package:jms_desktop/pages/test.dart';
 import 'package:jms_desktop/services/sidemenu_provider.dart';
+import 'package:jms_desktop/widgets/dashboard_widget.dart';
 import 'package:provider/provider.dart';
 
 class SideMenuWidget extends StatefulWidget {
@@ -15,15 +17,22 @@ class SideMenuWidget extends StatefulWidget {
 
 class _SideMenuWidgetState extends State<SideMenuWidget> {
   double? _deviceWidth, _deviceHeight;
+  late int _currentPageIndex;
+  late String currentPageRoute;
+
   //int seletedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
+    final SideMenuData data = SideMenuData();
     final provider = Provider.of<SideMenuProvider>(context);
     _deviceHeight = MediaQuery.of(context).size.height;
     _deviceWidth = MediaQuery.of(context).size.width;
+    _currentPageIndex = Provider.of<SideMenuProvider>(context).selectedIndex;
+    currentPageRoute = data.menu[_currentPageIndex].routeName;
 
-    final SideMenuData data = SideMenuData();
+    print(currentPageRoute);
+
     return Container(
       constraints: BoxConstraints(
         minWidth: 200,
@@ -53,9 +62,10 @@ class _SideMenuWidgetState extends State<SideMenuWidget> {
             onTap: () {
               Provider.of<SideMenuProvider>(context, listen: false)
                   .setSelectedIndex(index);
-              Navigator.of(context).push(PageRouteBuilder(
+              Navigator.of(context).pushReplacement(PageRouteBuilder(
                 pageBuilder: (context, animation, secondaryAnimation) =>
-                    _getRouteWidget(data.menu[index].routeName),
+                    _getRouteWidget(
+                        data.menu[index].routeName),
               ));
             },
             child: Row(
@@ -92,7 +102,8 @@ class _SideMenuWidgetState extends State<SideMenuWidget> {
       future: _loadPage(routeName),
       builder: (BuildContext context, AsyncSnapshot<Widget> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return _buildPageWithLoader(); // Show loader
+          return _buildPageWithLoader(
+              routeName); // Show loader
         } else if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
         } else {
@@ -102,16 +113,34 @@ class _SideMenuWidgetState extends State<SideMenuWidget> {
     );
   }
 
-  Widget _buildPageWithLoader() {
-    return Stack(
-      children: [
-        // Your page content goes here
-        MainScreen(), // Placeholder, replace with your actual content widget
-        // Circular progress indicator overlay
-        Center(
-          child: CircularProgressIndicator(),
-        ),
-      ],
+  Widget _buildPageWithLoader(String routeName) {
+    return FutureBuilder<Widget>(
+      future: _loadPage(routeName),
+      builder: (BuildContext context, AsyncSnapshot<Widget> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          // If data is still loading, show the loading indicator
+
+          return Stack(
+            children: [
+              if(currentPageRoute == "/dashboard")...{
+                MainScreen(),
+              }else if(currentPageRoute == "/profile")...{
+                ProfilePage(),
+              }
+              ,
+              Center(
+                child: CircularProgressIndicator(),
+              ),
+            ],
+          );
+        } else if (snapshot.hasError) {
+          // If there's an error, show an error message
+          return Text('Error: ${snapshot.error}');
+        } else {
+          // Otherwise, return the loaded page widget
+          return snapshot.data!;
+        }
+      },
     );
   }
 
@@ -123,12 +152,9 @@ class _SideMenuWidgetState extends State<SideMenuWidget> {
       case '/dashboard':
         return MainScreen();
       case '/profile':
-        return TestPage(
-          companyName: "abc",
-        );
+        return ProfilePage();
       // Add more cases for all your routes
     }
     throw Exception('Invalid route: $routeName');
   }
 }
-

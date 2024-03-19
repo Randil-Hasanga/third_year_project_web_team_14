@@ -23,20 +23,23 @@ class _ProfileDetailsSectionState extends State<ProfileDetailsSection> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             SizedBox(
-              height: _widthXheight! * 2.7,
-              width: _widthXheight! * 5,
+              height: _deviceHeight! * 0.1,
+              width: _deviceWidth! * 0.001,
             ),
             Padding(
               padding: EdgeInsets.only(right: _widthXheight! * 1),
-              child: Icon(
-                Icons.notifications_none_outlined,
-                size: _widthXheight! * 1.5,
+              child: IconButton(
+                onPressed: () {
+                  //Navigator.pop(context);
+                },
+                icon: const Icon(Icons.notifications_none_outlined),
+                iconSize: _widthXheight! * 1.5,
               ),
             ),
           ],
         ),
         SizedBox(
-          height: _widthXheight! * 8,
+          height: _deviceHeight! * 0.15,
         ),
         _profileImage(),
         SizedBox(
@@ -50,21 +53,21 @@ class _ProfileDetailsSectionState extends State<ProfileDetailsSection> {
             Text(
               "<<Name>>", //TODO: add name
               style: TextStyle(
-                fontSize: _widthXheight! * 1,
+                fontSize: _widthXheight! * 0.9,
                 fontWeight: FontWeight.w600,
               ),
             ),
             Text(
               "<<Reg No>>", //TODO: add name
               style: TextStyle(
-                fontSize: _widthXheight! * 1,
+                fontSize: _widthXheight! * 0.9,
                 fontWeight: FontWeight.w600,
               ),
             ),
             Text(
               "<<Post>>", //TODO: add name
               style: TextStyle(
-                fontSize: _widthXheight! * 1,
+                fontSize: _widthXheight! * 0.9,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -82,7 +85,7 @@ class _ProfileDetailsSectionState extends State<ProfileDetailsSection> {
       width: _widthXheight! * 7,
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(100)),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(100),
+        borderRadius: BorderRadius.circular(50000),
         child: Image.network(
           "https://i.pravatar.cc/150?img=3", //TODO: profile pic
           fit: BoxFit.cover,
