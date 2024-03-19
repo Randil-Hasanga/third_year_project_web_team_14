@@ -24,9 +24,9 @@ class _DashboardState extends State<DashboardWidget> {
     return Column(
       children: [
         Container(
-          height: _widthXheight! * 2.7,
+          height: _deviceHeight! * 0.07,
           //color: backgroundColor2,
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             borderRadius: BorderRadius.only(
               bottomRight: Radius.circular(500),
             ),
@@ -34,15 +34,15 @@ class _DashboardState extends State<DashboardWidget> {
           ),
         ),
         SizedBox(
-          height: _widthXheight! * 1,
+          height: _deviceHeight! * 0.006,
         ),
         ActivityDetailsCardWidget(),
         SizedBox(
-          height: _widthXheight! * 0.2,
+          height: _deviceHeight! * 0.006,
         ),
         ApprovalListWidget(),
         SizedBox(
-          height: _widthXheight! * 1.1,
+          height:_deviceHeight! * 0.03,
         ),
         CurrentProvidersListWidget(),
         
