@@ -3,7 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:jms_desktop/const/constants.dart';
 import 'package:jms_desktop/pages/test.dart';
 
-class ListViewBuilderWidget extends StatelessWidget {
+class CurrentListViewBuilderWidget extends StatelessWidget {
   double? _deviceWidth, _deviceHeight, _widthXheight;
   TestPage? testPage;
 

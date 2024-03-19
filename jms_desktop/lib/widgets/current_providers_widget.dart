@@ -2,16 +2,17 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:jms_desktop/const/constants.dart';
+import 'package:jms_desktop/widgets/current_listview_builder.dart';
 import 'package:jms_desktop/widgets/pending_listView_builder.dart';
 
-class ApprovalListWidget extends StatefulWidget {
+class CurrentProvidersListWidget extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return _ApprovalListWidgetState();
+    return _CurrentProvidersListWidgetState();
   }
 }
 
-class _ApprovalListWidgetState extends State<ApprovalListWidget> {
+class _CurrentProvidersListWidgetState extends State<CurrentProvidersListWidget> {
   double? _deviceWidth, _deviceHeight, _widthXheight;
 
   @override
@@ -46,7 +47,7 @@ class _ApprovalListWidgetState extends State<ApprovalListWidget> {
                 child: Row(
                   children: [
                     Text(
-                      "Pending Approvals (Scroll with Shift key)",
+                      "Current Job Providers (Scroll with Shift key)",
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: _widthXheight! * 0.7,
@@ -62,7 +63,7 @@ class _ApprovalListWidgetState extends State<ApprovalListWidget> {
               itemCount: 10,
               scrollDirection: Axis.horizontal,
               itemBuilder: (context, index) {
-                return PendingListViewBuilderWidget();
+                return CurrentListViewBuilderWidget();
               },
             ),
           ),
