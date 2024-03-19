@@ -18,7 +18,7 @@ class SideMenuWidget extends StatefulWidget {
 class _SideMenuWidgetState extends State<SideMenuWidget> {
   double? _deviceWidth, _deviceHeight;
   late int _currentPageIndex;
-  late String currentPageRoute;
+  String? currentPageRoute;
 
   //int seletedIndex = 0;
 

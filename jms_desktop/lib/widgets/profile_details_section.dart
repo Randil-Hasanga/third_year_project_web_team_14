@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jms_desktop/const/constants.dart';
 
 class ProfileDetailsSection extends StatefulWidget {
   @override
@@ -17,7 +18,6 @@ class _ProfileDetailsSectionState extends State<ProfileDetailsSection> {
     _widthXheight = _deviceHeight! * _deviceWidth! / 50000;
 
     return Column(
-      
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -41,38 +41,57 @@ class _ProfileDetailsSectionState extends State<ProfileDetailsSection> {
         SizedBox(
           height: _deviceHeight! * 0.15,
         ),
-        _profileImage(),
-        SizedBox(
-          height: _widthXheight! * 1,
-        ),
-        Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "<<Name>>", //TODO: add name
-              style: TextStyle(
-                fontSize: _widthXheight! * 0.9,
-                fontWeight: FontWeight.w600,
+        Container(
+          padding: EdgeInsets.all(_widthXheight! * 1),
+          height: _deviceHeight! * 0.4,
+          width: _deviceWidth! * 0.2,
+          decoration: BoxDecoration(
+            color: cardBackgroundColorLayer2,
+            borderRadius: BorderRadius.circular(_widthXheight! * 1),
+            boxShadow: const [
+              BoxShadow(
+                color: Colors.black12,
+                blurRadius: 5,
+                offset: Offset(0, 0),
               ),
-            ),
-            Text(
-              "<<Reg No>>", //TODO: add name
-              style: TextStyle(
-                fontSize: _widthXheight! * 0.9,
-                fontWeight: FontWeight.w600,
+            ],
+          ),
+          child: Column(
+            children: [
+              _profileImage(),
+              SizedBox(
+                height: _widthXheight! * 1,
               ),
-            ),
-            Text(
-              "<<Post>>", //TODO: add name
-              style: TextStyle(
-                fontSize: _widthXheight! * 0.9,
-                fontWeight: FontWeight.w600,
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                mainAxisSize: MainAxisSize.max,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "<<Name>>", //TODO: add name
+                    style: TextStyle(
+                      fontSize: _widthXheight! * 0.9,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  Text(
+                    "<<Reg No>>", //TODO: add name
+                    style: TextStyle(
+                      fontSize: _widthXheight! * 0.9,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  Text(
+                    "<<Post>>", //TODO: add name
+                    style: TextStyle(
+                      fontSize: _widthXheight! * 0.9,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
               ),
-            ),
-    
-          ],
+            ],
+          ),
         ),
       ],
     );
