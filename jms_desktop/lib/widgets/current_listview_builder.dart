@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
 import 'package:jms_desktop/const/constants.dart';
 import 'package:jms_desktop/pages/test.dart';
 
-class CurrentListViewBuilderWidget extends StatelessWidget {
+class CurrentListViewBuilderWidget extends StatefulWidget {
+  @override
+  State<CurrentListViewBuilderWidget> createState() => _CurrentListViewBuilderWidgetState();
+}
+
+class _CurrentListViewBuilderWidgetState extends State<CurrentListViewBuilderWidget> {
   double? _deviceWidth, _deviceHeight, _widthXheight;
+
   TestPage? testPage;
 
   @override

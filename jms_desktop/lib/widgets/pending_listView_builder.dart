@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
 import 'package:jms_desktop/const/constants.dart';
 import 'package:jms_desktop/pages/test.dart';
 
-class PendingListViewBuilderWidget extends StatelessWidget {
+class PendingListViewBuilderWidget extends StatefulWidget {
+  @override
+  State<PendingListViewBuilderWidget> createState() => _PendingListViewBuilderWidgetState();
+}
+
+class _PendingListViewBuilderWidgetState extends State<PendingListViewBuilderWidget> {
   double? _deviceWidth, _deviceHeight, _widthXheight;
+
   TestPage? testPage;
 
   @override

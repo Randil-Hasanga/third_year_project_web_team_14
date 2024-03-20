@@ -1,4 +1,5 @@
-import 'package:fl_chart/fl_chart.dart';
+// ignore_for_file: unused_field
+
 import 'package:flutter/material.dart';
 import 'package:jms_desktop/const/constants.dart';
 import 'package:jms_desktop/widgets/activity_details_card.dart';
