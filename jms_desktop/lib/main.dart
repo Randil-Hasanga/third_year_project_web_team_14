@@ -37,7 +37,7 @@ class MyApp extends StatelessWidget {
         // '/job_seekers': (context) => JobSeekersScreen(),
         // '/job_providers_page': (context) => JobProvidersScreen(),
         // '/settings': (context) => SettingsScreen(),
-        // '/logout': (context) => LogoutScreen(),
+        '/logout': (context) => LoginScreen(),
       },
       initialRoute: '/dashboard',
     );

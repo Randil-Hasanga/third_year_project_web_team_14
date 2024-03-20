@@ -37,6 +37,7 @@ class _MainScreenState extends State<MainScreen> {
               ),
             ),
             Expanded(
+              flex: 7,
               child: SizedBox(
                 child: DashboardWidget(),
               ),
