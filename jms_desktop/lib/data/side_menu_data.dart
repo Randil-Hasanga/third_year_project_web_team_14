@@ -35,7 +35,7 @@ class SideMenuData {
     SideMenuItem(
       icon: Icons.logout,
       title: 'Logout',
-      routeName: '/logout_page',
+      routeName: '/logout',
     ),
   ];
 }

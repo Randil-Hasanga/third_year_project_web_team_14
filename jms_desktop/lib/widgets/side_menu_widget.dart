@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jms_desktop/const/constants.dart';
 import 'package:jms_desktop/data/side_menu_data.dart';
+import 'package:jms_desktop/pages/login_screen.dart';
 import 'package:jms_desktop/pages/main_screen.dart';
 import 'package:jms_desktop/pages/profile_page.dart';
 import 'package:jms_desktop/services/sidemenu_provider.dart';
@@ -151,6 +152,9 @@ class _SideMenuWidgetState extends State<SideMenuWidget> {
         return MainScreen();
       case '/profile':
         return ProfilePage();
+      case '/logout':
+        return LoginScreen();
+      
       // Add more cases for all your routes
     }
     throw Exception('Invalid route: $routeName');
