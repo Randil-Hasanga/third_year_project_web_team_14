@@ -1,11 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:jms_desktop/const/constants.dart';
 import 'package:jms_desktop/pages/main_screen.dart';
 import 'package:jms_desktop/pages/profile_page.dart';
-import 'package:jms_desktop/pages/test.dart';
 import 'package:jms_desktop/services/sidemenu_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -37,7 +35,7 @@ class MyApp extends StatelessWidget {
         '/dashboard': (context) => MainScreen(),
         '/profile': (context) => ProfilePage(),
         // '/job_seekers': (context) => JobSeekersScreen(),
-        // '/job_providers': (context) => JobProvidersScreen(),
+        // '/job_providers_page': (context) => JobProvidersScreen(),
         // '/settings': (context) => SettingsScreen(),
         // '/logout': (context) => LogoutScreen(),
       },

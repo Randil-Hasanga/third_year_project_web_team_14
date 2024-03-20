@@ -3,9 +3,7 @@ import 'package:jms_desktop/const/constants.dart';
 import 'package:jms_desktop/data/side_menu_data.dart';
 import 'package:jms_desktop/pages/main_screen.dart';
 import 'package:jms_desktop/pages/profile_page.dart';
-import 'package:jms_desktop/pages/test.dart';
 import 'package:jms_desktop/services/sidemenu_provider.dart';
-import 'package:jms_desktop/widgets/dashboard_widget.dart';
 import 'package:provider/provider.dart';
 
 class SideMenuWidget extends StatefulWidget {
@@ -25,7 +23,7 @@ class _SideMenuWidgetState extends State<SideMenuWidget> {
   @override
   Widget build(BuildContext context) {
     final SideMenuData data = SideMenuData();
-    final provider = Provider.of<SideMenuProvider>(context);
+    //final provider = Provider.of<SideMenuProvider>(context);
     _deviceHeight = MediaQuery.of(context).size.height;
     _deviceWidth = MediaQuery.of(context).size.width;
     _currentPageIndex = Provider.of<SideMenuProvider>(context).selectedIndex;

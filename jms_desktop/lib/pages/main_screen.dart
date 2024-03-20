@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:jms_desktop/const/constants.dart';
 import 'package:jms_desktop/widgets/dashboard_widget.dart';
 import 'package:jms_desktop/widgets/profile_details_section.dart';
 import 'package:jms_desktop/widgets/side_menu_widget.dart';
@@ -13,6 +12,7 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+  // ignore: unused_field
   double? _deviceWidth, _deviceHeight;
 
   @override
@@ -37,22 +37,6 @@ class _MainScreenState extends State<MainScreen> {
               ),
             ),
             Expanded(
-              flex: 7,
-              //   child: Navigator(
-              //   initialRoute: '/',
-              //   onGenerateRoute: (RouteSettings settings) {
-              //     WidgetBuilder builder;
-              //     // Manage your route names here
-              //     switch (settings.name) {
-              //       case '/':
-              //         builder = (BuildContext _) => DashboardWidget();
-              //         break;
-              //       default:
-              //         throw Exception('Invalid route: ${settings.name}');
-              //     }
-              //     return MaterialPageRoute(builder: builder, settings: settings);
-              //   },
-              // ),
               child: SizedBox(
                 child: DashboardWidget(),
               ),

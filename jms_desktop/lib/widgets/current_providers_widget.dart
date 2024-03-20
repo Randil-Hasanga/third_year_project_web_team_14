@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:jms_desktop/const/constants.dart';
 import 'package:jms_desktop/widgets/current_listview_builder.dart';
-import 'package:jms_desktop/widgets/pending_listView_builder.dart';
 
 class CurrentProvidersListWidget extends StatefulWidget {
   @override
