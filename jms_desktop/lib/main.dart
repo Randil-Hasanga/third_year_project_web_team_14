@@ -4,9 +4,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:jms_desktop/const/constants.dart';
 import 'package:jms_desktop/pages/login_screen.dart';
 import 'package:jms_desktop/pages/main_screen.dart';
+import 'package:jms_desktop/pages/officers_page.dart';
 import 'package:jms_desktop/pages/profile_page.dart';
 import 'package:jms_desktop/services/sidemenu_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:jms_desktop/pages/officers_page.dart';
 
 void main() {
   runApp(
@@ -40,8 +42,9 @@ class MyApp extends StatelessWidget {
         // '/job_providers_page': (context) => JobProvidersScreen(),
         // '/settings': (context) => SettingsScreen(),
         '/logout': (context) => LoginScreen(),
+        '/officer': (context) => OfficersPage(),
       },
-      initialRoute: '/Login',
+      initialRoute: '/officer',
     );
   }
 }

@@ -101,11 +101,16 @@ class _LoginScreenState extends State<LoginScreen> {
                       },
                       child: const Text('Login'),
                     ),
-                    const SizedBox(height: 40.0),
-                    ElevatedButton(
-                      onPressed: _login,
-                      child: const Text('Sign Up'),
-                    ),
+                    const SizedBox(height: 10.0),
+                    /* ElevatedButton(
+                      onPressed: _login, // here navegation the forgot password page
+                      child: const Text(
+                        'Forgot Password?',
+                        style: TextStyle(
+                          fontSize: 12.0,
+                        ),
+                      ),
+                    ),*/
                   ],
                 ),
               ),
