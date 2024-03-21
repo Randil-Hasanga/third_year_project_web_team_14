@@ -3,7 +3,9 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:get_it/get_it.dart';
 import 'package:jms_desktop/const/constants.dart';
+import 'package:jms_desktop/services/firebase_services.dart';
 import 'package:jms_desktop/widgets/dashboard_widget.dart';
 import 'package:jms_desktop/widgets/side_menu_widget.dart';
 
@@ -16,12 +18,29 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   double? _deviceWidth, _deviceHeight, _widthXheight;
+  FirebaseService? _firebaseService;
+  String? _fname, _lname, _regNo, _post, _email, _contactNo;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _firebaseService = GetIt.instance.get<FirebaseService>();
+  }
 
   @override
   Widget build(BuildContext context) {
     _deviceHeight = MediaQuery.of(context).size.height;
     _deviceWidth = MediaQuery.of(context).size.width;
     _widthXheight = _deviceHeight! * _deviceWidth! / 50000;
+
+    _fname = _firebaseService!.currentUser!['fname'];
+    _lname = _firebaseService!.currentUser!['lname'];
+    _regNo = _firebaseService!.currentUser!['reg_no'];
+    _post = _firebaseService!.currentUser!['position'];
+    _email = _firebaseService!.currentUser!['email'];
+    _contactNo = _firebaseService!.currentUser!['contact'];
+
     return Scaffold(
       body: SafeArea(
         child: Row(
@@ -74,7 +93,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           child: Text(
                             "Edit Profile",
                             style: TextStyle(
-                              fontSize:  _deviceWidth! * 0.014,
+                              fontSize: _deviceWidth! * 0.014,
                               color: selectionColor,
                               fontWeight: FontWeight.w600,
                             ),
@@ -129,7 +148,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     width: _widthXheight! * 4,
                   ),
                   Text(
-                    "John Doe", //TODO: add name
+                    "$_fname $_lname", //TODO: add name
                     style: TextStyle(
                       fontSize: _deviceWidth! * 0.014,
                       fontWeight: FontWeight.w600,
@@ -165,7 +184,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     width: _widthXheight! * 4,
                   ),
                   Text(
-                    "2020690", //TODO: add reg no
+                    "$_regNo", //TODO: add reg no
                     style: TextStyle(
                       fontSize: _deviceWidth! * 0.014,
                       fontWeight: FontWeight.w600,
@@ -201,7 +220,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     width: _widthXheight! * 4,
                   ),
                   Text(
-                    "Admin", //TODO: add position
+                    "$_post", //TODO: add position
                     style: TextStyle(
                       fontSize: _deviceWidth! * 0.014,
                       fontWeight: FontWeight.w600,
@@ -211,7 +230,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ],
           ),
-         SizedBox(
+          SizedBox(
             height: _widthXheight! * 0.35,
           ),
           Container(
@@ -237,7 +256,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     width: _widthXheight! * 4,
                   ),
                   Text(
-                    "0712345678", //TODO: add contact no
+                    "$_contactNo", //TODO: add contact no
                     style: TextStyle(
                       fontSize: _deviceWidth! * 0.014,
                       fontWeight: FontWeight.w600,
@@ -273,49 +292,10 @@ class _ProfilePageState extends State<ProfilePage> {
                     width: _widthXheight! * 4,
                   ),
                   Text(
-                    "jobcenter@gmail.com", //TODO: add gmail
+                    "$_email", //TODO: add gmail
                     style: TextStyle(
                       fontSize: _deviceWidth! * 0.014,
                       fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          SizedBox(
-            height: _widthXheight! * 0.35,
-          ),
-          Container(
-            color: Colors.grey,
-            height: 1,
-          ),
-          SizedBox(
-            height: _widthXheight! * 0.35,
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Job Description : ",
-                style: TextStyle(
-                  fontSize: _deviceWidth! * 0.014,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              Row(
-                children: [
-                  SizedBox(
-                    width: _widthXheight! * 4,
-                  ),
-                  Flexible(
-                    child: Text(
-                      //TODO: add job description
-                      "DescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescription",
-                      style: TextStyle(
-                        fontSize: _deviceWidth! * 0.014,
-                        fontWeight: FontWeight.w600,
-                      ),
                     ),
                   ),
                 ],

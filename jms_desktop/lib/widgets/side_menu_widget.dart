@@ -132,7 +132,9 @@ class _SideMenuWidgetState extends State<SideMenuWidget> {
                 OfficersPage(),
               },
               Center(
-                child: CircularProgressIndicator(),
+                child: CircularProgressIndicator(
+                  color: Colors.orange[900],
+                ),
               ),
             ],
           );

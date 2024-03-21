@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:jms_desktop/const/constants.dart';
+import 'package:jms_desktop/services/firebase_services.dart';
 
 class ProfileDetailsSection extends StatefulWidget {
   @override
@@ -10,12 +12,26 @@ class ProfileDetailsSection extends StatefulWidget {
 
 class _ProfileDetailsSectionState extends State<ProfileDetailsSection> {
   double? _deviceWidth, _deviceHeight, _widthXheight;
+  FirebaseService? _firebaseService;
+  String? _fname, _lname,_regNo, _post;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _firebaseService = GetIt.instance.get<FirebaseService>();
+  }
+  
 
   @override
   Widget build(BuildContext context) {
     _deviceHeight = MediaQuery.of(context).size.height;
     _deviceWidth = MediaQuery.of(context).size.width;
     _widthXheight = _deviceHeight! * _deviceWidth! / 50000;
+    _fname = _firebaseService!.currentUser!['fname'];
+    _lname = _firebaseService!.currentUser!['lname'];
+    _regNo = _firebaseService!.currentUser!['reg_no'];
+    _post = _firebaseService!.currentUser!['position'];
 
     return Column(
       children: [
@@ -68,21 +84,21 @@ class _ProfileDetailsSectionState extends State<ProfileDetailsSection> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "<<Name>>", //TODO: add name
+                    "$_fname $_lname", //TODO: add name
                     style: TextStyle(
                       fontSize: _widthXheight! * 0.9,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                   Text(
-                    "<<Reg No>>", //TODO: add name
+                    "$_regNo", //TODO: add name
                     style: TextStyle(
                       fontSize: _widthXheight! * 0.9,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                   Text(
-                    "<<Post>>", //TODO: add name
+                    "$_post", //TODO: add name
                     style: TextStyle(
                       fontSize: _widthXheight! * 0.9,
                       fontWeight: FontWeight.w600,
