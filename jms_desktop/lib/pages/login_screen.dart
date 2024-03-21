@@ -29,6 +29,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    _deviceHeight = MediaQuery.of(context).size.height;
+    _deviceWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       body: SafeArea(
         child: Row(
@@ -36,7 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Expanded(
-              flex: 1,
+              flex: 2,
               child: Image.asset(
                 'assets/images/man.png',
                 height: MediaQuery.of(context).size.height,
@@ -67,11 +70,57 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: const Text(
                         'Forgot Password?',
                         style: TextStyle(
-                          fontSize: 12.0,
+                          fontSize: 24.0,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                    ),*/
-                  ],
+                      const SizedBox(height: 20.0),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[200],
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        child: TextField(
+                          controller: _usernameController,
+                          decoration: const InputDecoration(
+                            hintText: 'Username',
+                            border: InputBorder.none,
+                            prefixIcon: Icon(Icons.person),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 20.0),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[200],
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        child: TextField(
+                          controller: _passwordController,
+                          decoration: const InputDecoration(
+                            hintText: 'Password',
+                            border: InputBorder.none,
+                            prefixIcon: Icon(Icons.lock),
+                          ),
+                          obscureText: true,
+                        ),
+                      ),
+                      const SizedBox(height: 20.0),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => MainScreen()),
+                          );
+                        },
+                        child: const Text('Login'),
+                      ),
+                      const SizedBox(height: 10.0),
+                    ],
+                  ),
                 ),
               ),
             ),
