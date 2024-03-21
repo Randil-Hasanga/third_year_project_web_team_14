@@ -44,7 +44,7 @@ class MyApp extends StatelessWidget {
         '/logout': (context) => LoginScreen(),
         '/officer': (context) => OfficersPage(),
       },
-      initialRoute: '/officer',
+      initialRoute: '/Login',
     );
   }
 }

@@ -3,6 +3,7 @@ import 'package:jms_desktop/const/constants.dart';
 import 'package:jms_desktop/data/side_menu_data.dart';
 import 'package:jms_desktop/pages/login_screen.dart';
 import 'package:jms_desktop/pages/main_screen.dart';
+import 'package:jms_desktop/pages/officers_page.dart';
 import 'package:jms_desktop/pages/profile_page.dart';
 import 'package:jms_desktop/services/sidemenu_provider.dart';
 import 'package:provider/provider.dart';
@@ -125,8 +126,11 @@ class _SideMenuWidgetState extends State<SideMenuWidget> {
                 MainScreen(),
               }else if(currentPageRoute == "/profile")...{
                 ProfilePage(),
-              }
-              ,
+              }else if(currentPageRoute == "/logout")...{
+                LoginScreen(),
+              }else if(currentPageRoute == "/officer")...{
+                OfficersPage(),
+              },
               Center(
                 child: CircularProgressIndicator(),
               ),
@@ -154,6 +158,8 @@ class _SideMenuWidgetState extends State<SideMenuWidget> {
         return ProfilePage();
       case '/logout':
         return LoginScreen();
+      case '/officer':
+        return OfficersPage();
       
       // Add more cases for all your routes
     }

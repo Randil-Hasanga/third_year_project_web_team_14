@@ -25,7 +25,7 @@ class SideMenuData {
     SideMenuItem(
       icon: Icons.work,
       title: 'Officers',
-      routeName: '/officers_page',
+      routeName: '/officer',
     ),
     SideMenuItem(
       icon: Icons.settings,

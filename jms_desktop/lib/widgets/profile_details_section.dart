@@ -43,7 +43,7 @@ class _ProfileDetailsSectionState extends State<ProfileDetailsSection> {
         ),
         Container(
           padding: EdgeInsets.all(_widthXheight! * 1),
-          height: _deviceHeight! * 0.4,
+          height: _widthXheight! * 13,
           width: _deviceWidth! * 0.2,
           decoration: BoxDecoration(
             color: cardBackgroundColorLayer2,
@@ -60,7 +60,7 @@ class _ProfileDetailsSectionState extends State<ProfileDetailsSection> {
             children: [
               _profileImage(),
               SizedBox(
-                height: _widthXheight! * 1,
+                height: _widthXheight! * 0.5,
               ),
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -99,9 +99,9 @@ class _ProfileDetailsSectionState extends State<ProfileDetailsSection> {
 
   Widget _profileImage() {
     return Container(
-      margin: EdgeInsets.only(bottom: _deviceHeight! * 0.02),
-      height: _widthXheight! * 7,
-      width: _widthXheight! * 7,
+      margin: EdgeInsets.only(bottom: _deviceHeight! * 0.01),
+      height: _widthXheight! * 6,
+      width: _widthXheight! * 6,
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(100)),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(50000),
