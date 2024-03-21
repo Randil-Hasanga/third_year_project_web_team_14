@@ -191,6 +191,16 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         );
       }
+    }else{
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              "Invalid email or password",
+              textAlign: TextAlign.center,
+              selectionColor: Color.fromARGB(255, 230, 255, 2),
+            ),
+          ),
+        );
     }
   }
 }
