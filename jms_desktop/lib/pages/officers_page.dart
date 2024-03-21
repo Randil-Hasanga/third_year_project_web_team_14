@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:jms_desktop/widgets/dashboard_widget.dart';
-import 'package:jms_desktop/widgets/profile_details_section.dart';
+import 'package:jms_desktop/pages/create_officer_page.dart';
 import 'package:jms_desktop/widgets/side_menu_widget.dart';
-import 'package:flutter/src/material/data_table.dart';
+import 'package:jms_desktop/const/constants.dart';
 
 class OfficersPage extends StatefulWidget {
   @override
@@ -22,7 +20,6 @@ class _OfficersPageStete extends State<OfficersPage> {
       'Position': 'Admin',
       'contact_no': '0712345678',
       'e_mail': 'jobcenter@gmail.com',
-      'job_description': 'description12'
     },
     {
       'name': 'Randil Hasanga',
@@ -30,7 +27,6 @@ class _OfficersPageStete extends State<OfficersPage> {
       'Position': 'Admin',
       'contact_no': '0713847619',
       'e_mail': 'hasanga@gmail.com',
-      'job_description': 'description123'
     },
     {
       'name': 'Dinuka Dulanjana',
@@ -38,23 +34,20 @@ class _OfficersPageStete extends State<OfficersPage> {
       'Position': 'Admin',
       'contact_no': '0712988102',
       'e_mail': 'dinuka@gmail.com',
-      'job_description': 'description1234'
     },
     {
       'name': 'Deshani Bandara',
       'reg_no': '2020693',
       'Position': 'Admin',
       'contact_no': '0779915002',
-      'e_mail': 'deshani@gmail.com',
-      'job_description': 'description12345'
+      'e_mail': 'deshani@gmail.com'
     },
     {
       'name': 'Vinod Kavinda',
       'reg_no': '2020694',
       'Position': 'Admin',
       'contact_no': '0710013248',
-      'e_mail': 'kavinda@gmail.com',
-      'job_description': 'description123456'
+      'e_mail': 'kavinda@gmail.com'
     },
   ];
   @override
@@ -106,7 +99,6 @@ class _OfficersPageStete extends State<OfficersPage> {
                       DataColumn(label: Text('Position')),
                       DataColumn(label: Text('Contact_No')),
                       DataColumn(label: Text('E_mail')),
-                      DataColumn(label: Text('Job_Description')),
                       DataColumn(label: Text('Actions')),
                     ],
                     rows: officer
@@ -117,7 +109,6 @@ class _OfficersPageStete extends State<OfficersPage> {
                             DataCell(Text(user['Position']!)),
                             DataCell(Text(user['contact_no']!)),
                             DataCell(Text(user['e_mail']!)),
-                            DataCell(Text(user['job_description']!)),
                             DataCell(Row(
                               children: [
                                 IconButton(
@@ -145,8 +136,21 @@ class _OfficersPageStete extends State<OfficersPage> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       ElevatedButton(
-                        onPressed: () {},
-                        child: const Text('Add'),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => CreateOfficerPage()),
+                          );
+                        },
+                        child: Text(
+                          "Create New",
+                          style: TextStyle(
+                            fontSize: _deviceWidth! * 0.012,
+                            color: selectionColor,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                       ),
                       const SizedBox(width: 40.0)
                     ],
