@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -10,7 +11,16 @@ import 'package:jms_desktop/services/sidemenu_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:jms_desktop/pages/officers_page.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: const FirebaseOptions(
+      apiKey: "AIzaSyBX-f2VAYW6NZOS-1Ra4PvsjYbnA4Xzvcg",
+      projectId: "jobcenter-app-74ca3",
+      messagingSenderId: "352414474958",
+      appId: "1:352414474958:web:9aaf2f85d78b4e4a71669f",
+    ),
+  );
   runApp(
     ChangeNotifierProvider(
       create: (_) => SideMenuProvider(),
