@@ -1,12 +1,14 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:jms_desktop/const/constants.dart';
 import 'package:jms_desktop/pages/login_screen.dart';
 import 'package:jms_desktop/pages/main_screen.dart';
 import 'package:jms_desktop/pages/officers_page.dart';
 import 'package:jms_desktop/pages/profile_page.dart';
+import 'package:jms_desktop/services/firebase_services.dart';
 import 'package:jms_desktop/services/sidemenu_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:jms_desktop/pages/officers_page.dart';
@@ -18,8 +20,12 @@ void main() async {
       apiKey: "AIzaSyBX-f2VAYW6NZOS-1Ra4PvsjYbnA4Xzvcg",
       projectId: "jobcenter-app-74ca3",
       messagingSenderId: "352414474958",
+      storageBucket: "jobcenter-app-74ca3.appspot.com",
       appId: "1:352414474958:web:9aaf2f85d78b4e4a71669f",
     ),
+  );
+  GetIt.instance.registerSingleton<FirebaseService>(
+    FirebaseService(),
   );
   runApp(
     ChangeNotifierProvider(
