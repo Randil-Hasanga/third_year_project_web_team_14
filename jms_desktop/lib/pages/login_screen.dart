@@ -143,6 +143,9 @@ class _LoginScreenState extends State<LoginScreen> {
             _password = _newValue;
           });
         },
+        validator: (_value) => _value!.length >= 8
+                          ? null
+                          : "Please enter password greater than 8 characters",
         obscureText: true,
       ),
     );
