@@ -114,6 +114,13 @@ class _LoginScreenState extends State<LoginScreen> {
             _email = _newValue;
           });
         },
+        validator: (_value) {
+          bool _result = _value!.contains(
+            RegExp(
+                r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"),
+          );
+          return _result ? null : "Please enter a valid email";
+        },
       ),
     );
   }
@@ -168,31 +175,37 @@ class _LoginScreenState extends State<LoginScreen> {
         _isLoading = true; // Set to true when login starts
       },
     );
-    _loginFormKey.currentState!.save();
-    bool _result =
-        await _firebaseService!.loginUser(email: _email!, password: _password!);
+    if (_loginFormKey.currentState!.validate()) {
+      _loginFormKey.currentState!.save();
+      bool _result = await _firebaseService!
+          .loginUser(email: _email!, password: _password!);
 
-    setState(
-      () {
-        _isLoading = false; // Set to false when login ends
-      },
-    );
+      setState(
+        () {
+          _isLoading = false; // Set to false when login ends
+        },
+      );
 
-    if (_result) {
-      if (_firebaseService!.currentUser!['type'] == 'officer') {
-        Navigator.popAndPushNamed(context, '/dashboard');
+      if (_result) {
+        if (_firebaseService!.currentUser!['type'] == 'officer') {
+          Navigator.popAndPushNamed(context, '/dashboard');
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                "Invalid email or password",
+                selectionColor: Color.fromARGB(255, 230, 255, 2),
+              ),
+            ),
+          );
+          setState(
+            () {
+              _isLoading = false; // Set to false when login ends
+            },
+          );
+        }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              "Invalid email or password",
-              selectionColor: Color.fromARGB(255, 230, 255, 2),
-            ),
-          ),
-        );
-      }
-    }else{
-      ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text(
               "Invalid email or password",
@@ -201,6 +214,27 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
         );
+        setState(
+          () {
+            _isLoading = false; // Set to false when login ends
+          },
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            "Invalid Email",
+            textAlign: TextAlign.center,
+            selectionColor: Color.fromARGB(255, 230, 255, 2),
+          ),
+        ),
+      );
+      setState(
+        () {
+          _isLoading = false; // Set to false when login ends
+        },
+      );
     }
   }
 }
