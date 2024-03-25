@@ -2,16 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:jms_desktop/widgets/dashboard_widget.dart';
 import 'package:jms_desktop/widgets/profile_details_section.dart';
-import 'package:jms_desktop/widgets/side_menu_widget.dart';
 
-class MainScreen extends StatefulWidget {
+class Dashboard extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return _MainScreenState();
+    return _DashboardState();
   }
 }
 
-class _MainScreenState extends State<MainScreen> {
+class _DashboardState extends State<Dashboard> {
   // ignore: unused_field
   double? _deviceWidth, _deviceHeight;
 
@@ -24,18 +23,18 @@ class _MainScreenState extends State<MainScreen> {
       body: SafeArea(
         child: Row(
           children: [
-            Expanded(
-                flex: 2,
-                child: SizedBox(
-                  child: SideMenuWidget(),
-                )),
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: _deviceHeight! * 0.02),
-              child: const VerticalDivider(
-                width: 3,
-                color: Colors.grey,
-              ),
-            ),
+            // Expanded(
+            //     flex: 2,
+            //     child: SizedBox(
+            //       child: SideMenuWidget(),
+            //     )),
+            // Padding(
+            //   padding: EdgeInsets.symmetric(vertical: _deviceHeight! * 0.02),
+            //   child: const VerticalDivider(
+            //     width: 3,
+            //     color: Colors.grey,
+            //   ),
+            // ),
             Expanded(
               flex: 7,
               child: SizedBox(

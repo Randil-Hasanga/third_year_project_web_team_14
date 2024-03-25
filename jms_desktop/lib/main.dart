@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:jms_desktop/const/constants.dart';
+import 'package:jms_desktop/pages/Main_Page.dart';
 import 'package:jms_desktop/pages/login_screen.dart';
-import 'package:jms_desktop/pages/main_screen.dart';
+import 'package:jms_desktop/pages/Dashboard.dart';
 import 'package:jms_desktop/pages/officers_page.dart';
 import 'package:jms_desktop/pages/profile_page.dart';
 import 'package:jms_desktop/services/firebase_services.dart';
-import 'package:jms_desktop/services/sidemenu_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:jms_desktop/pages/officers_page.dart';
 
@@ -28,10 +28,7 @@ void main() async {
     FirebaseService(),
   );
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => SideMenuProvider(),
-      child: const MyApp(),
-    ),
+    const MyApp(),
   );
 }
 
@@ -45,6 +42,12 @@ class MyApp extends StatelessWidget {
       title: 'Job Management System',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+        navigationRailTheme: const NavigationRailThemeData(
+          backgroundColor: backgroundColor2,
+          unselectedIconTheme: IconThemeData(
+            color: selectionColor,
+          ),
+        ),
         scaffoldBackgroundColor: backgroundColor,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
@@ -52,13 +55,14 @@ class MyApp extends StatelessWidget {
       ),
       routes: {
         '/Login': (context) => LoginScreen(),
-        '/dashboard': (context) => MainScreen(),
+        '/dashboard': (context) => Dashboard(),
         '/profile': (context) => ProfilePage(),
         // '/job_seekers': (context) => JobSeekersScreen(),
         // '/job_providers_page': (context) => JobProvidersScreen(),
         // '/settings': (context) => SettingsScreen(),
         '/logout': (context) => LoginScreen(),
         '/officer': (context) => OfficersPage(),
+        '/MainPage': (context) => MainPage(),
       },
       initialRoute: '/Login',
     );

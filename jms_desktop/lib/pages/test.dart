@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:jms_desktop/widgets/dashboard_widget.dart';
-import 'package:jms_desktop/widgets/side_menu_widget.dart';
+
 
 class TestPage extends StatelessWidget {
   String companyName;
@@ -17,18 +17,7 @@ class TestPage extends StatelessWidget {
       body: SafeArea(
         child: Row(
           children: [
-            Expanded(
-                flex: 2,
-                child: SizedBox(
-                  child: SideMenuWidget(),
-                )),
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: _deviceHeight! * 0.02),
-              child: const VerticalDivider(
-                width: 3,
-                color: Colors.grey,
-              ),
-            ),
+            
             Expanded(
               flex: 7,
               child: DashboardWidget(),

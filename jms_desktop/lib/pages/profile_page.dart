@@ -7,7 +7,7 @@ import 'package:get_it/get_it.dart';
 import 'package:jms_desktop/const/constants.dart';
 import 'package:jms_desktop/services/firebase_services.dart';
 import 'package:jms_desktop/widgets/dashboard_widget.dart';
-import 'package:jms_desktop/widgets/side_menu_widget.dart';
+
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -45,18 +45,6 @@ class _ProfilePageState extends State<ProfilePage> {
       body: SafeArea(
         child: Row(
           children: [
-            Expanded(
-                flex: 2,
-                child: SizedBox(
-                  child: SideMenuWidget(),
-                )),
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: _deviceHeight! * 0.02),
-              child: const VerticalDivider(
-                width: 3,
-                color: Colors.grey,
-              ),
-            ),
             Expanded(
               flex: 3,
               child: Column(

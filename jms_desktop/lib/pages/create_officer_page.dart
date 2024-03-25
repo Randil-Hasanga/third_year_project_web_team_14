@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:jms_desktop/widgets/side_menu_widget.dart';
 import 'package:jms_desktop/const/constants.dart';
 
 class CreateOfficerPage extends StatefulWidget {
@@ -21,19 +20,6 @@ class _CreateOfficerPageState extends State<CreateOfficerPage> {
       body: SafeArea(
         child: Row(
           children: [
-            Expanded(
-              flex: 2,
-              child: SizedBox(
-                child: SideMenuWidget(),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: _deviceHeight! * 0.5),
-              child: const VerticalDivider(
-                width: 80,
-                color: Colors.grey,
-              ),
-            ),
             Expanded(
               flex: 6,
               child: Column(
