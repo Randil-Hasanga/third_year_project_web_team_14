@@ -24,16 +24,6 @@ class _DashboardState extends State<DashboardWidget> {
 
     return Column(
       children: [
-        Container(
-          height: _deviceHeight! * 0.07,
-          //color: backgroundColor2,
-          decoration: const BoxDecoration(
-            borderRadius: BorderRadius.only(
-              bottomRight: Radius.circular(500),
-            ),
-            color: backgroundColor2,
-          ),
-        ),
         SizedBox(
           height: _deviceHeight! * 0.006,
         ),

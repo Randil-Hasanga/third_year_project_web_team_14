@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
-import 'package:jms_desktop/pages/main_screen.dart';
+import 'package:jms_desktop/pages/Dashboard.dart';
 import 'package:jms_desktop/services/firebase_services.dart';
-import 'package:jms_desktop/widgets/side_menu_widget.dart';
 import 'package:jms_desktop/widgets/dashboard_widget.dart';
 import 'package:jms_desktop/const/constants.dart';
 
@@ -191,7 +190,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (_result) {
         if (_firebaseService!.currentUser!['type'] == 'officer') {
-          Navigator.popAndPushNamed(context, '/dashboard');
+          Navigator.popAndPushNamed(context, '/MainPage');
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(

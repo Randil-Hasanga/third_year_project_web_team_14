@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:jms_desktop/pages/create_officer_page.dart';
-import 'package:jms_desktop/widgets/side_menu_widget.dart';
 import 'package:jms_desktop/const/constants.dart';
 
 class OfficersPage extends StatefulWidget {
@@ -60,19 +59,6 @@ class _OfficersPageStete extends State<OfficersPage> {
           child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Expanded(
-            flex: 2,
-            child: SizedBox(
-              child: SideMenuWidget(),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: _deviceHeight! * 0.02),
-            child: const VerticalDivider(
-              width: 3,
-              color: Colors.grey,
-            ),
-          ),
           Expanded(
             flex: 9,
             child: SingleChildScrollView(
