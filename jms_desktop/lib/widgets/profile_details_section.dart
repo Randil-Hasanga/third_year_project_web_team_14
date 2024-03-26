@@ -13,7 +13,7 @@ class ProfileDetailsSection extends StatefulWidget {
 class _ProfileDetailsSectionState extends State<ProfileDetailsSection> {
   double? _deviceWidth, _deviceHeight, _widthXheight;
   FirebaseService? _firebaseService;
-  String? _fname, _lname,_regNo, _post;
+  String? _fname, _lname, _regNo, _post;
 
   @override
   void initState() {
@@ -21,7 +21,6 @@ class _ProfileDetailsSectionState extends State<ProfileDetailsSection> {
     super.initState();
     _firebaseService = GetIt.instance.get<FirebaseService>();
   }
-  
 
   @override
   Widget build(BuildContext context) {
@@ -33,83 +32,91 @@ class _ProfileDetailsSectionState extends State<ProfileDetailsSection> {
     _regNo = _firebaseService!.currentUser!['reg_no'];
     _post = _firebaseService!.currentUser!['position'];
 
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            SizedBox(
-              height: _deviceHeight! * 0.1,
-              width: _deviceWidth! * 0.001,
-            ),
-            Padding(
-              padding: EdgeInsets.only(right: _widthXheight! * 1),
-              child: IconButton(
+    return Container(
+      margin: EdgeInsets.only(
+        right: _deviceWidth! * 0.01,
+        top: _deviceWidth! * 0.01,
+        bottom: _deviceWidth! * 0.01,
+      ),
+      padding: EdgeInsets.all(_widthXheight! * 1),
+      // height: _widthXheight! * 13,
+      // width: _deviceWidth! * 0.2,
+      decoration: BoxDecoration(
+        color: cardBackgroundColorLayer2,
+        borderRadius: BorderRadius.circular(_widthXheight! * 1),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 5,
+            offset: Offset(0, 0),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.max,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                height: _deviceHeight! * 0.1,
+                width: _deviceWidth! * 0.001,
+              ),
+              IconButton(
                 onPressed: () {
                   //Navigator.pop(context);
                 },
                 icon: const Icon(Icons.notifications_none_outlined),
                 iconSize: _widthXheight! * 1.5,
               ),
+            ],
+          ),
+          SizedBox(
+            height: _deviceHeight! * 0.15,
+          ),
+          Container(
+            child: Column(
+              children: [
+                _profileImage(),
+                SizedBox(
+                  height: _widthXheight! * 0.5,
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  mainAxisSize: MainAxisSize.max,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "$_fname $_lname", //TODO: add name
+                      style: TextStyle(
+                        fontSize: _widthXheight! * 0.9,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    Text(
+                      "$_regNo", //TODO: add name
+                      style: TextStyle(
+                        fontSize: _widthXheight! * 0.9,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    Text(
+                      "$_post", //TODO: add name
+                      style: TextStyle(
+                        fontSize: _widthXheight! * 0.9,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-          ],
-        ),
-        SizedBox(
-          height: _deviceHeight! * 0.15,
-        ),
-        Container(
-          padding: EdgeInsets.all(_widthXheight! * 1),
-          height: _widthXheight! * 13,
-          width: _deviceWidth! * 0.2,
-          decoration: BoxDecoration(
-            color: cardBackgroundColorLayer2,
-            borderRadius: BorderRadius.circular(_widthXheight! * 1),
-            boxShadow: const [
-              BoxShadow(
-                color: Colors.black12,
-                blurRadius: 5,
-                offset: Offset(0, 0),
-              ),
-            ],
           ),
-          child: Column(
-            children: [
-              _profileImage(),
-              SizedBox(
-                height: _widthXheight! * 0.5,
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                mainAxisSize: MainAxisSize.max,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "$_fname $_lname", //TODO: add name
-                    style: TextStyle(
-                      fontSize: _widthXheight! * 0.9,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  Text(
-                    "$_regNo", //TODO: add name
-                    style: TextStyle(
-                      fontSize: _widthXheight! * 0.9,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  Text(
-                    "$_post", //TODO: add name
-                    style: TextStyle(
-                      fontSize: _widthXheight! * 0.9,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -122,7 +129,7 @@ class _ProfileDetailsSectionState extends State<ProfileDetailsSection> {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(50000),
         child: Image.network(
-          "https://i.pravatar.cc/150?img=3", //TODO: profile pic
+          "https://avatar.iran.liara.run/public/3", //TODO: profile pic
           fit: BoxFit.cover,
           loadingBuilder: (BuildContext context, Widget child,
               ImageChunkEvent? loadingProgress) {
