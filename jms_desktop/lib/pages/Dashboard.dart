@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:jms_desktop/widgets/dashboard_widget.dart';
 import 'package:jms_desktop/widgets/profile_details_section.dart';
 
 class Dashboard extends StatefulWidget {
+  const Dashboard({super.key});
+
   @override
   State<StatefulWidget> createState() {
     return _DashboardState();

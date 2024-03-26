@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
-import 'package:jms_desktop/pages/Dashboard.dart';
 import 'package:jms_desktop/services/firebase_services.dart';
-import 'package:jms_desktop/widgets/dashboard_widget.dart';
-import 'package:jms_desktop/const/constants.dart';
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
   State<StatefulWidget> createState() {
     return _LoginScreenState();
