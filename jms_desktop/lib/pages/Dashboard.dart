@@ -23,18 +23,6 @@ class _DashboardState extends State<Dashboard> {
       body: SafeArea(
         child: Row(
           children: [
-            // Expanded(
-            //     flex: 2,
-            //     child: SizedBox(
-            //       child: SideMenuWidget(),
-            //     )),
-            // Padding(
-            //   padding: EdgeInsets.symmetric(vertical: _deviceHeight! * 0.02),
-            //   child: const VerticalDivider(
-            //     width: 3,
-            //     color: Colors.grey,
-            //   ),
-            // ),
             Expanded(
               flex: 7,
               child: SizedBox(

@@ -304,7 +304,7 @@ class _ProfilePageState extends State<ProfilePage> {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(500),
         child: Image.network(
-          "https://i.pravatar.cc/150?img=3", //TODO: profile pic
+          "https://avatar.iran.liara.run/public/3", //TODO: profile pic
           fit: BoxFit.cover,
           loadingBuilder: (BuildContext context, Widget child,
               ImageChunkEvent? loadingProgress) {
