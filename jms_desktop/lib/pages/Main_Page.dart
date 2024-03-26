@@ -1,6 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:jms_desktop/const/constants.dart';
 import 'package:jms_desktop/pages/dashboard.dart';
 import 'package:jms_desktop/pages/officers_page.dart';
@@ -15,7 +13,7 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int _currentPage = 0;
-  double? _deviceWidth, _deviceHeight, _widthXheight;
+  double? _deviceHeight;
 
   final List<Widget> _pages = [
     Dashboard(),
@@ -25,8 +23,6 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     _deviceHeight = MediaQuery.of(context).size.height;
-    _deviceWidth = MediaQuery.of(context).size.width;
-    _widthXheight = _deviceWidth! * _deviceHeight! / 50000;
     return Scaffold(
       body: Row(
         children: [

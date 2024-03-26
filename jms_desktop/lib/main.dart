@@ -1,17 +1,14 @@
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:jms_desktop/const/constants.dart';
 import 'package:jms_desktop/pages/Main_Page.dart';
 import 'package:jms_desktop/pages/login_screen.dart';
-import 'package:jms_desktop/pages/Dashboard.dart';
+import 'package:jms_desktop/pages/dashboard.dart';
 import 'package:jms_desktop/pages/officers_page.dart';
 import 'package:jms_desktop/pages/profile_page.dart';
 import 'package:jms_desktop/services/firebase_services.dart';
-import 'package:provider/provider.dart';
-import 'package:jms_desktop/pages/officers_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
