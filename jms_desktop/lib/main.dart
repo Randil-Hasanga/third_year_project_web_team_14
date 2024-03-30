@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:jms_desktop/const/constants.dart';
 import 'package:jms_desktop/pages/Main_Page.dart';
+import 'package:jms_desktop/pages/job_providers_page.dart';
 import 'package:jms_desktop/pages/login_screen.dart';
 import 'package:jms_desktop/pages/dashboard.dart';
 import 'package:jms_desktop/pages/officers_page.dart';
@@ -60,8 +61,9 @@ class MyApp extends StatelessWidget {
         '/logout': (context) => LoginScreen(),
         '/officer': (context) => OfficersPage(),
         '/MainPage': (context) => MainPage(),
+        '/provider': (context) => JobProviders(),
       },
-      initialRoute: '/Login',
+      initialRoute: '/provider',
     );
   }
 }

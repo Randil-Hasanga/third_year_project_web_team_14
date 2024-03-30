@@ -35,9 +35,29 @@ class FirebaseService {
   Future<Map?> _getUserData({required String uid}) async {
     DocumentSnapshot _doc =
         await _db.collection(USER_COLLECTION).doc(uid).get();
-    
-    if(_doc.exists){
+
+    if (_doc.exists) {
       return _doc.data() as Map;
+    } else {
+      return null;
+    }
+  }
+
+  Future<List<Map<String, dynamic>>?> getJobProviderData() async {
+    QuerySnapshot<Map<String, dynamic>>? _querySnapshot = await _db
+        .collection(USER_COLLECTION)
+        .where('type', isEqualTo: 'officer')
+        .get();
+
+    List<Map<String, dynamic>> jobProviders = [];
+
+    for (QueryDocumentSnapshot<Map<String, dynamic>> doc
+        in _querySnapshot.docs) {
+      jobProviders.add(doc.data());
+    }
+
+    if (jobProviders.isNotEmpty) {
+      return jobProviders;
     } else {
       return null;
     }
