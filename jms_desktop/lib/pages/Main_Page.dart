@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jms_desktop/const/constants.dart';
 import 'package:jms_desktop/pages/dashboard.dart';
+import 'package:jms_desktop/pages/job_providers_page.dart';
 import 'package:jms_desktop/pages/officers_page.dart';
 import 'package:jms_desktop/pages/profile_page.dart';
 
@@ -19,6 +20,7 @@ class _MainPageState extends State<MainPage> {
     Dashboard(),
     ProfilePage(),
     OfficersPage(),
+    JobProviders(),
   ];
   @override
   Widget build(BuildContext context) {
@@ -58,6 +60,13 @@ class _MainPageState extends State<MainPage> {
                 icon: Icon(Icons.work),
                 label: Text(
                   'Officers',
+                  style: TextStyle(color: Colors.white, fontSize: 20),
+                ),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.handshake),
+                label: Text(
+                  'Job Providers',
                   style: TextStyle(color: Colors.white, fontSize: 20),
                 ),
               ),

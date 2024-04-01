@@ -52,7 +52,7 @@ class MyApp extends StatelessWidget {
         textTheme: GoogleFonts.poppinsTextTheme(),
       ),
       routes: {
-        '/Login': (context) => LoginScreen(),
+        '/login': (context) => LoginScreen(),
         '/dashboard': (context) => Dashboard(),
         '/profile': (context) => ProfilePage(),
         // '/job_seekers': (context) => JobSeekersScreen(),
@@ -63,7 +63,7 @@ class MyApp extends StatelessWidget {
         '/MainPage': (context) => MainPage(),
         '/provider': (context) => JobProviders(),
       },
-      initialRoute: '/provider',
+      initialRoute: '/login',
     );
   }
 }
