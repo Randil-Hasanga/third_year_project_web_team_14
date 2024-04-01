@@ -3,8 +3,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:get_it/get_it.dart';
 import 'package:jms_desktop/const/constants.dart';
 import 'package:jms_desktop/pages/test.dart';
+import 'package:jms_desktop/services/firebase_services.dart';
 
 class DashboardWidget extends StatefulWidget {
   @override
@@ -14,6 +16,31 @@ class DashboardWidget extends StatefulWidget {
 }
 
 class _DashboardState extends State<DashboardWidget> {
+  FirebaseService? _firebaseService;
+  List<Map<String, dynamic>>? jobProviders;
+  Map<String, dynamic>? _selectedProvider;
+  int? _JobProvidersCount = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _firebaseService = GetIt.instance.get<FirebaseService>();
+    _loadJobProviders();
+    _GetJobProvidersCount();
+  }
+
+  void _GetJobProvidersCount() async {
+    _JobProvidersCount = await _firebaseService!.getProviderCount();
+  }
+
+  void _loadJobProviders() async {
+    List<Map<String, dynamic>>? data =
+        await _firebaseService!.getJobProviderData();
+    setState(() {
+      jobProviders = data;
+    });
+  }
+
   double? _deviceWidth, _deviceHeight, _widthXheight;
   ScrollController _scrollControllerRight = ScrollController();
   ScrollController _scrollControllerLeft = ScrollController();
@@ -25,7 +52,6 @@ class _DashboardState extends State<DashboardWidget> {
 
     return Column(
       children: [
-        
         ActivityDetailsCardWidget(),
         SizedBox(
           height: _deviceHeight! * 0.006,
@@ -118,16 +144,16 @@ class _DashboardState extends State<DashboardWidget> {
         //bottom: _widthXheight! * 1,
       ),
       child: GestureDetector(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => TestPage(
-                companyName: "XYZ",
-              ),
-            ),
-          );
-        },
+        // onTap: () {
+        //   Navigator.push(
+        //     context,
+        //     MaterialPageRoute(
+        //       builder: (context) => TestPage(
+        //         companyName: "XYZ",
+        //       ),
+        //     ),
+        //   );
+        // },
         child: AnimatedContainer(
           duration: Duration(microseconds: 300),
           height: _deviceHeight! * 0.08,
@@ -316,7 +342,7 @@ class _DashboardState extends State<DashboardWidget> {
                                   children: [
                                     Text(
                                       // TODO: get data from DB
-                                      "20",
+                                      _JobProvidersCount.toString(),
                                       style: TextStyle(
                                         color: Colors.black,
                                         fontSize: _widthXheight! * 2,
@@ -450,11 +476,12 @@ class _DashboardState extends State<DashboardWidget> {
   Widget CurrentProvidersListWidget() {
     return Container(
       margin: EdgeInsets.only(
-          left: _deviceWidth! * 0.01, bottom: _deviceHeight! * 0.02),
+        left: _deviceWidth! * 0.01,
+        bottom: _deviceHeight! * 0.02,
+        // /top: _deviceHeight! * 0.02,
+      ),
       padding: EdgeInsets.symmetric(horizontal: _deviceWidth! * 0.01),
-      // height: _deviceHeight! * 0.27,
       decoration: BoxDecoration(
-        //color: Color.fromARGB(172, 255, 255, 255),
         color: cardBackgroundColorLayer2,
         borderRadius: BorderRadius.circular(_widthXheight! * 1),
         boxShadow: const [
@@ -486,18 +513,34 @@ class _DashboardState extends State<DashboardWidget> {
                 ),
               )),
           Expanded(
-            child: Scrollbar(
-              controller: _scrollControllerLeft,
-              thumbVisibility: true,
-              child: ListView.builder(
-                controller: _scrollControllerLeft,
-                shrinkWrap: true,
-                itemCount: 10,
-                scrollDirection: Axis.vertical,
-                itemBuilder: (context, index) {
-                  return CurrentListViewBuilderWidget();
-                },
-              ),
+            child: Stack(
+              children: [
+                Visibility(
+                  visible: jobProviders == null,
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      color: selectionColor,
+                    ),
+                  ),
+                ),
+                Visibility(
+                  visible: jobProviders != null,
+                  child: Scrollbar(
+                    controller: _scrollControllerLeft,
+                    thumbVisibility: true,
+                    child: ListView.builder(
+                      controller: _scrollControllerLeft,
+                      shrinkWrap: true,
+                      itemCount: jobProviders?.length ?? 0,
+                      scrollDirection: Axis.vertical,
+                      itemBuilder: (context, index) {
+                        return CurrentListViewBuilderWidget(
+                            jobProviders![index]);
+                      },
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -505,7 +548,7 @@ class _DashboardState extends State<DashboardWidget> {
     );
   }
 
-  Widget CurrentListViewBuilderWidget() {
+  Widget CurrentListViewBuilderWidget(Map<String, dynamic> provider) {
     return Padding(
       padding: EdgeInsets.only(
         right: _deviceWidth! * 0.0125,
@@ -513,14 +556,9 @@ class _DashboardState extends State<DashboardWidget> {
       ),
       child: GestureDetector(
         onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => TestPage(
-                companyName: "XYZ",
-              ),
-            ),
-          );
+          setState(() {
+            _selectedProvider = provider;
+          });
         },
         child: AnimatedContainer(
           duration: Duration(microseconds: 300),
@@ -553,7 +591,9 @@ class _DashboardState extends State<DashboardWidget> {
                   Icons.developer_mode,
                   size: _widthXheight! * 1,
                 ),
-                Text("Company Name")
+                if (provider['username'] != null) ...{
+                  Text(provider['username']),
+                }
               ],
             ),
           ),

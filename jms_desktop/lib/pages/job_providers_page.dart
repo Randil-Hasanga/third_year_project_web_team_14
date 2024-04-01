@@ -55,7 +55,13 @@ class _JobProvidersState extends State<JobProviders> {
               child: _isDetailsVisible
                   ? SelectedProviderDetailsWidget(_selectedProvider)
                   : Container(
-                      color: Colors.amber,
+                      child: Center(
+                          child: Text(
+                        "Select a provider to view details",
+                        style: TextStyle(
+                          fontSize: _widthXheight! * 0.5,
+                        ),
+                      )),
                     ),
             )
           ],
@@ -183,8 +189,8 @@ class _JobProvidersState extends State<JobProviders> {
                   Icons.developer_mode,
                   size: _widthXheight! * 1,
                 ),
-                if (provider['fname'] != null) ...{
-                  Text(provider['fname']),
+                if (provider['username'] != null) ...{
+                  Text(provider['username']),
                 }
               ],
             ),
@@ -232,7 +238,7 @@ class SelectedProviderDetailsWidget extends StatelessWidget {
           ),
           SizedBox(height: 20),
           if (provider != null) ...{
-            Text("Name: ${provider!['fname']}"),
+            Text("Name: ${provider!['username']}"),
             Text("Email: ${provider!['email']}"),
             // Add more details as needed
           }

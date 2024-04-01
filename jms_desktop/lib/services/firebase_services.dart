@@ -46,7 +46,7 @@ class FirebaseService {
   Future<List<Map<String, dynamic>>?> getJobProviderData() async {
     QuerySnapshot<Map<String, dynamic>>? _querySnapshot = await _db
         .collection(USER_COLLECTION)
-        .where('type', isEqualTo: 'officer')
+        .where('type', isEqualTo: 'provider')
         .get();
 
     List<Map<String, dynamic>> jobProviders = [];
@@ -61,5 +61,14 @@ class FirebaseService {
     } else {
       return null;
     }
+  }
+
+  Future<int> getProviderCount() async {
+    QuerySnapshot<Map<String, dynamic>>? _querySnapshot = await _db
+        .collection(USER_COLLECTION)
+        .where('type', isEqualTo: 'provider')
+        .get();
+
+    return _querySnapshot.docs.length;
   }
 }
