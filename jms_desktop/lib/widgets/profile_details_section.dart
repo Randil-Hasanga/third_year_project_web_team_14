@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jms_desktop/const/constants.dart';
@@ -14,10 +15,10 @@ class _ProfileDetailsSectionState extends State<ProfileDetailsSection> {
   double? _deviceWidth, _deviceHeight, _widthXheight;
   FirebaseService? _firebaseService;
   String? _fname, _lname, _regNo, _post;
+  GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _firebaseService = GetIt.instance.get<FirebaseService>();
   }
@@ -32,90 +33,118 @@ class _ProfileDetailsSectionState extends State<ProfileDetailsSection> {
     _regNo = _firebaseService!.currentUser!['reg_no'];
     _post = _firebaseService!.currentUser!['position'];
 
-    return Container(
-      margin: EdgeInsets.only(
-        right: _deviceWidth! * 0.01,
-        top: _deviceWidth! * 0.01,
-        bottom: _deviceWidth! * 0.01,
-      ),
-      padding: EdgeInsets.all(_widthXheight! * 1),
-      // height: _widthXheight! * 13,
-      // width: _deviceWidth! * 0.2,
-      decoration: BoxDecoration(
-        color: cardBackgroundColorLayer2,
-        borderRadius: BorderRadius.circular(_widthXheight! * 1),
-        boxShadow: const [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 5,
-            offset: Offset(0, 0),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        mainAxisSize: MainAxisSize.max,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                height: _deviceHeight! * 0.1,
-                width: _deviceWidth! * 0.001,
+    return Scaffold(
+      backgroundColor: backgroundColor3,
+      key: _scaffoldKey,
+      endDrawer: Drawer(
+        child: ListView(
+          children: [
+            DrawerHeader(
+              child: Text('Notifications'),
+              decoration: BoxDecoration(
+                color: Colors.blue,
               ),
-              IconButton(
-                onPressed: () {
-                  //Navigator.pop(context);
-                },
-                icon: const Icon(Icons.notifications_none_outlined),
-                iconSize: _widthXheight! * 1.5,
-              ),
-            ],
-          ),
-          SizedBox(
-            height: _deviceHeight! * 0.15,
-          ),
-          Container(
-            child: Column(
+            ),
+            ListTile(
+              title: Text('Notification 1'),
+              onTap: () {
+                // Handle notification tap
+              },
+            ),
+            ListTile(
+              title: Text('Notification 2'),
+              onTap: () {
+                // Handle notification tap
+              },
+            ),
+          ],
+        ),
+      ),
+      body: Container(
+        margin: EdgeInsets.only(
+          right: _deviceWidth! * 0.01,
+          top: _deviceWidth! * 0.01,
+          bottom: _deviceWidth! * 0.01,
+        ),
+        padding: EdgeInsets.all(_widthXheight! * 1),
+        decoration: BoxDecoration(
+          color: cardBackgroundColorLayer2,
+          borderRadius: BorderRadius.circular(_widthXheight! * 1),
+          boxShadow: const [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 5,
+              offset: Offset(0, 0),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _profileImage(),
                 SizedBox(
-                  height: _widthXheight! * 0.5,
+                  height: _deviceHeight! * 0.1,
+                  width: _deviceWidth! * 0.001,
                 ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  mainAxisSize: MainAxisSize.max,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "$_fname $_lname", //TODO: add name
-                      style: TextStyle(
-                        fontSize: _widthXheight! * 0.9,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    Text(
-                      "$_regNo", //TODO: add name
-                      style: TextStyle(
-                        fontSize: _widthXheight! * 0.9,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    Text(
-                      "$_post", //TODO: add name
-                      style: TextStyle(
-                        fontSize: _widthXheight! * 0.9,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
+                GestureDetector(
+                  child: Icon(
+                    Icons.notifications,
+                    size: _widthXheight! * 1.5,
+                  ),
+                  onTap: () {
+                    _scaffoldKey.currentState!.openEndDrawer();
+                  },
                 ),
               ],
             ),
-          ),
-        ],
+            // SizedBox(
+            //   height: _deviceHeight! * 0.15,
+            // ),
+            Container(
+              child: Column(
+                children: [
+                  _profileImage(),
+                  SizedBox(
+                    height: _widthXheight! * 0.5,
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    mainAxisSize: MainAxisSize.max,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "$_fname $_lname", //TODO: add name
+                        style: TextStyle(
+                          fontSize: _widthXheight! * 0.9,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Text(
+                        "$_regNo", //TODO: add name
+                        style: TextStyle(
+                          fontSize: _widthXheight! * 0.9,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Text(
+                        "$_post", //TODO: add name
+                        style: TextStyle(
+                          fontSize: _widthXheight! * 0.9,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
