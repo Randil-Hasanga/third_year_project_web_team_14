@@ -40,6 +40,9 @@ class MyApp extends StatelessWidget {
       title: 'Job Management System',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+        appBarTheme: AppBarTheme(
+          backgroundColor: backgroundColor3,
+        ),
         navigationRailTheme: const NavigationRailThemeData(
           backgroundColor: backgroundColor2,
           unselectedIconTheme: IconThemeData(
