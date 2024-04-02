@@ -37,6 +37,7 @@ class _ProfileDetailsSectionState extends State<ProfileDetailsSection> {
       backgroundColor: backgroundColor3,
       key: _scaffoldKey,
       endDrawer: Drawer(
+        width: _deviceWidth! * 0.22,
         child: ListView(
           children: [
             DrawerHeader(
