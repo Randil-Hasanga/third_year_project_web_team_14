@@ -47,6 +47,7 @@ class FirebaseService {
     QuerySnapshot<Map<String, dynamic>>? _querySnapshot = await _db
         .collection(USER_COLLECTION)
         .where('type', isEqualTo: 'provider')
+        .where('pending', isEqualTo: false)
         .get();
 
     List<Map<String, dynamic>> jobProviders = [];
@@ -67,6 +68,54 @@ class FirebaseService {
     QuerySnapshot<Map<String, dynamic>>? _querySnapshot = await _db
         .collection(USER_COLLECTION)
         .where('type', isEqualTo: 'provider')
+        .where('pending', isEqualTo: false)
+        .get();
+
+    return _querySnapshot.docs.length;
+  }
+
+  Future<List<Map<String, dynamic>>?> getApprovalsData() async {
+    QuerySnapshot<Map<String, dynamic>>? _querySnapshot = await _db
+        .collection(USER_COLLECTION)
+        .where('type', isEqualTo: 'provider')
+        .where('pending', isEqualTo: true)
+        .get();
+
+    List<Map<String, dynamic>> jobProviders = [];
+
+    for (QueryDocumentSnapshot<Map<String, dynamic>> doc
+        in _querySnapshot.docs) {
+      jobProviders.add(doc.data());
+    }
+
+    if (jobProviders.isNotEmpty) {
+      return jobProviders;
+    } else {
+      return null;
+    }
+  }
+
+  Future<int> getApprovalsCount() async {
+  try {
+    QuerySnapshot<Map<String, dynamic>>? _querySnapshot = await _db
+        .collection(USER_COLLECTION)
+        .where('type', isEqualTo: 'provider')
+        .where('pending', isEqualTo: true)
+        .get();
+
+    return _querySnapshot.docs.length;
+  } catch (e) {
+    print('Error fetching approvals count: $e');
+    return 0;
+  }
+}
+
+
+
+  Future<int> getJobSeekerCount() async {
+    QuerySnapshot<Map<String, dynamic>>? _querySnapshot = await _db
+        .collection(USER_COLLECTION)
+        .where('type', isEqualTo: 'seeker')
         .get();
 
     return _querySnapshot.docs.length;

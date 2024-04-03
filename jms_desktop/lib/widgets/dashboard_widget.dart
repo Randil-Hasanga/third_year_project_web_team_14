@@ -1,11 +1,8 @@
 // ignore_for_file: unused_field
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jms_desktop/const/constants.dart';
-import 'package:jms_desktop/pages/test.dart';
 import 'package:jms_desktop/services/firebase_services.dart';
 
 class DashboardWidget extends StatefulWidget {
@@ -18,26 +15,41 @@ class DashboardWidget extends StatefulWidget {
 class _DashboardState extends State<DashboardWidget> {
   FirebaseService? _firebaseService;
   List<Map<String, dynamic>>? jobProviders;
+  List<Map<String, dynamic>>? pendingApprovals;
   Map<String, dynamic>? _selectedProvider;
-  int? _JobProvidersCount = 0;
+  int? _JobProvidersCount,_PendingApprovalsCount, _jobSeekerCount;
 
   @override
   void initState() {
     super.initState();
     _firebaseService = GetIt.instance.get<FirebaseService>();
-    _loadJobProviders();
-    _GetJobProvidersCount();
+    _getDataFromDB();
+    _GetCounts();
+
   }
 
-  void _GetJobProvidersCount() async {
-    _JobProvidersCount = await _firebaseService!.getProviderCount();
-  }
+  void _GetCounts() async {
+  
+    int _ProvidersCount = await _firebaseService!.getProviderCount();
+    int _SeekerCount = await _firebaseService!.getJobSeekerCount();
+    int _ApprovalsCount = await _firebaseService!.getApprovalsCount();
 
-  void _loadJobProviders() async {
+    setState(() {
+      _PendingApprovalsCount = _ApprovalsCount;
+      _JobProvidersCount = _ProvidersCount;
+      _jobSeekerCount = _SeekerCount;
+    });
+  }
+  
+  void _getDataFromDB() async {
     List<Map<String, dynamic>>? data =
         await _firebaseService!.getJobProviderData();
+
+    List<Map<String, dynamic>>? data2 =
+        await _firebaseService!.getApprovalsData();
     setState(() {
       jobProviders = data;
+      pendingApprovals = data2;
     });
   }
 
@@ -80,11 +92,10 @@ class _DashboardState extends State<DashboardWidget> {
         left: _deviceWidth! * 0.01,
         bottom: _deviceHeight! * 0.02,
         right: _deviceWidth! * 0.01,
+        //top: _deviceHeight! * 0.02,
       ),
       padding: EdgeInsets.symmetric(horizontal: _deviceWidth! * 0.01),
-      // /height: _deviceHeight! * 0.27,
       decoration: BoxDecoration(
-        //color: Color.fromARGB(172, 255, 255, 255),
         color: cardBackgroundColorLayer2,
         borderRadius: BorderRadius.circular(_widthXheight! * 1),
         boxShadow: const [
@@ -105,7 +116,7 @@ class _DashboardState extends State<DashboardWidget> {
                 child: Row(
                   children: [
                     Text(
-                      "Pending Approvals",
+                      "Pending Job Providers",
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: _widthXheight! * 0.7,
@@ -116,19 +127,34 @@ class _DashboardState extends State<DashboardWidget> {
                 ),
               )),
           Expanded(
-            child: Scrollbar(
-              controller: _scrollControllerRight,
-              thumbVisibility: true,
-              child: ListView.builder(
-                controller: _scrollControllerRight,
-                shrinkWrap: true,
-                itemCount: 10,
-                scrollDirection: Axis.vertical,
-                //always show scroll bar
-                itemBuilder: (context, index) {
-                  return PendingListViewBuilderWidget();
-                },
-              ),
+            child: Stack(
+              children: [
+                Visibility(
+                  visible: pendingApprovals == null,
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      color: selectionColor,
+                    ),
+                  ),
+                ),
+                Visibility(
+                  visible: pendingApprovals != null,
+                  child: Scrollbar(
+                    controller: _scrollControllerRight,
+                    thumbVisibility: true,
+                    child: ListView.builder(
+                      controller: _scrollControllerRight,
+                      shrinkWrap: true,
+                      itemCount: pendingApprovals?.length ?? 0,
+                      scrollDirection: Axis.vertical,
+                      itemBuilder: (context, index) {
+                        return ApprovalListViewBuilderWidget(
+                            pendingApprovals![index]);
+                      },
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -136,23 +162,18 @@ class _DashboardState extends State<DashboardWidget> {
     );
   }
 
-  Widget PendingListViewBuilderWidget() {
+  Widget ApprovalListViewBuilderWidget(Map<String, dynamic> provider) {
     return Padding(
       padding: EdgeInsets.only(
         right: _deviceWidth! * 0.0125,
         top: _deviceHeight! * 0.01,
-        //bottom: _widthXheight! * 1,
       ),
       child: GestureDetector(
         // onTap: () {
-        //   Navigator.push(
-        //     context,
-        //     MaterialPageRoute(
-        //       builder: (context) => TestPage(
-        //         companyName: "XYZ",
-        //       ),
-        //     ),
-        //   );
+        //   setState(() {
+        //     _isDetailsVisible = true;
+        //     _selectedApproval = provider;
+        //   });
         // },
         child: AnimatedContainer(
           duration: Duration(microseconds: 300),
@@ -185,7 +206,9 @@ class _DashboardState extends State<DashboardWidget> {
                   Icons.developer_mode,
                   size: _widthXheight! * 1,
                 ),
-                Text("Company Name")
+                if (provider['username'] != null) ...{
+                  Text(provider['username']),
+                }
               ],
             ),
           ),
@@ -285,12 +308,31 @@ class _DashboardState extends State<DashboardWidget> {
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Text(
-                                      // TODO: get data from DB
-                                      "20",
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: _widthXheight! * 2,
+                                    Expanded(
+                                      child: Stack(
+                                        children: [
+                                          Visibility(
+                                            visible: _jobSeekerCount == null,
+                                            child: const Center(
+                                              child: CircularProgressIndicator(
+                                                color: selectionColor,
+                                              ),
+                                            ),
+                                          ),
+                                          Visibility(
+                                            visible: _jobSeekerCount != null,
+                                            child: Center(
+                                              child: Text(
+                                                // TODO: get data from DB
+                                                _jobSeekerCount.toString(),
+                                                style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: _widthXheight! * 2,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   ],
@@ -340,12 +382,31 @@ class _DashboardState extends State<DashboardWidget> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    Text(
-                                      // TODO: get data from DB
-                                      _JobProvidersCount.toString(),
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: _widthXheight! * 2,
+                                    Expanded(
+                                      child: Stack(
+                                        children: [
+                                          Visibility(
+                                            visible: _JobProvidersCount == null,
+                                            child: const Center(
+                                              child: CircularProgressIndicator(
+                                                color: selectionColor,
+                                              ),
+                                            ),
+                                          ),
+                                          Visibility(
+                                            visible: _JobProvidersCount != null,
+                                            child: Center(
+                                              child: Text(
+                                                // TODO: get data from DB
+                                                _JobProvidersCount.toString(),
+                                                style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: _widthXheight! * 2,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   ],
@@ -447,12 +508,31 @@ class _DashboardState extends State<DashboardWidget> {
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Text(
-                                      // TODO: get data from DB
-                                      "20",
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: _widthXheight! * 2,
+                                    Expanded(
+                                      child: Stack(
+                                        children: [
+                                          Visibility(
+                                            visible: _PendingApprovalsCount == null,
+                                            child: const Center(
+                                              child: CircularProgressIndicator(
+                                                color: selectionColor,
+                                              ),
+                                            ),
+                                          ),
+                                          Visibility(
+                                            visible: _PendingApprovalsCount != null,
+                                            child: Center(
+                                              child: Text(
+                                                // TODO: get data from DB
+                                                _PendingApprovalsCount.toString(),
+                                                style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: _widthXheight! * 2,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   ],
