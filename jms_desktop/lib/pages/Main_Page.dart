@@ -3,6 +3,7 @@ import 'package:jms_desktop/const/constants.dart';
 import 'package:jms_desktop/pages/dashboard.dart';
 import 'package:jms_desktop/pages/job_providers_page.dart';
 import 'package:jms_desktop/pages/officers_page.dart';
+import 'package:jms_desktop/pages/pending_approvals.dart';
 import 'package:jms_desktop/pages/profile_page.dart';
 
 class MainPage extends StatefulWidget {
@@ -21,6 +22,7 @@ class _MainPageState extends State<MainPage> {
     ProfilePage(),
     OfficersPage(),
     JobProviders(),
+    PendingApprovals(),
   ];
   @override
   Widget build(BuildContext context) {
@@ -31,6 +33,7 @@ class _MainPageState extends State<MainPage> {
           NavigationRail(
             extended: true,
             labelType: NavigationRailLabelType.none,
+            
             leading: SizedBox(
               height: _deviceHeight! * 0.1,
             ),
@@ -43,6 +46,7 @@ class _MainPageState extends State<MainPage> {
             indicatorColor: selectionColor,
             destinations: const [
               NavigationRailDestination(
+                padding: EdgeInsets.symmetric(vertical: 10),
                 icon: Icon(Icons.dashboard),
                 label: Text(
                   'Dashboard',
@@ -50,6 +54,7 @@ class _MainPageState extends State<MainPage> {
                 ),
               ),
               NavigationRailDestination(
+                padding: EdgeInsets.symmetric(vertical: 10),
                 icon: Icon(Icons.account_box),
                 label: Text(
                   'Profile',
@@ -57,6 +62,7 @@ class _MainPageState extends State<MainPage> {
                 ),
               ),
               NavigationRailDestination(
+                padding: EdgeInsets.symmetric(vertical: 10),
                 icon: Icon(Icons.work),
                 label: Text(
                   'Officers',
@@ -64,9 +70,18 @@ class _MainPageState extends State<MainPage> {
                 ),
               ),
               NavigationRailDestination(
+                padding: EdgeInsets.symmetric(vertical: 10),
                 icon: Icon(Icons.handshake),
                 label: Text(
-                  'Job Providers',
+                  'Current\nJob Providers',
+                  style: TextStyle(color: Colors.white, fontSize: 20),
+                ),
+              ),
+              NavigationRailDestination(
+                padding: EdgeInsets.symmetric(vertical: 10),
+                icon: Icon(Icons.lock_clock),
+                label: Text(
+                  'Pending\nJob Providers',
                   style: TextStyle(color: Colors.white, fontSize: 20),
                 ),
               ),
