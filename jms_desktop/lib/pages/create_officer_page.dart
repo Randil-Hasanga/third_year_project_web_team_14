@@ -26,19 +26,19 @@ class _CreateOfficerPageState extends State<CreateOfficerPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   TextFormField(
-                    decoration: InputDecoration(labelText: 'Name'),
+                    decoration: const InputDecoration(labelText: 'Name'),
                   ),
                   TextFormField(
-                    decoration: InputDecoration(labelText: 'Registration No'),
+                    decoration: const InputDecoration(labelText: 'Registration No'),
                   ),
                   TextFormField(
-                    decoration: InputDecoration(labelText: 'Position'),
+                    decoration: const InputDecoration(labelText: 'Position'),
                   ),
                   TextFormField(
-                    decoration: InputDecoration(labelText: 'Contact No'),
+                    decoration: const InputDecoration(labelText: 'Contact No'),
                   ),
                   TextFormField(
-                    decoration: InputDecoration(labelText: 'Email'),
+                    decoration: const InputDecoration(labelText: 'Email'),
                   ),
                   const SizedBox(
                     height: 10.0,

@@ -18,6 +18,7 @@ class _DashboardState extends State<DashboardWidget> {
   List<Map<String, dynamic>>? pendingApprovals;
   Map<String, dynamic>? _selectedProvider;
   int? _JobProvidersCount,_PendingApprovalsCount, _jobSeekerCount;
+  bool _showLoader = true;
 
   @override
   void initState() {
@@ -25,6 +26,14 @@ class _DashboardState extends State<DashboardWidget> {
     _firebaseService = GetIt.instance.get<FirebaseService>();
     _getDataFromDB();
     _GetCounts();
+
+    Future.delayed(const Duration(seconds: 5), () {
+      if (mounted) {
+        setState(() {
+          _showLoader = false;
+        });
+      }
+    });
 
   }
 
@@ -132,8 +141,20 @@ class _DashboardState extends State<DashboardWidget> {
                 Visibility(
                   visible: pendingApprovals == null,
                   child: Center(
-                    child: CircularProgressIndicator(
-                      color: selectionColor,
+                    child: Stack(
+                      children: [
+                        Visibility(
+                          visible: _showLoader,
+                          child: const CircularProgressIndicator(
+                            color: selectionColor,
+                          ),
+                          replacement: const Center(
+                            child: Text(
+                              "No pending approvals found."
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -176,7 +197,7 @@ class _DashboardState extends State<DashboardWidget> {
         //   });
         // },
         child: AnimatedContainer(
-          duration: Duration(microseconds: 300),
+          duration: const Duration(microseconds: 300),
           height: _deviceHeight! * 0.08,
           width: _deviceWidth! * 0.175,
           decoration: BoxDecoration(
@@ -275,7 +296,7 @@ class _DashboardState extends State<DashboardWidget> {
                       Expanded(
                         flex: 1,
                         child: AnimatedContainer(
-                          duration: Duration(milliseconds: 300),
+                          duration: const Duration(milliseconds: 300),
                           decoration: BoxDecoration(
                             color: cardBackgroundColor,
                             borderRadius:
@@ -348,7 +369,7 @@ class _DashboardState extends State<DashboardWidget> {
                       Expanded(
                         flex: 1,
                         child: AnimatedContainer(
-                          duration: Duration(milliseconds: 300),
+                          duration: const Duration(milliseconds: 300),
                           decoration: BoxDecoration(
                             color: cardBackgroundColor,
                             borderRadius:
@@ -475,7 +496,7 @@ class _DashboardState extends State<DashboardWidget> {
                       Expanded(
                         flex: 1,
                         child: AnimatedContainer(
-                          duration: Duration(milliseconds: 300),
+                          duration: const Duration(milliseconds: 300),
                           decoration: BoxDecoration(
                             color: cardBackgroundColor,
                             borderRadius:
@@ -598,8 +619,20 @@ class _DashboardState extends State<DashboardWidget> {
                 Visibility(
                   visible: jobProviders == null,
                   child: Center(
-                    child: CircularProgressIndicator(
-                      color: selectionColor,
+                    child: Stack(
+                      children: [
+                        Visibility(
+                          visible: _showLoader,
+                          child: const CircularProgressIndicator(
+                            color: selectionColor,
+                          ),
+                          replacement: const Center(
+                            child: Text(
+                              "No job providers found."
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -641,7 +674,7 @@ class _DashboardState extends State<DashboardWidget> {
           });
         },
         child: AnimatedContainer(
-          duration: Duration(microseconds: 300),
+          duration: const Duration(microseconds: 300),
           height: _deviceHeight! * 0.08,
           width: _deviceWidth! * 0.175,
           decoration: BoxDecoration(
