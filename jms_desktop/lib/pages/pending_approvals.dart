@@ -17,6 +17,7 @@ class PendingApprovals extends StatefulWidget {
 class _PendingApprovalsState extends State<PendingApprovals> {
   FirebaseService? _firebaseService;
   List<Map<String, dynamic>>? pendingApprovals;
+    bool _showLoader = true;
 
   ScrollController _scrollControllerLeft = ScrollController();
   bool _isDetailsVisible = false;
@@ -27,6 +28,14 @@ class _PendingApprovalsState extends State<PendingApprovals> {
     super.initState();
     _firebaseService = GetIt.instance.get<FirebaseService>();
     _loadJobProviders();
+
+    Future.delayed(const Duration(seconds: 5), () {
+      if (mounted) {
+        setState(() {
+          _showLoader = false;
+        });
+      }
+    });
   }
 
   void _loadJobProviders() async {
@@ -116,8 +125,20 @@ class _PendingApprovalsState extends State<PendingApprovals> {
                 Visibility(
                   visible: pendingApprovals == null,
                   child: Center(
-                    child: CircularProgressIndicator(
-                      color: selectionColor,
+                    child: Stack(
+                      children: [
+                        Visibility(
+                          visible: _showLoader,
+                          child: const CircularProgressIndicator(
+                            color: selectionColor,
+                          ),
+                          replacement: const Center(
+                            child: Text(
+                              "No pending approvals found."
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),

@@ -48,6 +48,7 @@ class FirebaseService {
         .collection(USER_COLLECTION)
         .where('type', isEqualTo: 'provider')
         .where('pending', isEqualTo: false)
+        .where('disabled', isEqualTo: false)
         .get();
 
     List<Map<String, dynamic>> jobProviders = [];
@@ -69,6 +70,7 @@ class FirebaseService {
         .collection(USER_COLLECTION)
         .where('type', isEqualTo: 'provider')
         .where('pending', isEqualTo: false)
+        .where('disabled', isEqualTo: false)
         .get();
 
     return _querySnapshot.docs.length;
@@ -96,28 +98,49 @@ class FirebaseService {
   }
 
   Future<int> getApprovalsCount() async {
-  try {
-    QuerySnapshot<Map<String, dynamic>>? _querySnapshot = await _db
-        .collection(USER_COLLECTION)
-        .where('type', isEqualTo: 'provider')
-        .where('pending', isEqualTo: true)
-        .get();
+    try {
+      QuerySnapshot<Map<String, dynamic>>? _querySnapshot = await _db
+          .collection(USER_COLLECTION)
+          .where('type', isEqualTo: 'provider')
+          .where('pending', isEqualTo: true)
+          .get();
 
-    return _querySnapshot.docs.length;
-  } catch (e) {
-    print('Error fetching approvals count: $e');
-    return 0;
+      return _querySnapshot.docs.length;
+    } catch (e) {
+      print('Error fetching approvals count: $e');
+      return 0;
+    }
   }
-}
-
-
 
   Future<int> getJobSeekerCount() async {
     QuerySnapshot<Map<String, dynamic>>? _querySnapshot = await _db
         .collection(USER_COLLECTION)
         .where('type', isEqualTo: 'seeker')
+
         .get();
 
     return _querySnapshot.docs.length;
+  }
+
+  Future<String?> getUidByEmail(String email) async {
+    try {
+      QuerySnapshot<Map<String, dynamic>> querySnapshot =
+          await _db.collection('users').where('email', isEqualTo: email).get();
+      if (querySnapshot.docs.isNotEmpty) {
+        return querySnapshot.docs.first.id;
+      } else {
+        print('User with email $email not found.');
+        return null;
+      }
+    } catch (e) {
+      print('Error getting UID by email: $e');
+      return null;
+    }
+  }
+
+  Future<void> deleteUser(String uid) async {
+    await _db.collection(USER_COLLECTION).doc(uid).update({
+      'disabled': true,
+    });
   }
 }
