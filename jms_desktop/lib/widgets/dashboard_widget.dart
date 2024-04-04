@@ -273,7 +273,7 @@ class _DashboardState extends State<DashboardWidget> {
                     mainAxisSize: MainAxisSize.max,
                     children: [
                       Text(
-                        "Total",
+                        "Current",
                         style: TextStyle(
                           color: const Color.fromARGB(255, 0, 0, 0),
                           fontSize: _widthXheight! * 0.7,
