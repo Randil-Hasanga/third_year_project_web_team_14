@@ -20,6 +20,53 @@ class _RecycleBinState extends State<RecycleBin> {
   bool _showLoader = true;
   Map<String, dynamic>? _selectedProvider;
   FirebaseService? _firebaseService;
+  String? _dropDownValue = "Job Providers";
+
+  Widget _selectedUserDropdown() {
+    List<String> _userType = [
+      "All",
+      "Job Providers",
+      "Job Seekers",
+    ];
+    List<DropdownMenuItem<String>> _items = _userType
+        .map(
+          (e) => DropdownMenuItem(
+            value: e,
+            child: Text(
+              e,
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: _widthXheight! * 0.7,
+                fontWeight: FontWeight.w600,
+              ),  
+            ),
+          ),
+        )
+        .toList();
+
+    return Center(
+      child: DropdownButton(
+        value: _dropDownValue,
+        items: _items,
+        onChanged: (_value) {
+          //print(_value);
+          print(_dropDownValue);
+          setState(() {
+            _dropDownValue = _value;
+          });
+          _getDataFromDB();
+        },
+        dropdownColor: backgroundColor3,
+        borderRadius: BorderRadius.circular(10),
+        iconSize: 20,
+        icon: const Icon(
+          Icons.arrow_drop_down_sharp,
+          color: Colors.white,
+        ),
+        underline: Container(),
+      ),
+    );
+  }
 
   @override
   void initState() {
@@ -38,13 +85,10 @@ class _RecycleBinState extends State<RecycleBin> {
 
   void _getDataFromDB() async {
     List<Map<String, dynamic>>? data =
-        await _firebaseService!.getDeletedJobProviderData();
-    List<Map<String, dynamic>>? data2 =
-        await _firebaseService!.getDeletedJobSeekersData();
-
+        await _firebaseService!.getDeletedUsersData(_dropDownValue);
     setState(() {
       _deletedJobProviders = data;
-      _deletedJobSeekers = data2;
+      // _deletedJobSeekers = data2;
     });
   }
 
@@ -92,12 +136,12 @@ class _RecycleBinState extends State<RecycleBin> {
                 children: [
                   Expanded(
                     flex: 1,
-                    child: _DeletedProvidersListWidget(),
+                    child: _DeletedUsersListWidget(),
                   ),
-                  Expanded(
-                    flex: 1,
-                    child: _DeletedSeekersListWidget(),
-                  ),
+                  // Expanded(
+                  //   flex: 1,
+                  //   child: _DeletedSeekersListWidget(),
+                  // ),
                   // Expanded(
                   //   flex: 1,
                   //   child: Container(
@@ -113,7 +157,7 @@ class _RecycleBinState extends State<RecycleBin> {
     );
   }
 
-  Widget _DeletedProvidersListWidget() {
+  Widget _DeletedUsersListWidget() {
     return Container(
       margin: EdgeInsets.only(
         left: _deviceWidth! * 0.01,
@@ -142,15 +186,17 @@ class _RecycleBinState extends State<RecycleBin> {
                 padding: EdgeInsets.only(
                     top: _widthXheight! * 0.7, left: _widthXheight! * 0.1),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      "Job Providers",
+                      "Users",
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: _widthXheight! * 0.7,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
+                    _selectedUserDropdown(),
                   ],
                 ),
               )),
