@@ -116,7 +116,6 @@ class FirebaseService {
     QuerySnapshot<Map<String, dynamic>>? _querySnapshot = await _db
         .collection(USER_COLLECTION)
         .where('type', isEqualTo: 'seeker')
-
         .get();
 
     return _querySnapshot.docs.length;
@@ -144,48 +143,60 @@ class FirebaseService {
     });
   }
 
-  Future<List<Map<String, dynamic>>?> getDeletedJobProviderData() async {
-    QuerySnapshot<Map<String, dynamic>>? _querySnapshot = await _db
-        .collection(USER_COLLECTION)
-        .where('type', isEqualTo: 'provider')
-        .where('pending', isEqualTo: false)
-        .where('disabled', isEqualTo: true)
-        .get();
-
-    List<Map<String, dynamic>> jobProviders = [];
-
-    for (QueryDocumentSnapshot<Map<String, dynamic>> doc
-        in _querySnapshot.docs) {
-      jobProviders.add(doc.data());
+  Future<List<Map<String, dynamic>>?> getDeletedUsersData(
+      String? dropDownValue) async {
+    QuerySnapshot<Map<String, dynamic>>? _querySnapshot;
+    if (dropDownValue == 'Job Providers') {
+      _querySnapshot = await _db
+          .collection(USER_COLLECTION)
+          .where('type', isEqualTo: 'provider')
+          .where('disabled', isEqualTo: true)
+          .get();
+    } else if (dropDownValue == 'Job Seekers') {
+      _querySnapshot = await _db
+          .collection(USER_COLLECTION)
+          .where('type', isEqualTo: 'seeker')
+          .where('disabled', isEqualTo: true)
+          .get();
+    } else if (dropDownValue == 'All') {
+      _querySnapshot = await _db
+          .collection(USER_COLLECTION)
+          .where('disabled', isEqualTo: true)
+          .get();
     }
 
-    if (jobProviders.isNotEmpty) {
-      return jobProviders;
+    List<Map<String, dynamic>> users = [];
+
+    for (QueryDocumentSnapshot<Map<String, dynamic>> doc
+        in _querySnapshot!.docs) {
+      users.add(doc.data());
+    }
+
+    if (users.isNotEmpty) {
+      return users;
     } else {
       return null;
     }
   }
 
-  Future<List<Map<String, dynamic>>?> getDeletedJobSeekersData() async {
-    QuerySnapshot<Map<String, dynamic>>? _querySnapshot = await _db
-        .collection(USER_COLLECTION)
-        .where('type', isEqualTo: 'seeker')
-        .where('disabled', isEqualTo: true)
-        .get();
+  // Future<List<Map<String, dynamic>>?> getDeletedJobSeekersData() async {
+  //   QuerySnapshot<Map<String, dynamic>>? _querySnapshot = await _db
+  //       .collection(USER_COLLECTION)
+  //       .where('type', isEqualTo: 'seeker')
+  //       .where('disabled', isEqualTo: true)
+  //       .get();
 
-    List<Map<String, dynamic>> jobSeekers = [];
+  //   List<Map<String, dynamic>> jobSeekers = [];
 
-    for (QueryDocumentSnapshot<Map<String, dynamic>> doc
-        in _querySnapshot.docs) {
-      jobSeekers.add(doc.data());
-    }
+  //   for (QueryDocumentSnapshot<Map<String, dynamic>> doc
+  //       in _querySnapshot.docs) {
+  //     jobSeekers.add(doc.data());
+  //   }
 
-    if (jobSeekers.isNotEmpty) {
-      return jobSeekers;
-    } else {
-      return null;
-    }
-  }
+  //   if (jobSeekers.isNotEmpty) {
+  //     return jobSeekers;
+  //   } else {
+  //     return null;
+  //   }
+  // }
 }
-
-
