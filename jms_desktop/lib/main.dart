@@ -9,6 +9,7 @@ import 'package:jms_desktop/pages/login_screen.dart';
 import 'package:jms_desktop/pages/dashboard.dart';
 import 'package:jms_desktop/pages/officers_page.dart';
 import 'package:jms_desktop/pages/profile_page.dart';
+import 'package:jms_desktop/pages/recycle_bin.dart';
 import 'package:jms_desktop/services/firebase_services.dart';
 
 void main() async {
@@ -65,6 +66,7 @@ class MyApp extends StatelessWidget {
         '/officer': (context) => OfficersPage(),
         '/MainPage': (context) => MainPage(),
         '/provider': (context) => JobProviders(),
+        '/bin' :(context) => RecycleBin(),
       },
       initialRoute: '/login',
     );

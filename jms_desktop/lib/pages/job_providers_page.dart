@@ -309,7 +309,8 @@ class SelectedProviderDetailsWidget extends StatelessWidget {
     return Container(
       margin: EdgeInsets.symmetric(
           horizontal: _deviceWidth! * 0.01, vertical: _deviceHeight! * 0.02),
-      padding: EdgeInsets.symmetric(horizontal: _deviceWidth! * 0.01),
+      
+      padding: EdgeInsets.symmetric(horizontal: _deviceWidth! * 0.01,vertical: _widthXheight! * 0.7,),
       decoration: BoxDecoration(
         color: cardBackgroundColorLayer2,
         borderRadius: BorderRadius.circular(_widthXheight! * 1),

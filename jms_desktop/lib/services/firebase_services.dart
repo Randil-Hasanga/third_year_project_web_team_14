@@ -143,4 +143,49 @@ class FirebaseService {
       'disabled': true,
     });
   }
+
+  Future<List<Map<String, dynamic>>?> getDeletedJobProviderData() async {
+    QuerySnapshot<Map<String, dynamic>>? _querySnapshot = await _db
+        .collection(USER_COLLECTION)
+        .where('type', isEqualTo: 'provider')
+        .where('pending', isEqualTo: false)
+        .where('disabled', isEqualTo: true)
+        .get();
+
+    List<Map<String, dynamic>> jobProviders = [];
+
+    for (QueryDocumentSnapshot<Map<String, dynamic>> doc
+        in _querySnapshot.docs) {
+      jobProviders.add(doc.data());
+    }
+
+    if (jobProviders.isNotEmpty) {
+      return jobProviders;
+    } else {
+      return null;
+    }
+  }
+
+  Future<List<Map<String, dynamic>>?> getDeletedJobSeekersData() async {
+    QuerySnapshot<Map<String, dynamic>>? _querySnapshot = await _db
+        .collection(USER_COLLECTION)
+        .where('type', isEqualTo: 'seeker')
+        .where('disabled', isEqualTo: true)
+        .get();
+
+    List<Map<String, dynamic>> jobSeekers = [];
+
+    for (QueryDocumentSnapshot<Map<String, dynamic>> doc
+        in _querySnapshot.docs) {
+      jobSeekers.add(doc.data());
+    }
+
+    if (jobSeekers.isNotEmpty) {
+      return jobSeekers;
+    } else {
+      return null;
+    }
+  }
 }
+
+
