@@ -143,6 +143,38 @@ class FirebaseService {
     });
   }
 
+Future<List<Map<String, dynamic>>?> getOfficerData() async {
+    QuerySnapshot<Map<String, dynamic>>? _querySnapshot = await _db
+        .collection(USER_COLLECTION)
+        .where('type', isEqualTo: 'officer')
+        .where('disabled', isEqualTo: false)
+        .get();
+
+    List<Map<String, dynamic>> officer = [];
+
+    for (QueryDocumentSnapshot<Map<String, dynamic>> doc
+        in _querySnapshot.docs) {
+      officer.add(doc.data());
+    }
+
+    if (officer.isNotEmpty) {
+      return officer;
+    } else {
+      return null;
+    }
+  }
+
+  Future<int> getOfficerCount() async {
+    QuerySnapshot<Map<String, dynamic>>? _querySnapshot = await _db
+        .collection(USER_COLLECTION)
+        .where('type', isEqualTo: 'officer')
+        .where('pending', isEqualTo: false)
+        .where('disabled', isEqualTo: false)
+        .get();
+
+    return _querySnapshot.docs.length;
+  }
+}
   Future<List<Map<String, dynamic>>?> getDeletedUsersData(
       String? dropDownValue) async {
     QuerySnapshot<Map<String, dynamic>>? _querySnapshot;
@@ -179,24 +211,14 @@ class FirebaseService {
     }
   }
 
-  // Future<List<Map<String, dynamic>>?> getDeletedJobSeekersData() async {
-  //   QuerySnapshot<Map<String, dynamic>>? _querySnapshot = await _db
-  //       .collection(USER_COLLECTION)
-  //       .where('type', isEqualTo: 'seeker')
-  //       .where('disabled', isEqualTo: true)
-  //       .get();
+  Future<int> getOfficerCount() async {
+    QuerySnapshot<Map<String, dynamic>>? _querySnapshot = await _db
+        .collection(USER_COLLECTION)
+        .where('type', isEqualTo: 'officer')
+        .where('pending', isEqualTo: false)
+        .where('disabled', isEqualTo: false)
+        .get();
 
-  //   List<Map<String, dynamic>> jobSeekers = [];
-
-  //   for (QueryDocumentSnapshot<Map<String, dynamic>> doc
-  //       in _querySnapshot.docs) {
-  //     jobSeekers.add(doc.data());
-  //   }
-
-  //   if (jobSeekers.isNotEmpty) {
-  //     return jobSeekers;
-  //   } else {
-  //     return null;
-  //   }
-  // }
+    return _querySnapshot.docs.length;
+  }
 }

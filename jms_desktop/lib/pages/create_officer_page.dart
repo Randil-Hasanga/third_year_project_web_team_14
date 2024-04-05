@@ -29,10 +29,14 @@ class _CreateOfficerPageState extends State<CreateOfficerPage> {
                     decoration: const InputDecoration(labelText: 'Name'),
                   ),
                   TextFormField(
-                    decoration: const InputDecoration(labelText: 'Registration No'),
+                    decoration:
+                        const InputDecoration(labelText: 'Registration No'),
                   ),
                   TextFormField(
                     decoration: const InputDecoration(labelText: 'Position'),
+                  ),
+                  TextFormField(
+                    decoration: const InputDecoration(labelText: 'Gender'),
                   ),
                   TextFormField(
                     decoration: const InputDecoration(labelText: 'Contact No'),
