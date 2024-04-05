@@ -143,7 +143,7 @@ class FirebaseService {
     });
   }
 
-  Future<List<Map<String, dynamic>>?> getOfficerData() async {
+Future<List<Map<String, dynamic>>?> getOfficerData() async {
     QuerySnapshot<Map<String, dynamic>>? _querySnapshot = await _db
         .collection(USER_COLLECTION)
         .where('type', isEqualTo: 'officer')
@@ -159,6 +159,53 @@ class FirebaseService {
 
     if (officer.isNotEmpty) {
       return officer;
+    } else {
+      return null;
+    }
+  }
+
+  Future<int> getOfficerCount() async {
+    QuerySnapshot<Map<String, dynamic>>? _querySnapshot = await _db
+        .collection(USER_COLLECTION)
+        .where('type', isEqualTo: 'officer')
+        .where('pending', isEqualTo: false)
+        .where('disabled', isEqualTo: false)
+        .get();
+
+    return _querySnapshot.docs.length;
+  }
+}
+  Future<List<Map<String, dynamic>>?> getDeletedUsersData(
+      String? dropDownValue) async {
+    QuerySnapshot<Map<String, dynamic>>? _querySnapshot;
+    if (dropDownValue == 'Job Providers') {
+      _querySnapshot = await _db
+          .collection(USER_COLLECTION)
+          .where('type', isEqualTo: 'provider')
+          .where('disabled', isEqualTo: true)
+          .get();
+    } else if (dropDownValue == 'Job Seekers') {
+      _querySnapshot = await _db
+          .collection(USER_COLLECTION)
+          .where('type', isEqualTo: 'seeker')
+          .where('disabled', isEqualTo: true)
+          .get();
+    } else if (dropDownValue == 'All') {
+      _querySnapshot = await _db
+          .collection(USER_COLLECTION)
+          .where('disabled', isEqualTo: true)
+          .get();
+    }
+
+    List<Map<String, dynamic>> users = [];
+
+    for (QueryDocumentSnapshot<Map<String, dynamic>> doc
+        in _querySnapshot!.docs) {
+      users.add(doc.data());
+    }
+
+    if (users.isNotEmpty) {
+      return users;
     } else {
       return null;
     }

@@ -5,6 +5,7 @@ import 'package:jms_desktop/pages/job_providers_page.dart';
 import 'package:jms_desktop/pages/officers_page.dart';
 import 'package:jms_desktop/pages/pending_approvals.dart';
 import 'package:jms_desktop/pages/profile_page.dart';
+import 'package:jms_desktop/pages/recycle_bin.dart';
 
 class MainPage extends StatefulWidget {
   @override
@@ -23,6 +24,7 @@ class _MainPageState extends State<MainPage> {
     OfficersPage(),
     JobProviders(),
     PendingApprovals(),
+    RecycleBin(),
   ];
   @override
   Widget build(BuildContext context) {
@@ -82,6 +84,14 @@ class _MainPageState extends State<MainPage> {
                 icon: Icon(Icons.lock_clock),
                 label: Text(
                   'Pending\nJob Providers',
+                  style: TextStyle(color: Colors.white, fontSize: 20),
+                ),
+              ),
+              NavigationRailDestination(
+                padding: EdgeInsets.symmetric(vertical: 10),
+                icon: Icon(Icons.recycling_rounded),
+                label: Text(
+                  'Recycle Bin',
                   style: TextStyle(color: Colors.white, fontSize: 20),
                 ),
               ),
