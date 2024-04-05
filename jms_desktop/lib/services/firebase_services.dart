@@ -116,7 +116,6 @@ class FirebaseService {
     QuerySnapshot<Map<String, dynamic>>? _querySnapshot = await _db
         .collection(USER_COLLECTION)
         .where('type', isEqualTo: 'seeker')
-
         .get();
 
     return _querySnapshot.docs.length;
@@ -142,5 +141,37 @@ class FirebaseService {
     await _db.collection(USER_COLLECTION).doc(uid).update({
       'disabled': true,
     });
+  }
+
+  Future<List<Map<String, dynamic>>?> getOfficerData() async {
+    QuerySnapshot<Map<String, dynamic>>? _querySnapshot = await _db
+        .collection(USER_COLLECTION)
+        .where('type', isEqualTo: 'officer')
+        .where('disabled', isEqualTo: false)
+        .get();
+
+    List<Map<String, dynamic>> officer = [];
+
+    for (QueryDocumentSnapshot<Map<String, dynamic>> doc
+        in _querySnapshot.docs) {
+      officer.add(doc.data());
+    }
+
+    if (officer.isNotEmpty) {
+      return officer;
+    } else {
+      return null;
+    }
+  }
+
+  Future<int> getOfficerCount() async {
+    QuerySnapshot<Map<String, dynamic>>? _querySnapshot = await _db
+        .collection(USER_COLLECTION)
+        .where('type', isEqualTo: 'officer')
+        .where('pending', isEqualTo: false)
+        .where('disabled', isEqualTo: false)
+        .get();
+
+    return _querySnapshot.docs.length;
   }
 }
