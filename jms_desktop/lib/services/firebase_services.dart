@@ -174,7 +174,7 @@ Future<List<Map<String, dynamic>>?> getOfficerData() async {
 
     return _querySnapshot.docs.length;
   }
-}
+
   Future<List<Map<String, dynamic>>?> getDeletedUsersData(
       String? dropDownValue) async {
     QuerySnapshot<Map<String, dynamic>>? _querySnapshot;
@@ -210,15 +210,5 @@ Future<List<Map<String, dynamic>>?> getOfficerData() async {
       return null;
     }
   }
-
-  Future<int> getOfficerCount() async {
-    QuerySnapshot<Map<String, dynamic>>? _querySnapshot = await _db
-        .collection(USER_COLLECTION)
-        .where('type', isEqualTo: 'officer')
-        .where('pending', isEqualTo: false)
-        .where('disabled', isEqualTo: false)
-        .get();
-
-    return _querySnapshot.docs.length;
-  }
 }
+  
