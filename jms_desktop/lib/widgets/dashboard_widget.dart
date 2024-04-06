@@ -17,7 +17,7 @@ class _DashboardState extends State<DashboardWidget> {
   List<Map<String, dynamic>>? jobProviders;
   List<Map<String, dynamic>>? pendingApprovals;
   Map<String, dynamic>? _selectedProvider;
-  int? _JobProvidersCount,_PendingApprovalsCount, _jobSeekerCount;
+  int? _JobProvidersCount, _PendingApprovalsCount, _jobSeekerCount;
   bool _showLoader = true;
 
   @override
@@ -34,11 +34,9 @@ class _DashboardState extends State<DashboardWidget> {
         });
       }
     });
-
   }
 
   void _GetCounts() async {
-  
     int _ProvidersCount = await _firebaseService!.getProviderCount();
     int _SeekerCount = await _firebaseService!.getJobSeekerCount();
     int _ApprovalsCount = await _firebaseService!.getApprovalsCount();
@@ -49,7 +47,7 @@ class _DashboardState extends State<DashboardWidget> {
       _jobSeekerCount = _SeekerCount;
     });
   }
-  
+
   void _getDataFromDB() async {
     List<Map<String, dynamic>>? data =
         await _firebaseService!.getJobProviderData();
@@ -128,7 +126,7 @@ class _DashboardState extends State<DashboardWidget> {
                       "Pending Job Providers",
                       style: TextStyle(
                         color: Colors.black,
-                        fontSize: _widthXheight! * 0.7,
+                        fontSize: _deviceWidth! * 0.0135,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -149,9 +147,7 @@ class _DashboardState extends State<DashboardWidget> {
                             color: selectionColor,
                           ),
                           replacement: const Center(
-                            child: Text(
-                              "No pending approvals found."
-                            ),
+                            child: Text("No pending approvals found."),
                           ),
                         ),
                       ],
@@ -276,7 +272,7 @@ class _DashboardState extends State<DashboardWidget> {
                         "Current",
                         style: TextStyle(
                           color: const Color.fromARGB(255, 0, 0, 0),
-                          fontSize: _widthXheight! * 0.7,
+                          fontSize: _deviceWidth! * 0.0135,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -323,7 +319,7 @@ class _DashboardState extends State<DashboardWidget> {
                                   "Job Seekers ",
                                   style: TextStyle(
                                     color: Colors.black,
-                                    fontSize: _widthXheight! * 0.6,
+                                    fontSize: _deviceWidth! * 0.0111,
                                   ),
                                 ),
                                 Row(
@@ -396,7 +392,7 @@ class _DashboardState extends State<DashboardWidget> {
                                   "Job Providers ",
                                   style: TextStyle(
                                     color: Colors.black,
-                                    fontSize: _widthXheight! * 0.6,
+                                    fontSize: _deviceWidth! * 0.0111,
                                   ),
                                 ),
                                 Row(
@@ -476,7 +472,7 @@ class _DashboardState extends State<DashboardWidget> {
                         "Pending",
                         style: TextStyle(
                           color: const Color.fromARGB(255, 0, 0, 0),
-                          fontSize: _widthXheight! * 0.7,
+                          fontSize: _deviceWidth! * 0.0135,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -523,7 +519,7 @@ class _DashboardState extends State<DashboardWidget> {
                                   "Job Providers ",
                                   style: TextStyle(
                                     color: Colors.black,
-                                    fontSize: _widthXheight! * 0.6,
+                                    fontSize: _deviceWidth! * 0.0111,
                                   ),
                                 ),
                                 Row(
@@ -533,7 +529,8 @@ class _DashboardState extends State<DashboardWidget> {
                                       child: Stack(
                                         children: [
                                           Visibility(
-                                            visible: _PendingApprovalsCount == null,
+                                            visible:
+                                                _PendingApprovalsCount == null,
                                             child: const Center(
                                               child: CircularProgressIndicator(
                                                 color: selectionColor,
@@ -541,11 +538,13 @@ class _DashboardState extends State<DashboardWidget> {
                                             ),
                                           ),
                                           Visibility(
-                                            visible: _PendingApprovalsCount != null,
+                                            visible:
+                                                _PendingApprovalsCount != null,
                                             child: Center(
                                               child: Text(
                                                 // TODO: get data from DB
-                                                _PendingApprovalsCount.toString(),
+                                                _PendingApprovalsCount
+                                                    .toString(),
                                                 style: TextStyle(
                                                   color: Colors.black,
                                                   fontSize: _widthXheight! * 2,
@@ -606,7 +605,7 @@ class _DashboardState extends State<DashboardWidget> {
                       "Current Job Providers",
                       style: TextStyle(
                         color: Colors.black,
-                        fontSize: _widthXheight! * 0.7,
+                        fontSize: _deviceWidth! * 0.0135,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -627,9 +626,7 @@ class _DashboardState extends State<DashboardWidget> {
                             color: selectionColor,
                           ),
                           replacement: const Center(
-                            child: Text(
-                              "No job providers found."
-                            ),
+                            child: Text("No job providers found."),
                           ),
                         ),
                       ],

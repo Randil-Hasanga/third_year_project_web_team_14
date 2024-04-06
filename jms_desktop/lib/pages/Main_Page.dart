@@ -48,51 +48,51 @@ class _MainPageState extends State<MainPage> {
             indicatorColor: selectionColor,
             destinations: const [
               NavigationRailDestination(
-                padding: EdgeInsets.symmetric(vertical: 10),
+                padding: EdgeInsets.symmetric(vertical: 7),
                 icon: Icon(Icons.dashboard),
                 label: Text(
                   'Dashboard',
-                  style: TextStyle(color: Colors.white, fontSize: 20),
+                  style: TextStyle(color: Colors.white, fontSize: 18),
                 ),
               ),
               NavigationRailDestination(
-                padding: EdgeInsets.symmetric(vertical: 10),
+                padding: EdgeInsets.symmetric(vertical: 7),
                 icon: Icon(Icons.account_box),
                 label: Text(
                   'Profile',
-                  style: TextStyle(color: Colors.white, fontSize: 20),
+                  style: TextStyle(color: Colors.white, fontSize: 18),
                 ),
               ),
               NavigationRailDestination(
-                padding: EdgeInsets.symmetric(vertical: 10),
+                padding: EdgeInsets.symmetric(vertical: 7),
                 icon: Icon(Icons.work),
                 label: Text(
                   'Officers',
-                  style: TextStyle(color: Colors.white, fontSize: 20),
+                  style: TextStyle(color: Colors.white, fontSize: 18),
                 ),
               ),
               NavigationRailDestination(
-                padding: EdgeInsets.symmetric(vertical: 10),
+                padding: EdgeInsets.symmetric(vertical: 7),
                 icon: Icon(Icons.handshake),
                 label: Text(
                   'Current\nJob Providers',
-                  style: TextStyle(color: Colors.white, fontSize: 20),
+                  style: TextStyle(color: Colors.white, fontSize: 18),
                 ),
               ),
               NavigationRailDestination(
-                padding: EdgeInsets.symmetric(vertical: 10),
+                padding: EdgeInsets.symmetric(vertical: 7),
                 icon: Icon(Icons.lock_clock),
                 label: Text(
                   'Pending\nJob Providers',
-                  style: TextStyle(color: Colors.white, fontSize: 20),
+                  style: TextStyle(color: Colors.white, fontSize: 18),
                 ),
               ),
               NavigationRailDestination(
-                padding: EdgeInsets.symmetric(vertical: 10),
+                padding: EdgeInsets.symmetric(vertical: 7),
                 icon: Icon(Icons.recycling_rounded),
                 label: Text(
                   'Recycle Bin',
-                  style: TextStyle(color: Colors.white, fontSize: 20),
+                  style: TextStyle(color: Colors.white, fontSize: 18),
                 ),
               ),
             ],

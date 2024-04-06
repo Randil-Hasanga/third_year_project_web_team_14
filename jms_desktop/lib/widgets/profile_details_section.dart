@@ -121,21 +121,21 @@ class _ProfileDetailsSectionState extends State<ProfileDetailsSection> {
                       Text(
                         "$_fname $_lname", //TODO: add name
                         style: TextStyle(
-                          fontSize: _widthXheight! * 0.9,
+                          fontSize: _deviceWidth! * 0.0135,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                       Text(
                         "$_regNo", //TODO: add name
                         style: TextStyle(
-                          fontSize: _widthXheight! * 0.9,
+                          fontSize: _deviceWidth! * 0.0135,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                       Text(
                         "$_post", //TODO: add name
                         style: TextStyle(
-                          fontSize: _widthXheight! * 0.9,
+                          fontSize: _deviceWidth! * 0.0135,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
