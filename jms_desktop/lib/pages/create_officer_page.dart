@@ -1,5 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:jms_desktop/const/constants.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/widgets.dart';
+import 'package:get_it/get_it.dart';
+import 'package:jms_desktop/const/constants.dart';
+import 'package:jms_desktop/services/firebase_services.dart';
+
+double? _deviceWidth, _deviceHeight, _widthXheight;
 
 class CreateOfficerPage extends StatefulWidget {
   @override
@@ -9,7 +17,8 @@ class CreateOfficerPage extends StatefulWidget {
 }
 
 class _CreateOfficerPageState extends State<CreateOfficerPage> {
-  double? _deviceWidth, _deviceHeight, _widthXheight;
+  FirebaseService? _firebaseService;
+  List<Map<String, dynamic>>? officer;
 
   @override
   Widget build(BuildContext context) {

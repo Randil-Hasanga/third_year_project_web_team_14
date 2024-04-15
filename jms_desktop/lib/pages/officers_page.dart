@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
-import 'package:jms_desktop/pages/create_officer_page.dart';
 import 'package:jms_desktop/const/constants.dart';
+import 'package:jms_desktop/pages/create_officer_page.dart';
 import 'package:jms_desktop/services/firebase_services.dart';
 
 double? _deviceWidth, _deviceHeight, _widthXheight;
@@ -162,6 +162,40 @@ class _OfficersPageStete extends State<OfficersPage> {
     );
   }
 
+  Widget _buildSectionTitle(String title) {
+    return Align(
+      alignment: Alignment.topLeft,
+      child: Padding(
+        padding: EdgeInsets.only(
+            top: _widthXheight! * 0.7, left: _widthXheight! * 0.1),
+        child: Row(
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: _widthXheight! * 0.7,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            if (title == "Create Officer")
+              ElevatedButton(
+                onPressed: () {
+                  // Navigate to the create officer page
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => CreateOfficerPage()),
+                  );
+                },
+                child: Text("Create Officer"),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget OfficerLisviewBuilderWidget(Map<String, dynamic> officer) {
     return Padding(
       padding: EdgeInsets.only(
@@ -224,9 +258,6 @@ class _OfficersPageStete extends State<OfficersPage> {
                             .getUidByEmail(officer['email']);
                         print(uid);
                         _showDeleteConfirmationDialog(context, uid!);
-
-                        // await _firebaseService!.deleteUser(uid!);
-                        // _loadJobProviders();
                       },
                       icon: const Icon(Icons.delete),
                     ),
