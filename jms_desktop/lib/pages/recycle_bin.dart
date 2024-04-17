@@ -20,7 +20,7 @@ class _RecycleBinState extends State<RecycleBin> {
   bool _showLoader = true;
   Map<String, dynamic>? _selectedProvider;
   FirebaseService? _firebaseService;
-  String? _dropDownValue = "Job Providers";
+  String? _dropDownValue = "All";
 
   Widget _selectedUserDropdown() {
     List<String> _userType = [
