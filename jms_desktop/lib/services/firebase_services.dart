@@ -4,6 +4,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 
 const String USER_COLLECTION = 'users';
 const String POSTS_COLLECTION = 'posts';
+const String PROVIDER_COLLECTION = 'provider_details';
 
 class FirebaseService {
   FirebaseService();
@@ -143,11 +144,10 @@ class FirebaseService {
     });
   }
 
-Future<List<Map<String, dynamic>>?> getOfficerData() async {
+  Future<List<Map<String, dynamic>>?> getOfficerData() async {
     QuerySnapshot<Map<String, dynamic>>? _querySnapshot = await _db
         .collection(USER_COLLECTION)
         .where('type', isEqualTo: 'officer')
-        .where('disabled', isEqualTo: false)
         .get();
 
     List<Map<String, dynamic>> officer = [];
@@ -168,8 +168,6 @@ Future<List<Map<String, dynamic>>?> getOfficerData() async {
     QuerySnapshot<Map<String, dynamic>>? _querySnapshot = await _db
         .collection(USER_COLLECTION)
         .where('type', isEqualTo: 'officer')
-        .where('pending', isEqualTo: false)
-        .where('disabled', isEqualTo: false)
         .get();
 
     return _querySnapshot.docs.length;
@@ -210,5 +208,132 @@ Future<List<Map<String, dynamic>>?> getOfficerData() async {
       return null;
     }
   }
+
+  Future<void> fetchData(
+    String reciType,
+    String location,
+    String industry,
+  ) async {
+    try {
+      bool foundProvider = false;
+
+      QuerySnapshot userSnapshot =
+          await FirebaseFirestore.instance.collection(USER_COLLECTION).get();
+
+      // Process the user data
+      List<QueryDocumentSnapshot> users = userSnapshot.docs;
+
+      // Create a map to store user data
+      Map<String, Map<String, dynamic>> userDataMap = {};
+
+      users.forEach((user) {
+        userDataMap[user.id] = user.data() as Map<String, dynamic>;
+      });
+
+      if (reciType == "Job Providers") {
+        QuerySnapshot providerSnapshot = await FirebaseFirestore.instance
+            .collection(PROVIDER_COLLECTION)
+            .get();
+
+        // Process the provider data
+        List<QueryDocumentSnapshot> providers = providerSnapshot.docs;
+
+        Map<String, Map<String, dynamic>> providerDataMap = {};
+
+        providers.forEach((provider) {
+          providerDataMap[provider.id] =
+              provider.data() as Map<String, dynamic>;
+        });
+
+        for (var provider in providers) {
+          String userId = provider.id;
+
+          var userData = userDataMap[userId];
+          var providerData = providerDataMap[userId];
+
+          if (location == "Any" && industry == "Any") {
+            if (userData != null && !(userData['disabled'] ?? false)) {
+              var providerData = provider.data();
+              foundProvider = true;
+
+              print('Provider data: $providerData');
+              print('User data: $userData');
+            }
+          } else if (location == "Any" && industry != "Any") {
+            if (userData != null &&
+                !(userData['disabled'] ?? false) &&
+                (providerData != null &&
+                    providerData['industry'] == industry)) {
+              foundProvider = true;
+              var providerData = provider.data();
+
+              print('Provider data: $providerData');
+              print('User data: $userData');
+            }
+          } else if (location != "Any" && industry == "Any") {
+            if (userData != null &&
+                !(userData['disabled'] ?? false) &&
+                (providerData != null &&
+                    providerData['district'] == location)) {
+              foundProvider = true;
+              var providerData = provider.data();
+
+              print('Provider data: $providerData');
+              print('User data: $userData');
+            }
+          } else if (location != "Any" && industry != "Any") {
+            if (userData != null &&
+                !(userData['disabled'] ?? false) &&
+                (providerData != null &&
+                    providerData['district'] == location &&
+                    providerData['industry'] == industry)) {
+              foundProvider = true;
+              var providerData = provider.data();
+
+              print('Provider data: $providerData');
+              print('User data: $userData');
+            }
+          }
+        }
+        if (!foundProvider) {
+          print('No providers found with the chosen parameters.');
+        }
+      } else if (reciType == "Job Seekers") {
+        //   QuerySnapshot providerSnapshot = await FirebaseFirestore.instance
+        //     .collection(PROVIDER_COLLECTION)
+        //     .get();
+
+        // // Process the provider data
+        // List<QueryDocumentSnapshot> providers = providerSnapshot.docs;
+
+        // // Fetch user data from the "users" collection
+
+        // // Store user data in the map
+        // users.forEach((user) {
+        //   userDataMap[user.id] = user.data() as Map<String, dynamic>;
+        // });
+
+        // // Process each provider document
+        // for (var provider in providers) {
+        //   // Get the user ID from the provider data
+        //   String userId = provider.id;
+
+        //   // Get the user data from the userDataMap
+        //   var userData = userDataMap[userId];
+
+        //   // Check if the user exists and is not disabled
+        //   if (userData != null && !(userData['disabled'] ?? false)) {
+        //     // If the user exists and is not disabled, process the provider data
+        //     var providerData = provider.data();
+
+        //     // Combine the provider and user data or use them as needed
+        //     print('Provider data: $providerData');
+        //     print('User data: $userData');
+        //   }
+        // }
+      }
+    } catch (e) {
+      print('Error fetching data: $e');
+    }
+  }
 }
-  

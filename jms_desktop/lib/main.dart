@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:jms_desktop/const/constants.dart';
+import 'package:jms_desktop/pages/BulkMailPages/bulk_mail.dart';
 import 'package:jms_desktop/pages/Main_Page.dart';
 import 'package:jms_desktop/pages/job_providers_page.dart';
 import 'package:jms_desktop/pages/login_screen.dart';
@@ -67,8 +68,9 @@ class MyApp extends StatelessWidget {
         '/MainPage': (context) => MainPage(),
         '/provider': (context) => JobProviders(),
         '/bin' :(context) => RecycleBin(),
+        '/bulkMail' :(context) => BulkMailPage(),
       },
-      initialRoute: '/login',
+      initialRoute: '/bulkMail',
     );
   }
 }
