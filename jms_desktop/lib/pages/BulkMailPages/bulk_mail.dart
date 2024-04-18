@@ -1,6 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jms_desktop/const/constants.dart';
+import 'package:jms_desktop/services/email_services.dart';
 import 'package:jms_desktop/services/firebase_services.dart';
 
 class BulkMailPage extends StatefulWidget {
@@ -18,6 +21,9 @@ class _BulkMailPageState extends State<BulkMailPage> {
   String? _EducationDropdownValue = "Any";
   String? _IndustryDropdownValue = "Any";
   String? englishDistrict;
+  Set<String>? emailList;
+
+  String? _subject, _body;
 
   // Define dropdown menus for each recipient type
 
@@ -28,26 +34,25 @@ class _BulkMailPageState extends State<BulkMailPage> {
 
   static const List<String> industries = [
     "Any",
-  "Agriculture, Animal Husbandry and Forestry",
-  "Fishing",
-  "Mining and Quarrying",
-  "Manufacturing",
-  "Electricity Gas and Water Supply",
-  "Construction",
-  "Wholesale and Retail Trade",
-  "Hotel and Restaurant",
-  "Financial Services",
-  "Real Estate Services",
-  "Computer Related Services",
-  "Research and Development Services",
-  "Public Administration and Defence",
-  "Health and Social Services",
-  "Other Community, Social and Personal Services",
-  "Private Household with Employed Personals",
-  "Extra Territorial Organizations",
-  "Transportation and Storage",
-];
-
+    "Agriculture, Animal Husbandry and Forestry",
+    "Fishing",
+    "Mining and Quarrying",
+    "Manufacturing",
+    "Electricity Gas and Water Supply",
+    "Construction",
+    "Wholesale and Retail Trade",
+    "Hotel and Restaurant",
+    "Financial Services",
+    "Real Estate Services",
+    "Computer Related Services",
+    "Research and Development Services",
+    "Public Administration and Defence",
+    "Health and Social Services",
+    "Other Community, Social and Personal Services",
+    "Private Household with Employed Personals",
+    "Extra Territorial Organizations",
+    "Transportation and Storage",
+  ];
 
   static const List<String> _education = [
     "Any",
@@ -85,15 +90,18 @@ class _BulkMailPageState extends State<BulkMailPage> {
   ];
 
   bool isProviderSelected = false;
-  bool isSeekerSelected = false;
+  bool isSeekerSelected = true;
+  bool _isLoading = false;
+  bool _isSending = false;
 
   FirebaseService? _firebaseService;
+  EmailService? _emailService;
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _firebaseService = GetIt.instance.get<FirebaseService>();
+    _emailService = GetIt.instance.get<EmailService>();
   }
 
   @override
@@ -116,7 +124,7 @@ class _BulkMailPageState extends State<BulkMailPage> {
             ],
           ),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: MainAxisAlignment.start,
             mainAxisSize: MainAxisSize.max,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -125,108 +133,238 @@ class _BulkMailPageState extends State<BulkMailPage> {
                 child: Column(
                   children: [
                     _mailForm(),
-                    _button(),
                     Container(
-                      margin: EdgeInsets.all(10),
+                      margin: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5),
+                        border: Border.all(color: Colors.black),
+                        borderRadius: BorderRadius.circular(10),
                         color: Colors.white,
                       ),
-                      padding: EdgeInsets.all(8),
+                      padding: const EdgeInsets.all(8),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.max,
                         children: [
-                          Text("To"),
-                          Row(
+                          const Text("To : "),
+                          _emailChips(),
+                          const Divider(),
+                          Column(
                             mainAxisAlignment: MainAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.max,
                             crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.max,
                             children: [
-                              _selectedRecepientTypeDropdown(),
                               SizedBox(
-                                width: _deviceWidth! * 0.05,
+                                height: _deviceHeight! * 0.01,
                               ),
-                              Visibility(
-                                visible: isSeekerSelected,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text("Education"),
-                                    _educationDropdown(),
-                                  ],
-                                ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.max,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  _selectedRecepientTypeDropdown(),
+                                  SizedBox(
+                                    width: _deviceWidth! * 0.02,
+                                  ),
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.max,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        mainAxisSize: MainAxisSize.max,
+                                        children: [
+                                          Visibility(
+                                            visible: isSeekerSelected,
+                                            child: Material(
+                                              borderRadius:
+                                                  BorderRadius.circular(5),
+                                              elevation: 2,
+                                              child: Container(
+                                                padding:
+                                                    const EdgeInsets.all(8),
+                                                decoration: BoxDecoration(
+                                                    color: backgroundColor,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            5)),
+                                                child: Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: [
+                                                    const Text("Education"),
+                                                    _educationDropdown(),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            width: _deviceWidth! * 0.02,
+                                          ),
+                                          Visibility(
+                                            visible: isSeekerSelected,
+                                            child: Material(
+                                              borderRadius:
+                                                  BorderRadius.circular(5),
+                                              elevation: 2,
+                                              child: Container(
+                                                padding:
+                                                    const EdgeInsets.all(8),
+                                                decoration: BoxDecoration(
+                                                    color: backgroundColor,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            5)),
+                                                child: Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: [
+                                                    const Text("Location"),
+                                                    _locationDropdown(),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            width: _deviceWidth! * 0.01,
+                                          ),
+                                          Visibility(
+                                            visible: isProviderSelected,
+                                            child: Material(
+                                              borderRadius:
+                                                  BorderRadius.circular(5),
+                                              elevation: 2,
+                                              child: Container(
+                                                padding:
+                                                    const EdgeInsets.all(8),
+                                                decoration: BoxDecoration(
+                                                    color: backgroundColor,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            5)),
+                                                child: Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: [
+                                                    const Text("Location"),
+                                                    _locationDropdown(),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            width: _deviceWidth! * 0.01,
+                                          ),
+                                          Visibility(
+                                            visible: isSeekerSelected,
+                                            child: Material(
+                                              borderRadius:
+                                                  BorderRadius.circular(5),
+                                              elevation: 2,
+                                              child: Container(
+                                                padding:
+                                                    const EdgeInsets.all(8),
+                                                decoration: BoxDecoration(
+                                                    color: backgroundColor,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            5)),
+                                                child: Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: [
+                                                    const Text("Industry"),
+                                                    _categoryDropdown(),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            width: _deviceWidth! * 0.01,
+                                          ),
+                                          Visibility(
+                                            visible: isProviderSelected,
+                                            child: Material(
+                                              borderRadius:
+                                                  BorderRadius.circular(5),
+                                              elevation: 2,
+                                              child: Container(
+                                                padding:
+                                                    const EdgeInsets.all(8),
+                                                decoration: BoxDecoration(
+                                                    color: backgroundColor,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            5)),
+                                                child: Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: [
+                                                    const Text("Industry"),
+                                                    _categoryDropdown(),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
-                              SizedBox(
-                                width: _deviceWidth! * 0.05,
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Visibility(
+                                    visible: isProviderSelected,
+                                    child: _selectReciepientsButton(),
+                                  ),
+                                  Visibility(
+                                    visible: isSeekerSelected,
+                                    child: _selectReciepientsButton(),
+                                  ),
+                                ],
                               ),
-                              Visibility(
-                                visible: isSeekerSelected,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text("Location"),
-                                    _locationDropdown(),
-                                  ],
-                                ),
-                              ),
-                              SizedBox(
-                                width: _deviceWidth! * 0.02,
-                              ),
-                              Visibility(
-                                visible: isProviderSelected,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text("Location"),
-                                    _locationDropdown(),
-                                  ],
-                                ),
-                              ),
-                              SizedBox(
-                                width: _deviceWidth! * 0.02,
-                              ),
-                              Visibility(
-                                visible: isSeekerSelected,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text("Industry"),
-                                    _categoryDropdown(),
-                                  ],
-                                ),
-                              ),
-                              SizedBox(
-                                width: _deviceWidth! * 0.02,
-                              ),
-                              Visibility(
-                                visible: isProviderSelected,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text("Industry"),
-                                    _categoryDropdown(),
-                                  ],
-                                ),
-                              ),
-                            
-                              
                             ],
                           ),
                         ],
                       ),
-                    )
+                    ),
+                    Row(
+                      children: [
+                        _sendButton(),
+                      ],
+                    ),
                   ],
                 ),
               ),
@@ -235,6 +373,99 @@ class _BulkMailPageState extends State<BulkMailPage> {
         ),
       ),
     );
+  }
+
+  Widget _sendButton() {
+    return Stack(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: MaterialButton(
+            elevation: 0, // Set elevation to 0 to hide the button background
+            color: const Color.fromARGB(255, 150, 255, 124),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            onPressed: _isLoading ? null : _sendMails,
+            child: const Row(
+              children: [
+                Text(
+                  "Send Email",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                SizedBox(
+                  width: 10,
+                ),
+                Icon(Icons.send),
+              ],
+            ), // Disable button when loading
+          ),
+        ),
+        Positioned.fill(
+          child: Align(
+            alignment: Alignment.center,
+            child: _isSending
+                ? const CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.orange),
+                  )
+                : const SizedBox(), // Empty SizedBox when not loading
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _sendMails() async {
+    _mailFormKey.currentState!.save();
+
+    if (emailList == null) {
+      print('Error: emailList is null.');
+      return;
+    } else {
+      try {
+        setState(() {
+          _isSending = true;
+        });
+
+        List<String> _emailList = emailList!
+            .toList(); // Convert _IdentityHashSet<String> to List<String>
+        await _emailService!.sendEmail(_emailList, _subject!, _body!);
+        print('All emails sent successfully.');
+      } catch (error) {
+        print('Error sending emails: $error');
+        // You can add additional error handling logic here, such as logging or notifying the user.
+      } finally {
+        setState(() {
+          _isSending = false;
+        });
+      }
+    }
+  }
+
+  Widget _emailChips() {
+    if (emailList != null && emailList!.isNotEmpty) {
+      return Container(
+        padding: const EdgeInsets.all(16.0),
+        child: Wrap(
+          spacing: 10.0, // Horizontal spacing between chips
+          runSpacing: 8.0, // Vertical spacing between chip rows
+          alignment:
+              WrapAlignment.start, // Align chips to the start of the container
+          children: emailList!.map((email) {
+            return Chip(
+              label: Text(email),
+              onDeleted: () {
+                setState(() {
+                  emailList!.remove(email);
+                });
+              },
+            );
+          }).toList(),
+        ),
+      );
+    } else {
+      return const SizedBox();
+    }
   }
 
   Widget _mailForm() {
@@ -249,45 +480,119 @@ class _BulkMailPageState extends State<BulkMailPage> {
     );
   }
 
-  Widget _button() {
-    return MaterialButton(
-        child: Text("Press"),
-        onPressed: () {
-          _firebaseService!.fetchData(_recipientTypeDropDownValue!,_locationDropdownValueFull!, _IndustryDropdownValue!);
-        });
+  Widget _selectReciepientsButton() {
+    return Stack(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: MaterialButton(
+            elevation: 0, // Set elevation to 0 to hide the button background
+            color: const Color.fromARGB(255, 255, 170, 124),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            onPressed: _isLoading ? null : _getEmails,
+            child: const Text(
+              "Select Recipients",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ), // Disable button when loading
+          ),
+        ),
+        Positioned.fill(
+          child: Align(
+            alignment: Alignment.center,
+            child: _isLoading
+                ? const CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.orange),
+                  )
+                : const SizedBox(), // Empty SizedBox when not loading
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _getEmails() async {
+    setState(() {
+      _isLoading = true;
+    });
+    // Fetch new emails from the service
+    List<String>? newEmailList = await _firebaseService!.fetchData(
+      _recipientTypeDropDownValue!,
+      _locationDropdownValueFull!,
+      _IndustryDropdownValue!,
+    );
+
+    // Ensure emailList is initialized
+    emailList ??= {};
+
+    // Add new emails to the emailList set if they are not null
+    if (newEmailList != null) {
+      for (String email in newEmailList) {
+        emailList!.add(email);
+      }
+    }
+
+    List<String> emailListAsList = emailList!.toList();
+    print(emailListAsList);
+    setState(() {
+      _isLoading = false;
+    });
+
+    // Update UI
+    setState(() {});
   }
 
   Widget _subjectTextField() {
-    return Container(
-      margin: EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(5),
-        color: Colors.white,
-      ),
-      padding: EdgeInsets.all(8),
-      child: TextFormField(
-        decoration: InputDecoration(
-          hintText: "Subject",
-          border: InputBorder.none,
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Colors.white,
+        ),
+        child: TextFormField(
+          decoration: const InputDecoration(
+            hintText: "Subject",
+            border: OutlineInputBorder(),
+          ),
+          onSaved: (newValue) {
+            setState(() {
+              _subject = newValue;
+            });
+          },
+          validator: (value) {
+            if (value == null) {
+              return "Subject is Required";
+            }
+          },
         ),
       ),
     );
   }
 
   Widget _messageBody() {
-    return Container(
-      margin: EdgeInsets.only(left: 10, right: 10, bottom: 10),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(5),
+    return Padding(
+      padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
+      child: Container(
         color: Colors.white,
-      ),
-      padding: EdgeInsets.all(8),
-      child: TextFormField(
-        maxLines: 15,
-        minLines: 5,
-        decoration: InputDecoration(
-          hintText: "Body",
-          border: InputBorder.none,
+        child: TextFormField(
+          maxLines: 15,
+          minLines: 5,
+          decoration: const InputDecoration(
+            hintText: "Body",
+            border: OutlineInputBorder(),
+          ),
+          onSaved: (newValue) {
+            setState(() {
+              _body = newValue;
+            });
+          },
+          validator: (value) {
+            if (value == null) {
+              return "Message body is Required";
+            }
+          },
         ),
       ),
     );
@@ -300,7 +605,7 @@ class _BulkMailPageState extends State<BulkMailPage> {
             value: e,
             child: Text(
               e,
-              style: TextStyle(
+              style: const TextStyle(
                 color: Colors.black,
                 fontWeight: FontWeight.w600,
               ),
@@ -352,7 +657,7 @@ class _BulkMailPageState extends State<BulkMailPage> {
             value: e,
             child: Text(
               e,
-              style: TextStyle(
+              style: const TextStyle(
                 color: Colors.black,
                 //fontSize: _widthXheight! * 0.7,
                 fontWeight: FontWeight.w600,
@@ -396,7 +701,7 @@ class _BulkMailPageState extends State<BulkMailPage> {
             value: e,
             child: Text(
               e,
-              style: TextStyle(
+              style: const TextStyle(
                 color: Colors.black,
                 //fontSize: _widthXheight! * 0.7,
                 fontWeight: FontWeight.w600,
@@ -436,7 +741,7 @@ class _BulkMailPageState extends State<BulkMailPage> {
             value: e,
             child: Text(
               e,
-              style: TextStyle(
+              style: const TextStyle(
                 color: Colors.black,
                 //fontSize: _widthXheight! * 0.7,
                 fontWeight: FontWeight.w600,
