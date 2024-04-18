@@ -11,6 +11,7 @@ import 'package:jms_desktop/pages/dashboard.dart';
 import 'package:jms_desktop/pages/officers_page.dart';
 import 'package:jms_desktop/pages/profile_page.dart';
 import 'package:jms_desktop/pages/recycle_bin.dart';
+import 'package:jms_desktop/services/email_services.dart';
 import 'package:jms_desktop/services/firebase_services.dart';
 
 void main() async {
@@ -26,6 +27,9 @@ void main() async {
   );
   GetIt.instance.registerSingleton<FirebaseService>(
     FirebaseService(),
+  );
+  GetIt.instance.registerSingleton<EmailService>(
+    EmailService(),
   );
   runApp(
     const MyApp(),

@@ -209,26 +209,23 @@ class FirebaseService {
     }
   }
 
-  Future<void> fetchData(
+  Future<List<String>> fetchData(
     String reciType,
     String location,
     String industry,
   ) async {
+    List<String> providerEmails = [];
+    bool foundProvider = false;
     try {
-      bool foundProvider = false;
-
       QuerySnapshot userSnapshot =
           await FirebaseFirestore.instance.collection(USER_COLLECTION).get();
 
       // Process the user data
-      List<QueryDocumentSnapshot> users = userSnapshot.docs;
-
-      // Create a map to store user data
       Map<String, Map<String, dynamic>> userDataMap = {};
 
-      users.forEach((user) {
+      for (var user in userSnapshot.docs) {
         userDataMap[user.id] = user.data() as Map<String, dynamic>;
-      });
+      }
 
       if (reciType == "Job Providers") {
         QuerySnapshot providerSnapshot = await FirebaseFirestore.instance
@@ -236,104 +233,40 @@ class FirebaseService {
             .get();
 
         // Process the provider data
-        List<QueryDocumentSnapshot> providers = providerSnapshot.docs;
-
         Map<String, Map<String, dynamic>> providerDataMap = {};
 
-        providers.forEach((provider) {
+        for (var provider in providerSnapshot.docs) {
           providerDataMap[provider.id] =
               provider.data() as Map<String, dynamic>;
-        });
+        }
 
-        for (var provider in providers) {
-          String userId = provider.id;
-
+        for (var entry in providerDataMap.entries) {
+          String userId = entry.key;
+          var providerData = entry.value;
           var userData = userDataMap[userId];
-          var providerData = providerDataMap[userId];
 
-          if (location == "Any" && industry == "Any") {
-            if (userData != null && !(userData['disabled'] ?? false)) {
-              var providerData = provider.data();
-              foundProvider = true;
-
-              print('Provider data: $providerData');
-              print('User data: $userData');
+          if (providerData != null &&
+              (location == "Any" || providerData['district'] == location) &&
+              (industry == "Any" || providerData['industry'] == industry) &&
+              userData != null &&
+              !(userData['disabled'] ?? false)) {
+            var repEmail = providerData['repEmail'];
+            if (repEmail != null && repEmail is String && repEmail.isNotEmpty) {
+              providerEmails.add(repEmail);
             }
-          } else if (location == "Any" && industry != "Any") {
-            if (userData != null &&
-                !(userData['disabled'] ?? false) &&
-                (providerData != null &&
-                    providerData['industry'] == industry)) {
-              foundProvider = true;
-              var providerData = provider.data();
-
-              print('Provider data: $providerData');
-              print('User data: $userData');
-            }
-          } else if (location != "Any" && industry == "Any") {
-            if (userData != null &&
-                !(userData['disabled'] ?? false) &&
-                (providerData != null &&
-                    providerData['district'] == location)) {
-              foundProvider = true;
-              var providerData = provider.data();
-
-              print('Provider data: $providerData');
-              print('User data: $userData');
-            }
-          } else if (location != "Any" && industry != "Any") {
-            if (userData != null &&
-                !(userData['disabled'] ?? false) &&
-                (providerData != null &&
-                    providerData['district'] == location &&
-                    providerData['industry'] == industry)) {
-              foundProvider = true;
-              var providerData = provider.data();
-
-              print('Provider data: $providerData');
-              print('User data: $userData');
-            }
+            foundProvider = true;
+            print('Provider data: $providerData');
+            print('User data: $userData');
           }
         }
+
         if (!foundProvider) {
           print('No providers found with the chosen parameters.');
         }
-      } else if (reciType == "Job Seekers") {
-        //   QuerySnapshot providerSnapshot = await FirebaseFirestore.instance
-        //     .collection(PROVIDER_COLLECTION)
-        //     .get();
-
-        // // Process the provider data
-        // List<QueryDocumentSnapshot> providers = providerSnapshot.docs;
-
-        // // Fetch user data from the "users" collection
-
-        // // Store user data in the map
-        // users.forEach((user) {
-        //   userDataMap[user.id] = user.data() as Map<String, dynamic>;
-        // });
-
-        // // Process each provider document
-        // for (var provider in providers) {
-        //   // Get the user ID from the provider data
-        //   String userId = provider.id;
-
-        //   // Get the user data from the userDataMap
-        //   var userData = userDataMap[userId];
-
-        //   // Check if the user exists and is not disabled
-        //   if (userData != null && !(userData['disabled'] ?? false)) {
-        //     // If the user exists and is not disabled, process the provider data
-        //     var providerData = provider.data();
-
-        //     // Combine the provider and user data or use them as needed
-        //     print('Provider data: $providerData');
-        //     print('User data: $userData');
-        //   }
-        // }
       }
     } catch (e) {
       print('Error fetching data: $e');
     }
+    return providerEmails;
   }
 }
