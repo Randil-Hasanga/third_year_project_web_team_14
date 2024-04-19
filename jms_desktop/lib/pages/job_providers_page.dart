@@ -30,7 +30,7 @@ class _JobProvidersState extends State<JobProviders> {
     _firebaseService = GetIt.instance.get<FirebaseService>();
     _loadJobProviders();
 
-    Future.delayed(const Duration(seconds: 5), () {
+    Future.delayed(const Duration(seconds: 3), () {
       if (mounted) {
         setState(() {
           _showLoader = false;

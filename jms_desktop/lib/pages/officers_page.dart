@@ -31,7 +31,7 @@ class _OfficersPageStete extends State<OfficersPage> {
     _firebaseService = GetIt.instance.get<FirebaseService>();
     _loadOfficer();
 
-    Future.delayed(const Duration(seconds: 5), () {
+    Future.delayed(const Duration(seconds: 3), () {
       if (mounted) {
         setState(() {
           _showLoader = false;
