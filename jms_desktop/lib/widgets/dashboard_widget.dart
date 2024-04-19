@@ -27,7 +27,7 @@ class _DashboardState extends State<DashboardWidget> {
     _getDataFromDB();
     _GetCounts();
 
-    Future.delayed(const Duration(seconds: 5), () {
+    Future.delayed(const Duration(seconds: 3), () {
       if (mounted) {
         setState(() {
           _showLoader = false;

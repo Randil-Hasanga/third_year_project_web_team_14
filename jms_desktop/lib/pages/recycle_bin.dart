@@ -74,7 +74,7 @@ class _RecycleBinState extends State<RecycleBin> {
     _firebaseService = GetIt.instance.get<FirebaseService>();
     _getDataFromDB();
 
-    Future.delayed(const Duration(seconds: 5), () {
+    Future.delayed(const Duration(seconds: 3), () {
       if (mounted) {
         setState(() {
           _showLoader = false;

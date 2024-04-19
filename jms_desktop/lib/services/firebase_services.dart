@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -18,11 +20,11 @@ class FirebaseService {
   Future<bool> loginUser(
       {required String email, required String password}) async {
     try {
-      UserCredential _userCredentials = await _auth.signInWithEmailAndPassword(
+      UserCredential userCredentials = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
 
-      if (_userCredentials != null) {
-        currentUser = await _getUserData(uid: _userCredentials.user!.uid);
+      if (userCredentials != null) {
+        currentUser = await _getUserData(uid: userCredentials.user!.uid);
         return true;
       } else {
         return false;
@@ -34,79 +36,111 @@ class FirebaseService {
   }
 
   Future<Map?> _getUserData({required String uid}) async {
-    DocumentSnapshot _doc =
-        await _db.collection(USER_COLLECTION).doc(uid).get();
+    try {
+      DocumentSnapshot doc =
+          await _db.collection(USER_COLLECTION).doc(uid).get();
 
-    if (_doc.exists) {
-      return _doc.data() as Map;
-    } else {
+      if (doc.exists) {
+        return doc.data() as Map;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print(e);
       return null;
     }
   }
 
   Future<List<Map<String, dynamic>>?> getJobProviderData() async {
-    QuerySnapshot<Map<String, dynamic>>? _querySnapshot = await _db
-        .collection(USER_COLLECTION)
-        .where('type', isEqualTo: 'provider')
-        .where('pending', isEqualTo: false)
-        .where('disabled', isEqualTo: false)
-        .get();
+    try {
+      QuerySnapshot<Map<String, dynamic>>? querySnapshot = await _db
+          .collection(USER_COLLECTION)
+          .where('type', isEqualTo: 'provider')
+          .where('pending', isEqualTo: false)
+          .where('disabled', isEqualTo: false)
+          .get();
 
-    List<Map<String, dynamic>> jobProviders = [];
+      List<Map<String, dynamic>> jobProviders = [];
 
-    for (QueryDocumentSnapshot<Map<String, dynamic>> doc
-        in _querySnapshot.docs) {
-      jobProviders.add(doc.data());
-    }
+      for (QueryDocumentSnapshot<Map<String, dynamic>> doc
+          in querySnapshot.docs) {
+        jobProviders.add(doc.data());
+      }
 
-    if (jobProviders.isNotEmpty) {
-      return jobProviders;
-    } else {
+      if (jobProviders.isNotEmpty) {
+        return jobProviders;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print("Error getting provider data : $e");
       return null;
     }
   }
 
   Future<int> getProviderCount() async {
-    QuerySnapshot<Map<String, dynamic>>? _querySnapshot = await _db
-        .collection(USER_COLLECTION)
-        .where('type', isEqualTo: 'provider')
-        .where('pending', isEqualTo: false)
-        .where('disabled', isEqualTo: false)
-        .get();
+    try {
+      QuerySnapshot<Map<String, dynamic>>? querySnapshot = await _db
+          .collection(USER_COLLECTION)
+          .where('type', isEqualTo: 'provider')
+          .where('pending', isEqualTo: false)
+          .where('disabled', isEqualTo: false)
+          .get();
 
-    return _querySnapshot.docs.length;
+      if (querySnapshot.docs.isNotEmpty) {
+        // Documents exist
+        return querySnapshot.docs.length;
+      } else {
+        // No documents found
+        return 0;
+      }
+    } on Exception catch (e) {
+      print('Error fetching provider count: $e');
+      return 0;
+    }
   }
 
   Future<List<Map<String, dynamic>>?> getApprovalsData() async {
-    QuerySnapshot<Map<String, dynamic>>? _querySnapshot = await _db
-        .collection(USER_COLLECTION)
-        .where('type', isEqualTo: 'provider')
-        .where('pending', isEqualTo: true)
-        .get();
+    try {
+      QuerySnapshot<Map<String, dynamic>>? querySnapshot = await _db
+          .collection(USER_COLLECTION)
+          .where('type', isEqualTo: 'provider')
+          .where('pending', isEqualTo: true)
+          .get();
 
-    List<Map<String, dynamic>> jobProviders = [];
+      List<Map<String, dynamic>> jobProviders = [];
 
-    for (QueryDocumentSnapshot<Map<String, dynamic>> doc
-        in _querySnapshot.docs) {
-      jobProviders.add(doc.data());
-    }
+      for (QueryDocumentSnapshot<Map<String, dynamic>> doc
+          in querySnapshot.docs) {
+        jobProviders.add(doc.data());
+      }
 
-    if (jobProviders.isNotEmpty) {
-      return jobProviders;
-    } else {
+      if (jobProviders.isNotEmpty) {
+        return jobProviders;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print("Error getting approvals data : $e");
       return null;
     }
   }
 
   Future<int> getApprovalsCount() async {
     try {
-      QuerySnapshot<Map<String, dynamic>>? _querySnapshot = await _db
+      QuerySnapshot<Map<String, dynamic>>? querySnapshot = await _db
           .collection(USER_COLLECTION)
           .where('type', isEqualTo: 'provider')
           .where('pending', isEqualTo: true)
           .get();
 
-      return _querySnapshot.docs.length;
+      if (querySnapshot.docs.isNotEmpty) {
+        // Documents exist
+        return querySnapshot.docs.length;
+      } else {
+        // No documents found
+        return 0;
+      }
     } catch (e) {
       print('Error fetching approvals count: $e');
       return 0;
@@ -114,12 +148,23 @@ class FirebaseService {
   }
 
   Future<int> getJobSeekerCount() async {
-    QuerySnapshot<Map<String, dynamic>>? _querySnapshot = await _db
-        .collection(USER_COLLECTION)
-        .where('type', isEqualTo: 'seeker')
-        .get();
+    try {
+      QuerySnapshot<Map<String, dynamic>>? querySnapshot = await _db
+          .collection(USER_COLLECTION)
+          .where('type', isEqualTo: 'seeker')
+          .get();
 
-    return _querySnapshot.docs.length;
+      if (querySnapshot.docs.isNotEmpty) {
+        // Documents exist
+        return querySnapshot.docs.length;
+      } else {
+        // No documents found
+        return 0;
+      }
+    } catch (e) {
+      print('Error fetching job seeker count: $e');
+      return 0;
+    }
   }
 
   Future<String?> getUidByEmail(String email) async {
@@ -139,77 +184,99 @@ class FirebaseService {
   }
 
   Future<void> deleteUser(String uid) async {
-    await _db.collection(USER_COLLECTION).doc(uid).update({
-      'disabled': true,
-    });
+    try {
+      await _db.collection(USER_COLLECTION).doc(uid).update({
+        'disabled': true,
+      });
+    } catch (e) {
+      print('Error Deleting user: $e');
+    }
   }
 
   Future<List<Map<String, dynamic>>?> getOfficerData() async {
-    QuerySnapshot<Map<String, dynamic>>? _querySnapshot = await _db
-        .collection(USER_COLLECTION)
-        .where('type', isEqualTo: 'officer')
-        .get();
+    try {
+      QuerySnapshot<Map<String, dynamic>>? querySnapshot = await _db
+          .collection(USER_COLLECTION)
+          .where('type', isEqualTo: 'officer')
+          .get();
 
-    List<Map<String, dynamic>> officer = [];
+      List<Map<String, dynamic>> officer = [];
 
-    for (QueryDocumentSnapshot<Map<String, dynamic>> doc
-        in _querySnapshot.docs) {
-      officer.add(doc.data());
-    }
+      for (QueryDocumentSnapshot<Map<String, dynamic>> doc
+          in querySnapshot.docs) {
+        officer.add(doc.data());
+      }
 
-    if (officer.isNotEmpty) {
-      return officer;
-    } else {
+      if (officer.isNotEmpty) {
+        return officer;
+      } else {}
+    } catch (e) {
+      print('Error Deleting user: $e');
       return null;
     }
   }
 
   Future<int> getOfficerCount() async {
-    QuerySnapshot<Map<String, dynamic>>? _querySnapshot = await _db
-        .collection(USER_COLLECTION)
-        .where('type', isEqualTo: 'officer')
-        .get();
+    try {
+      QuerySnapshot<Map<String, dynamic>>? querySnapshot = await _db
+          .collection(USER_COLLECTION)
+          .where('type', isEqualTo: 'officer')
+          .get();
 
-    return _querySnapshot.docs.length;
+      if (querySnapshot.docs.isNotEmpty) {
+        return querySnapshot.docs.length;
+      } else {
+        return 0;
+      }
+    } catch (e) {
+      print('Error fetching job seeker count: $e');
+      return 0;
+    }
   }
 
   Future<List<Map<String, dynamic>>?> getDeletedUsersData(
       String? dropDownValue) async {
-    QuerySnapshot<Map<String, dynamic>>? _querySnapshot;
-    if (dropDownValue == 'Job Providers') {
-      _querySnapshot = await _db
-          .collection(USER_COLLECTION)
-          .where('type', isEqualTo: 'provider')
-          .where('disabled', isEqualTo: true)
-          .get();
-    } else if (dropDownValue == 'Job Seekers') {
-      _querySnapshot = await _db
-          .collection(USER_COLLECTION)
-          .where('type', isEqualTo: 'seeker')
-          .where('disabled', isEqualTo: true)
-          .get();
-    } else if (dropDownValue == 'All') {
-      _querySnapshot = await _db
-          .collection(USER_COLLECTION)
-          .where('disabled', isEqualTo: true)
-          .get();
-    }
+    try {
+      QuerySnapshot<Map<String, dynamic>>? querySnapshot;
+      if (dropDownValue == 'Job Providers') {
+        querySnapshot = await _db
+            .collection(USER_COLLECTION)
+            .where('type', isEqualTo: 'provider')
+            .where('disabled', isEqualTo: true)
+            .get();
+      } else if (dropDownValue == 'Job Seekers') {
+        querySnapshot = await _db
+            .collection(USER_COLLECTION)
+            .where('type', isEqualTo: 'seeker')
+            .where('disabled', isEqualTo: true)
+            .get();
+      } else if (dropDownValue == 'All') {
+        querySnapshot = await _db
+            .collection(USER_COLLECTION)
+            .where('disabled', isEqualTo: true)
+            .get();
+      }
 
-    List<Map<String, dynamic>> users = [];
+      List<Map<String, dynamic>> users = [];
 
-    for (QueryDocumentSnapshot<Map<String, dynamic>> doc
-        in _querySnapshot!.docs) {
-      users.add(doc.data());
-    }
+      for (QueryDocumentSnapshot<Map<String, dynamic>> doc
+          in querySnapshot!.docs) {
+        users.add(doc.data());
+      }
 
-    if (users.isNotEmpty) {
-      return users;
-    } else {
-      return null;
+      if (users.isNotEmpty) {
+        return users;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print('Error fetching deleted users $e');
     }
   }
 
-  Future<List<String>> fetchData(
+//filter get emails for bulk mail service
+
+  Future<List<String>> getEmails(
     String reciType,
     String location,
     String industry,

@@ -74,7 +74,7 @@ class MyApp extends StatelessWidget {
         '/bin' :(context) => RecycleBin(),
         '/bulkMail' :(context) => BulkMailPage(),
       },
-      initialRoute: '/bulkMail',
+      initialRoute: '/login',
     );
   }
 }

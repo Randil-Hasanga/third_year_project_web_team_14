@@ -29,7 +29,7 @@ class _PendingApprovalsState extends State<PendingApprovals> {
     _firebaseService = GetIt.instance.get<FirebaseService>();
     _loadJobProviders();
 
-    Future.delayed(const Duration(seconds: 5), () {
+    Future.delayed(const Duration(seconds: 3), () {
       if (mounted) {
         setState(() {
           _showLoader = false;

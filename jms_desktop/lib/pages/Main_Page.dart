@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jms_desktop/const/constants.dart';
+import 'package:jms_desktop/pages/BulkMailPages/bulk_mail.dart';
 import 'package:jms_desktop/pages/dashboard.dart';
 import 'package:jms_desktop/pages/job_providers_page.dart';
 import 'package:jms_desktop/pages/officers_page.dart';
@@ -24,7 +25,9 @@ class _MainPageState extends State<MainPage> {
     OfficersPage(),
     JobProviders(),
     PendingApprovals(),
+    BulkMailPage(),
     RecycleBin(),
+    
   ];
   @override
   Widget build(BuildContext context) {
@@ -84,6 +87,13 @@ class _MainPageState extends State<MainPage> {
                 icon: Icon(Icons.lock_clock),
                 label: Text(
                   'Pending\nJob Providers',
+                  style: TextStyle(color: Colors.white, fontSize: 18),
+                ),
+              ),NavigationRailDestination(
+                padding: EdgeInsets.symmetric(vertical: 7),
+                icon: Icon(Icons.email),
+                label: Text(
+                  'Bulk Mail',
                   style: TextStyle(color: Colors.white, fontSize: 18),
                 ),
               ),
