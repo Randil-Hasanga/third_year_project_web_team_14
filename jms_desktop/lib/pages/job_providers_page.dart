@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:jms_desktop/const/constants.dart';
 import 'package:jms_desktop/pages/test.dart';
 import 'package:jms_desktop/services/firebase_services.dart';
@@ -23,20 +24,13 @@ class _JobProvidersState extends State<JobProviders> {
   bool _isDetailsVisible = false;
   Map<String, dynamic>? _selectedProvider;
   bool _showLoader = true;
+  bool _showNoProvidersFound = false; // New flag to control message visibility
 
   @override
   void initState() {
     super.initState();
     _firebaseService = GetIt.instance.get<FirebaseService>();
     _loadJobProviders();
-
-    Future.delayed(const Duration(seconds: 3), () {
-      if (mounted) {
-        setState(() {
-          _showLoader = false;
-        });
-      }
-    });
   }
 
   void _loadJobProviders() async {
@@ -44,6 +38,8 @@ class _JobProvidersState extends State<JobProviders> {
         await _firebaseService!.getJobProviderData();
     setState(() {
       jobProviders = data;
+      _showLoader = false; // Set showLoader to false after data is loaded
+      _showNoProvidersFound = data == null || data.isEmpty; // Show message if no providers found
     });
   }
 
@@ -102,46 +98,51 @@ class _JobProvidersState extends State<JobProviders> {
       child: Column(
         children: [
           Align(
-              alignment: Alignment.topLeft,
-              child: Padding(
-                padding: EdgeInsets.only(
-                    top: _widthXheight! * 0.7, left: _widthXheight! * 0.1),
-                child: Row(
-                  children: [
-                    Text(
-                      "Current Job Providers",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: _widthXheight! * 0.7,
-                        fontWeight: FontWeight.w600,
-                      ),
+            alignment: Alignment.topLeft,
+            child: Padding(
+              padding: EdgeInsets.only(
+                top: _widthXheight! * 0.7,
+                left: _widthXheight! * 0.1,
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.handshake,
+                    size: _widthXheight! * 1.5,
+                  ),
+                  SizedBox(width: _deviceWidth! * 0.01),
+                  Text(
+                    "Current Providers",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: _widthXheight! * 0.9,
+                      fontWeight: FontWeight.w600,
                     ),
-                  ],
-                ),
-              )),
+                  ),
+                ],
+              ),
+            ),
+          ),
           Expanded(
             child: Stack(
               children: [
                 Visibility(
-                  visible: jobProviders == null,
+                  visible: _showLoader,
                   child: Center(
-                    child: Stack(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Visibility(
-                          visible: _showLoader,
-                          replacement: const Center(
-                            child: Text("No job providers found."),
-                          ),
-                          child: const CircularProgressIndicator(
-                            color: selectionColor,
-                          ),
+                        CircularProgressIndicator(
+                          color: selectionColor,
                         ),
+                        SizedBox(height: 8),
+                        Text("Loading..."),
                       ],
                     ),
                   ),
                 ),
                 Visibility(
-                  visible: jobProviders != null,
+                  visible: !(jobProviders == null || jobProviders!.isEmpty),
                   child: Scrollbar(
                     controller: _scrollControllerLeft,
                     thumbVisibility: true,
@@ -151,10 +152,15 @@ class _JobProvidersState extends State<JobProviders> {
                       itemCount: jobProviders?.length ?? 0,
                       scrollDirection: Axis.vertical,
                       itemBuilder: (context, index) {
-                        return CurrentListViewBuilderWidget(
-                            jobProviders![index]);
+                        return CurrentListViewBuilderWidget(jobProviders![index]);
                       },
                     ),
+                  ),
+                ),
+                Visibility(
+                  visible: _showNoProvidersFound, // Show message if flag is true
+                  child: Center(
+                    child: Text("No job providers found."),
                   ),
                 ),
               ],
@@ -227,9 +233,6 @@ class _JobProvidersState extends State<JobProviders> {
                             .getUidByEmail(provider['email']);
                         print(uid);
                         _showDeleteConfirmationDialog(context, uid!);
-
-                        // await _firebaseService!.deleteUser(uid!);
-                        // _loadJobProviders();
                       },
                       icon: const Icon(Icons.delete),
                     ),
@@ -309,8 +312,10 @@ class SelectedProviderDetailsWidget extends StatelessWidget {
     return Container(
       margin: EdgeInsets.symmetric(
           horizontal: _deviceWidth! * 0.01, vertical: _deviceHeight! * 0.02),
-      
-      padding: EdgeInsets.symmetric(horizontal: _deviceWidth! * 0.01,vertical: _widthXheight! * 0.7,),
+      padding: EdgeInsets.symmetric(
+        horizontal: _deviceWidth! * 0.01,
+        vertical: _widthXheight! * 0.7,
+      ),
       decoration: BoxDecoration(
         color: cardBackgroundColorLayer2,
         borderRadius: BorderRadius.circular(_widthXheight! * 1),
@@ -325,18 +330,38 @@ class SelectedProviderDetailsWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             "Details of Selected Job Provider",
             style: TextStyle(
-              fontSize: 20,
+              fontSize: _widthXheight! * 0.9,
               fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 20),
           if (provider != null) ...{
             Text("Name: ${provider!['username']}"),
+            SizedBox(
+              height: _deviceHeight! * 0.01,
+            ),
             Text("Email: ${provider!['email']}"),
-            // Add more details as needed
+            RichText(
+                text: TextSpan(children: <TextSpan>[
+              TextSpan(
+                text: "Name : ",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontFamily: GoogleFonts.poppins().fontFamily,
+                ),
+              ),
+              TextSpan(
+                text: "${provider!['username']}",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  fontFamily: GoogleFonts.poppins().fontFamily,
+                ),
+              ),
+            ]))
           }
         ],
       ),

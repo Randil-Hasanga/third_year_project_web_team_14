@@ -17,7 +17,7 @@ class PendingApprovals extends StatefulWidget {
 class _PendingApprovalsState extends State<PendingApprovals> {
   FirebaseService? _firebaseService;
   List<Map<String, dynamic>>? pendingApprovals;
-    bool _showLoader = true;
+  bool _showLoader = true;
 
   ScrollController _scrollControllerLeft = ScrollController();
   bool _isDetailsVisible = false;
@@ -28,14 +28,6 @@ class _PendingApprovalsState extends State<PendingApprovals> {
     super.initState();
     _firebaseService = GetIt.instance.get<FirebaseService>();
     _loadJobProviders();
-
-    Future.delayed(const Duration(seconds: 3), () {
-      if (mounted) {
-        setState(() {
-          _showLoader = false;
-        });
-      }
-    });
   }
 
   void _loadJobProviders() async {
@@ -43,6 +35,7 @@ class _PendingApprovalsState extends State<PendingApprovals> {
         await _firebaseService!.getApprovalsData();
     setState(() {
       pendingApprovals = data;
+      _showLoader = false;
     });
   }
 
@@ -65,12 +58,13 @@ class _PendingApprovalsState extends State<PendingApprovals> {
                   ? SelectedApprovalDetailsWidget(_selectedApproval)
                   : Container(
                       child: Center(
-                          child: Text(
-                        "Select a provider to view details",
-                        style: TextStyle(
-                          fontSize: _widthXheight! * 0.5,
+                        child: Text(
+                          "Select a provider to view details",
+                          style: TextStyle(
+                            fontSize: _widthXheight! * 0.5,
+                          ),
                         ),
-                      )),
+                      ),
                     ),
             )
           ],
@@ -104,7 +98,9 @@ class _PendingApprovalsState extends State<PendingApprovals> {
             alignment: Alignment.topLeft,
             child: Padding(
               padding: EdgeInsets.only(
-                  top: _widthXheight! * 0.7, left: _widthXheight! * 0.1),
+                top: _widthXheight! * 0.7,
+                left: _widthXheight! * 0.1,
+              ),
               child: Row(
                 children: [
                   Text(
@@ -129,21 +125,35 @@ class _PendingApprovalsState extends State<PendingApprovals> {
                       children: [
                         Visibility(
                           visible: _showLoader,
-                          child: const CircularProgressIndicator(
-                            color: selectionColor,
-                          ),
-                          replacement: const Center(
-                            child: Text(
-                              "No pending approvals found."
-                            ),
+                          child: const Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              CircularProgressIndicator(
+                                color: selectionColor,
+                              ),
+                              SizedBox(height: 10),
+                              Text(
+                                "Loading...",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
+                        if (!_showLoader && (pendingApprovals == null || pendingApprovals!.isEmpty))
+                          Center(
+                            child: Text(
+                              "No pending approvals found.",
+                            ),
+                          ),
                       ],
                     ),
                   ),
                 ),
                 Visibility(
-                  visible: pendingApprovals != null,
+                  visible: !_showLoader && (pendingApprovals != null && pendingApprovals!.isNotEmpty),
                   child: Scrollbar(
                     controller: _scrollControllerLeft,
                     thumbVisibility: true,
@@ -154,7 +164,8 @@ class _PendingApprovalsState extends State<PendingApprovals> {
                       scrollDirection: Axis.vertical,
                       itemBuilder: (context, index) {
                         return PendingListViewBuilderWidget(
-                            pendingApprovals![index]);
+                          pendingApprovals![index],
+                        );
                       },
                     ),
                   ),
@@ -197,8 +208,9 @@ class _PendingApprovalsState extends State<PendingApprovals> {
           ),
           child: Padding(
             padding: EdgeInsets.symmetric(
-                horizontal: _deviceWidth! * 0.001,
-                vertical: _deviceHeight! * 0.015),
+              horizontal: _deviceWidth! * 0.001,
+              vertical: _deviceHeight! * 0.015,
+            ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               mainAxisSize: MainAxisSize.max,
@@ -235,8 +247,12 @@ class SelectedApprovalDetailsWidget extends StatelessWidget {
     _widthXheight = _deviceHeight! * _deviceWidth! / 50000;
     return Container(
       margin: EdgeInsets.symmetric(
-          horizontal: _deviceWidth! * 0.01, vertical: _deviceHeight! * 0.02),
-      padding: EdgeInsets.symmetric(horizontal: _deviceWidth! * 0.01),
+        horizontal: _deviceWidth! * 0.01,
+        vertical: _deviceHeight! * 0.02,
+      ),
+      padding: EdgeInsets.symmetric(
+        horizontal: _deviceWidth! * 0.01,
+      ),
       decoration: BoxDecoration(
         color: cardBackgroundColorLayer2,
         borderRadius: BorderRadius.circular(_widthXheight! * 1),
@@ -271,3 +287,4 @@ class SelectedApprovalDetailsWidget extends StatelessWidget {
     );
   }
 }
+

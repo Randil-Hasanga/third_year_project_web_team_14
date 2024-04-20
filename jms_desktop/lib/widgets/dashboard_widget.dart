@@ -1,5 +1,3 @@
-// ignore_for_file: unused_field
-
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jms_desktop/const/constants.dart';
@@ -18,7 +16,8 @@ class _DashboardState extends State<DashboardWidget> {
   List<Map<String, dynamic>>? pendingApprovals;
   Map<String, dynamic>? _selectedProvider;
   int? _JobProvidersCount, _PendingApprovalsCount, _jobSeekerCount;
-  bool _showLoader = true;
+  bool _showLoaderCurrent = true;
+  bool _showLoaderApprovals = true;
 
   @override
   void initState() {
@@ -27,13 +26,6 @@ class _DashboardState extends State<DashboardWidget> {
     _getDataFromDB();
     _GetCounts();
 
-    Future.delayed(const Duration(seconds: 3), () {
-      if (mounted) {
-        setState(() {
-          _showLoader = false;
-        });
-      }
-    });
   }
 
   void _GetCounts() async {
@@ -57,6 +49,8 @@ class _DashboardState extends State<DashboardWidget> {
     setState(() {
       jobProviders = data;
       pendingApprovals = data2;
+      _showLoaderCurrent = false;
+      _showLoaderApprovals = false;
     });
   }
 
@@ -116,46 +110,43 @@ class _DashboardState extends State<DashboardWidget> {
       child: Column(
         children: [
           Align(
-              alignment: Alignment.topLeft,
-              child: Padding(
-                padding: EdgeInsets.only(
-                    top: _widthXheight! * 0.7, left: _widthXheight! * 0.1),
-                child: Row(
-                  children: [
-                    Text(
-                      "Pending Job Providers",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: _deviceWidth! * 0.0135,
-                        fontWeight: FontWeight.w600,
-                      ),
+            alignment: Alignment.topLeft,
+            child: Padding(
+              padding: EdgeInsets.only(
+                  top: _widthXheight! * 0.7, left: _widthXheight! * 0.1),
+              child: Row(
+                children: [
+                  Text(
+                    "Pending Job Providers",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: _deviceWidth! * 0.0135,
+                      fontWeight: FontWeight.w600,
                     ),
-                  ],
-                ),
-              )),
+                  ),
+                ],
+              ),
+            ),
+          ),
           Expanded(
             child: Stack(
               children: [
                 Visibility(
-                  visible: pendingApprovals == null,
+                  visible: _showLoaderApprovals,
                   child: Center(
-                    child: Stack(
-                      children: [
-                        Visibility(
-                          visible: _showLoader,
-                          child: const CircularProgressIndicator(
-                            color: selectionColor,
-                          ),
-                          replacement: const Center(
-                            child: Text("No pending approvals found."),
-                          ),
-                        ),
-                      ],
+                    child: CircularProgressIndicator(
+                      color: selectionColor,
                     ),
                   ),
                 ),
                 Visibility(
-                  visible: pendingApprovals != null,
+                  visible: !_showLoaderApprovals && pendingApprovals == null,
+                  child: Center(
+                    child: Text("No pending approvals found."),
+                  ),
+                ),
+                Visibility(
+                  visible: !_showLoaderApprovals && pendingApprovals != null,
                   child: Scrollbar(
                     controller: _scrollControllerRight,
                     thumbVisibility: true,
@@ -245,7 +236,6 @@ class _DashboardState extends State<DashboardWidget> {
           child: Container(
             margin: EdgeInsets.all(_deviceWidth! * 0.01),
             decoration: BoxDecoration(
-              //color: Color.fromARGB(172, 255, 255, 255),
               color: cardBackgroundColorLayer2,
               borderRadius: BorderRadius.circular(_widthXheight! * 1),
               boxShadow: const [
@@ -256,7 +246,6 @@ class _DashboardState extends State<DashboardWidget> {
                 ),
               ],
             ),
-            //color: Colors.transparent,
             child: Padding(
               padding: EdgeInsets.all(_widthXheight! * 0.5),
               child: Column(
@@ -340,7 +329,6 @@ class _DashboardState extends State<DashboardWidget> {
                                             visible: _jobSeekerCount != null,
                                             child: Center(
                                               child: Text(
-                                                // TODO: get data from DB
                                                 _jobSeekerCount.toString(),
                                                 style: TextStyle(
                                                   color: Colors.black,
@@ -414,7 +402,6 @@ class _DashboardState extends State<DashboardWidget> {
                                             visible: _JobProvidersCount != null,
                                             child: Center(
                                               child: Text(
-                                                // TODO: get data from DB
                                                 _JobProvidersCount.toString(),
                                                 style: TextStyle(
                                                   color: Colors.black,
@@ -445,7 +432,6 @@ class _DashboardState extends State<DashboardWidget> {
           child: Container(
             margin: EdgeInsets.only(right: _deviceWidth! * 0.01),
             decoration: BoxDecoration(
-              //color: Color.fromARGB(172, 255, 255, 255),
               color: cardBackgroundColorLayer2,
               borderRadius: BorderRadius.circular(_widthXheight! * 1),
               boxShadow: const [
@@ -456,7 +442,6 @@ class _DashboardState extends State<DashboardWidget> {
                 ),
               ],
             ),
-            //color: Colors.transparent,
             child: Padding(
               padding: EdgeInsets.all(_widthXheight! * 0.5),
               child: Column(
@@ -542,7 +527,6 @@ class _DashboardState extends State<DashboardWidget> {
                                                 _PendingApprovalsCount != null,
                                             child: Center(
                                               child: Text(
-                                                // TODO: get data from DB
                                                 _PendingApprovalsCount
                                                     .toString(),
                                                 style: TextStyle(
@@ -578,7 +562,8 @@ class _DashboardState extends State<DashboardWidget> {
       margin: EdgeInsets.only(
         left: _deviceWidth! * 0.01,
         bottom: _deviceHeight! * 0.02,
-        // /top: _deviceHeight! * 0.02,
+        right: _deviceWidth! * 0.01,
+        //top: _deviceHeight! * 0.02,
       ),
       padding: EdgeInsets.symmetric(horizontal: _deviceWidth! * 0.01),
       decoration: BoxDecoration(
@@ -595,46 +580,43 @@ class _DashboardState extends State<DashboardWidget> {
       child: Column(
         children: [
           Align(
-              alignment: Alignment.topLeft,
-              child: Padding(
-                padding: EdgeInsets.only(
-                    top: _widthXheight! * 0.7, left: _widthXheight! * 0.1),
-                child: Row(
-                  children: [
-                    Text(
-                      "Current Job Providers",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: _deviceWidth! * 0.0135,
-                        fontWeight: FontWeight.w600,
-                      ),
+            alignment: Alignment.topLeft,
+            child: Padding(
+              padding: EdgeInsets.only(
+                  top: _widthXheight! * 0.7, left: _widthXheight! * 0.1),
+              child: Row(
+                children: [
+                  Text(
+                    "Current Job Providers",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: _deviceWidth! * 0.0135,
+                      fontWeight: FontWeight.w600,
                     ),
-                  ],
-                ),
-              )),
+                  ),
+                ],
+              ),
+            ),
+          ),
           Expanded(
             child: Stack(
               children: [
                 Visibility(
-                  visible: jobProviders == null,
+                  visible: _showLoaderCurrent,
                   child: Center(
-                    child: Stack(
-                      children: [
-                        Visibility(
-                          visible: _showLoader,
-                          child: const CircularProgressIndicator(
-                            color: selectionColor,
-                          ),
-                          replacement: const Center(
-                            child: Text("No job providers found."),
-                          ),
-                        ),
-                      ],
+                    child: CircularProgressIndicator(
+                      color: selectionColor,
                     ),
                   ),
                 ),
                 Visibility(
-                  visible: jobProviders != null,
+                  visible: !_showLoaderCurrent && jobProviders == null,
+                  child: Center(
+                    child: Text("No job providers found."),
+                  ),
+                ),
+                Visibility(
+                  visible: !_showLoaderCurrent && jobProviders != null,
                   child: Scrollbar(
                     controller: _scrollControllerLeft,
                     thumbVisibility: true,
@@ -644,7 +626,7 @@ class _DashboardState extends State<DashboardWidget> {
                       itemCount: jobProviders?.length ?? 0,
                       scrollDirection: Axis.vertical,
                       itemBuilder: (context, index) {
-                        return CurrentListViewBuilderWidget(
+                        return CurrentProvidersListViewBuilderWidget(
                             jobProviders![index]);
                       },
                     ),
@@ -658,18 +640,19 @@ class _DashboardState extends State<DashboardWidget> {
     );
   }
 
-  Widget CurrentListViewBuilderWidget(Map<String, dynamic> provider) {
+  Widget CurrentProvidersListViewBuilderWidget(Map<String, dynamic> provider) {
     return Padding(
       padding: EdgeInsets.only(
         right: _deviceWidth! * 0.0125,
         top: _deviceHeight! * 0.01,
       ),
       child: GestureDetector(
-        onTap: () {
-          setState(() {
-            _selectedProvider = provider;
-          });
-        },
+        // onTap: () {
+        //   setState(() {
+        //     _isDetailsVisible = true;
+        //     _selectedProvider = provider;
+        //   });
+        // },
         child: AnimatedContainer(
           duration: const Duration(microseconds: 300),
           height: _deviceHeight! * 0.08,
@@ -712,3 +695,4 @@ class _DashboardState extends State<DashboardWidget> {
     );
   }
 }
+
