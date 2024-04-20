@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:jms_desktop/auth/auth_guard.dart';
 import 'package:jms_desktop/const/constants.dart';
 import 'package:jms_desktop/pages/BulkMailPages/bulk_mail.dart';
 import 'package:jms_desktop/pages/Main_Page.dart';
@@ -39,7 +40,6 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -71,8 +71,8 @@ class MyApp extends StatelessWidget {
         '/officer': (context) => OfficersPage(),
         '/MainPage': (context) => MainPage(),
         '/provider': (context) => JobProviders(),
-        '/bin' :(context) => RecycleBin(),
-        '/bulkMail' :(context) => BulkMailPage(),
+        '/bin': (context) => RecycleBin(),
+        '/bulkMail': (context) => BulkMailPage(),
       },
       initialRoute: '/login',
     );
