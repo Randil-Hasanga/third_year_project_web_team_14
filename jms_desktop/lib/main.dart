@@ -14,6 +14,7 @@ import 'package:jms_desktop/pages/profile_page.dart';
 import 'package:jms_desktop/pages/recycle_bin.dart';
 import 'package:jms_desktop/services/email_services.dart';
 import 'package:jms_desktop/services/firebase_services.dart';
+import 'package:jms_desktop/widgets/richText.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,6 +32,9 @@ void main() async {
   );
   GetIt.instance.registerSingleton<EmailService>(
     EmailService(),
+  );
+  GetIt.instance.registerSingleton<RichTextWidget>(
+    RichTextWidget(),
   );
   runApp(
     const MyApp(),
@@ -64,9 +68,6 @@ class MyApp extends StatelessWidget {
         '/login': (context) => LoginScreen(),
         '/dashboard': (context) => Dashboard(),
         '/profile': (context) => ProfilePage(),
-        // '/job_seekers': (context) => JobSeekersScreen(),
-        // '/job_providers_page': (context) => JobProvidersScreen(),
-        // '/settings': (context) => SettingsScreen(),
         '/logout': (context) => LoginScreen(),
         '/officer': (context) => OfficersPage(),
         '/MainPage': (context) => MainPage(),
@@ -74,7 +75,56 @@ class MyApp extends StatelessWidget {
         '/bin': (context) => RecycleBin(),
         '/bulkMail': (context) => BulkMailPage(),
       },
-      initialRoute: '/login',
+      initialRoute: '/provider',
+      onGenerateRoute: (RouteSettings settings) {
+        switch (settings.name) {
+          case '/':
+            return AuthGuard.redirectUnauthorizedToLogin(
+              builder: (_) => LoginScreen(), // Redirect to login page
+              redirectPath: '/login',
+            )(settings);
+          case '/dashboard':
+            return AuthGuard.redirectUnauthorizedToLogin(
+              builder: (_) => Dashboard(),
+              redirectPath: '/login',
+            )(settings);
+          case '/profile':
+            return AuthGuard.redirectUnauthorizedToLogin(
+              builder: (_) => ProfilePage(),
+              redirectPath: '/login',
+            )(settings);
+          case '/officer':
+            return AuthGuard.redirectUnauthorizedToLogin(
+              builder: (_) => OfficersPage(),
+              redirectPath: '/login',
+            )(settings);
+          case '/MainPage':
+            return AuthGuard.redirectUnauthorizedToLogin(
+              builder: (_) => MainPage(),
+              redirectPath: '/login',
+            )(settings);
+          case '/provider':
+            return AuthGuard.redirectUnauthorizedToLogin(
+              builder: (_) => JobProviders(),
+              redirectPath: '/login',
+            )(settings);
+          case '/bin':
+            return AuthGuard.redirectUnauthorizedToLogin(
+              builder: (_) => RecycleBin(),
+              redirectPath: '/login',
+            )(settings);
+          case '/bulkMail':
+            return AuthGuard.redirectUnauthorizedToLogin(
+              builder: (_) => BulkMailPage(),
+              redirectPath: '/login',
+            )(settings);
+          default:
+            return MaterialPageRoute(
+              builder: (_) => LoginScreen(), // Redirect to login page
+              settings: RouteSettings(name: '/login'),
+            );
+        }
+      },
     );
   }
 }
