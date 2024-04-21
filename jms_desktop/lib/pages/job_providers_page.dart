@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -6,8 +8,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:jms_desktop/const/constants.dart';
 import 'package:jms_desktop/pages/test.dart';
 import 'package:jms_desktop/services/firebase_services.dart';
+import 'package:jms_desktop/widgets/richText.dart';
 
 double? _deviceWidth, _deviceHeight, _widthXheight;
+RichTextWidget? _richTextWidget;
 
 class JobProviders extends StatefulWidget {
   @override
@@ -18,6 +22,7 @@ class JobProviders extends StatefulWidget {
 
 class _JobProvidersState extends State<JobProviders> {
   FirebaseService? _firebaseService;
+
   List<Map<String, dynamic>>? jobProviders;
 
   ScrollController _scrollControllerLeft = ScrollController();
@@ -30,6 +35,7 @@ class _JobProvidersState extends State<JobProviders> {
   void initState() {
     super.initState();
     _firebaseService = GetIt.instance.get<FirebaseService>();
+    _richTextWidget = GetIt.instance.get<RichTextWidget>();
     _loadJobProviders();
   }
 
@@ -39,7 +45,8 @@ class _JobProvidersState extends State<JobProviders> {
     setState(() {
       jobProviders = data;
       _showLoader = false; // Set showLoader to false after data is loaded
-      _showNoProvidersFound = data == null || data.isEmpty; // Show message if no providers found
+      _showNoProvidersFound =
+          data == null || data.isEmpty; // Show message if no providers found
     });
   }
 
@@ -128,7 +135,7 @@ class _JobProvidersState extends State<JobProviders> {
               children: [
                 Visibility(
                   visible: _showLoader,
-                  child: Center(
+                  child: const Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -152,14 +159,16 @@ class _JobProvidersState extends State<JobProviders> {
                       itemCount: jobProviders?.length ?? 0,
                       scrollDirection: Axis.vertical,
                       itemBuilder: (context, index) {
-                        return CurrentListViewBuilderWidget(jobProviders![index]);
+                        return CurrentListViewBuilderWidget(
+                            jobProviders![index]);
                       },
                     ),
                   ),
                 ),
                 Visibility(
-                  visible: _showNoProvidersFound, // Show message if flag is true
-                  child: Center(
+                  visible:
+                      _showNoProvidersFound, // Show message if flag is true
+                  child: const Center(
                     child: Text("No job providers found."),
                   ),
                 ),
@@ -299,16 +308,30 @@ class _JobProvidersState extends State<JobProviders> {
   }
 }
 
-class SelectedProviderDetailsWidget extends StatelessWidget {
+class SelectedProviderDetailsWidget extends StatefulWidget {
   final Map<String, dynamic>? provider;
 
   const SelectedProviderDetailsWidget(this.provider);
+
+  @override
+  State<SelectedProviderDetailsWidget> createState() =>
+      _SelectedProviderDetailsWidgetState();
+}
+
+class _SelectedProviderDetailsWidgetState
+    extends State<SelectedProviderDetailsWidget> {
+  @override
+  void initState() {
+    super.initState();
+    _richTextWidget = GetIt.instance.get<RichTextWidget>();
+  }
 
   @override
   Widget build(BuildContext context) {
     _deviceHeight = MediaQuery.of(context).size.height;
     _deviceWidth = MediaQuery.of(context).size.width;
     _widthXheight = _deviceHeight! * _deviceWidth! / 50000;
+
     return Container(
       margin: EdgeInsets.symmetric(
           horizontal: _deviceWidth! * 0.01, vertical: _deviceHeight! * 0.02),
@@ -338,32 +361,195 @@ class SelectedProviderDetailsWidget extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 20),
-          if (provider != null) ...{
-            Text("Name: ${provider!['username']}"),
-            SizedBox(
-              height: _deviceHeight! * 0.01,
+          if (widget.provider != null) ...{
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Expanded(
+                  child: Column(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8.0),
+                        decoration: BoxDecoration(
+                          color: cardBackgroundColor,
+                          borderRadius: BorderRadius.circular(15),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Colors.black12,
+                              blurRadius: 5,
+                              offset: Offset(0, 0),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Text(
+                              "Basic data",
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.w600),
+                            ),
+                            const Divider(),
+                            _richTextWidget!.KeyValuePairrichText(
+                                "User Name : ",
+                                "${widget.provider!['username']}"),
+                            _richTextWidget!.KeyValuePairrichText(
+                                "Email : ", "${widget.provider!['email']}")
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: _deviceHeight! * 0.02),
+                      if (widget.provider!['company_name'] != null) ...{
+                        Container(
+                          padding: const EdgeInsets.all(8.0),
+                          decoration: BoxDecoration(
+                            color: cardBackgroundColor,
+                            borderRadius: BorderRadius.circular(15),
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Colors.black12,
+                                blurRadius: 5,
+                                offset: Offset(0, 0),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Text(
+                                "Contact person details",
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.w600),
+                              ),
+                              const Divider(),
+                              _richTextWidget!.KeyValuePairrichText(
+                                  "Name : ", "${widget.provider!['repName']}"),
+                              _richTextWidget!.KeyValuePairrichText(
+                                  "Designation : ",
+                                  "${widget.provider!['repPost']}"),
+                              _richTextWidget!.KeyValuePairrichText("Email : ",
+                                  "${widget.provider!['repEmail']}"),
+                              _richTextWidget!.KeyValuePairrichText("Mobile : ",
+                                  "${widget.provider!['repMobile']}"),
+                              _richTextWidget!.KeyValuePairrichText(
+                                  "Telephone : ",
+                                  "${widget.provider!['repTelephone']}"),
+                              _richTextWidget!.KeyValuePairrichText(
+                                  "Fax : ", "${widget.provider!['repFax']}"),
+                            ],
+                          ),
+                        ),
+                      }
+                    ],
+                  ),
+                ),
+                SizedBox(
+                    width: _deviceHeight! *
+                        0.02), // Add space between the containers
+
+                if (widget.provider!['company_name'] != null) ...{
+                  Expanded(
+                    child: Column(
+                      children: [
+                        if (widget.provider!['logo'] != null) ...{
+                          _logo(),
+                        },
+                        SizedBox(height: _deviceHeight! * 0.02),
+                        Container(
+                          padding: const EdgeInsets.all(8.0),
+                          decoration: BoxDecoration(
+                            color: cardBackgroundColor,
+                            borderRadius: BorderRadius.circular(15),
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Colors.black12,
+                                blurRadius: 5,
+                                offset: Offset(0, 0),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Text(
+                                "Company details",
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.w600),
+                              ),
+                              const Divider(),
+                              _richTextWidget!.KeyValuePairrichText(
+                                  "Company Name : ",
+                                  "${widget.provider!['company_name']}"),
+                              _richTextWidget!.KeyValuePairrichText(
+                                  "Address : ",
+                                  "${widget.provider!['company_address']}"),
+                              _richTextWidget!.KeyValuePairrichText(
+                                  "District : ",
+                                  "${widget.provider!['district']}"),
+                              _richTextWidget!.KeyValuePairrichText(
+                                  "Industry : ",
+                                  "${widget.provider!['industry']}"),
+                              _richTextWidget!.KeyValuePairrichText(
+                                  "Organization type : ",
+                                  "${widget.provider!['org_type']}"),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                }
+              ],
             ),
-            Text("Email: ${provider!['email']}"),
-            RichText(
-                text: TextSpan(children: <TextSpan>[
-              TextSpan(
-                text: "Name : ",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontFamily: GoogleFonts.poppins().fontFamily,
-                ),
-              ),
-              TextSpan(
-                text: "${provider!['username']}",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  fontFamily: GoogleFonts.poppins().fontFamily,
-                ),
-              ),
-            ]))
           }
         ],
+      ),
+    );
+  }
+
+  Widget _logo() {
+    return Container(
+      height: _deviceHeight! * 0.15,
+      width: _deviceWidth! * 0.15,
+      margin: EdgeInsets.only(bottom: _deviceHeight! * 0.01),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        color: Colors.transparent,
+        
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: Image.network(
+          widget.provider!['logo'], //TODO: profile pic
+          fit: BoxFit.cover,
+          loadingBuilder: (BuildContext context, Widget child,
+              ImageChunkEvent? loadingProgress) {
+            if (loadingProgress == null) {
+              return child;
+            } else {
+              return Center(
+                child: CircularProgressIndicator(
+                  value: loadingProgress.expectedTotalBytes != null
+                      ? loadingProgress.cumulativeBytesLoaded /
+                          loadingProgress.expectedTotalBytes!
+                      : null,
+                ),
+              );
+            }
+          },
+          errorBuilder:
+              (BuildContext context, Object exception, StackTrace? stackTrace) {
+            return const Icon(Icons.error);
+          },
+        ),
       ),
     );
   }
