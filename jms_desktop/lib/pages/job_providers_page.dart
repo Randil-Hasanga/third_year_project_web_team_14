@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -22,8 +20,9 @@ class JobProviders extends StatefulWidget {
 
 class _JobProvidersState extends State<JobProviders> {
   FirebaseService? _firebaseService;
-
+  TextEditingController _searchController = TextEditingController();
   List<Map<String, dynamic>>? jobProviders;
+  List<Map<String, dynamic>>? filteredJobProviders;
 
   ScrollController _scrollControllerLeft = ScrollController();
   bool _isDetailsVisible = false;
@@ -37,6 +36,8 @@ class _JobProvidersState extends State<JobProviders> {
     _firebaseService = GetIt.instance.get<FirebaseService>();
     _richTextWidget = GetIt.instance.get<RichTextWidget>();
     _loadJobProviders();
+    // Add listener to search controller
+    _searchController.addListener(_filterJobProviders);
   }
 
   void _loadJobProviders() async {
@@ -44,9 +45,22 @@ class _JobProvidersState extends State<JobProviders> {
         await _firebaseService!.getJobProviderData();
     setState(() {
       jobProviders = data;
+      filteredJobProviders =
+          data; // Initialize filtered list with all providers
       _showLoader = false; // Set showLoader to false after data is loaded
       _showNoProvidersFound =
           data == null || data.isEmpty; // Show message if no providers found
+    });
+  }
+
+  // Method to filter job providers based on search query
+  void _filterJobProviders() {
+    String query = _searchController.text.toLowerCase();
+    setState(() {
+      filteredJobProviders = jobProviders
+          ?.where((provider) =>
+              provider['username']?.toLowerCase().contains(query) ?? false)
+          .toList();
     });
   }
 
@@ -130,6 +144,7 @@ class _JobProvidersState extends State<JobProviders> {
               ),
             ),
           ),
+          _searchBar(),
           Expanded(
             child: Stack(
               children: [
@@ -149,25 +164,25 @@ class _JobProvidersState extends State<JobProviders> {
                   ),
                 ),
                 Visibility(
-                  visible: !(jobProviders == null || jobProviders!.isEmpty),
+                  visible: !(filteredJobProviders == null ||
+                      filteredJobProviders!.isEmpty), // Updated condition
                   child: Scrollbar(
                     controller: _scrollControllerLeft,
                     thumbVisibility: true,
                     child: ListView.builder(
                       controller: _scrollControllerLeft,
                       shrinkWrap: true,
-                      itemCount: jobProviders?.length ?? 0,
+                      itemCount: (filteredJobProviders ?? []).length, // Updated
                       scrollDirection: Axis.vertical,
                       itemBuilder: (context, index) {
                         return CurrentListViewBuilderWidget(
-                            jobProviders![index]);
+                            (filteredJobProviders ?? [])[index]); // Updated
                       },
                     ),
                   ),
                 ),
                 Visibility(
-                  visible:
-                      _showNoProvidersFound, // Show message if flag is true
+                  visible: _showNoProvidersFound,
                   child: const Center(
                     child: Text("No job providers found."),
                   ),
@@ -176,6 +191,19 @@ class _JobProvidersState extends State<JobProviders> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _searchBar() {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: _deviceWidth! * 0.005, vertical: _deviceHeight! * 0.02),
+      child: TextField(
+        controller: _searchController,
+        decoration: const InputDecoration(
+          hintText: 'Search providers...',
+          prefixIcon: Icon(Icons.search),
+        ),
       ),
     );
   }
@@ -523,7 +551,6 @@ class _SelectedProviderDetailsWidgetState
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         color: Colors.transparent,
-        
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(20),
