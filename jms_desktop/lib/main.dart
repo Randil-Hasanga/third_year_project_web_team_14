@@ -10,10 +10,12 @@ import 'package:jms_desktop/pages/job_providers_page.dart';
 import 'package:jms_desktop/pages/login_screen.dart';
 import 'package:jms_desktop/pages/dashboard.dart';
 import 'package:jms_desktop/pages/officers_page.dart';
+import 'package:jms_desktop/pages/pending_approvals.dart';
 import 'package:jms_desktop/pages/profile_page.dart';
 import 'package:jms_desktop/pages/recycle_bin.dart';
 import 'package:jms_desktop/services/email_services.dart';
 import 'package:jms_desktop/services/firebase_services.dart';
+import 'package:jms_desktop/widgets/Search_bar_widget.dart';
 import 'package:jms_desktop/widgets/richText.dart';
 
 void main() async {
@@ -35,6 +37,9 @@ void main() async {
   );
   GetIt.instance.registerSingleton<RichTextWidget>(
     RichTextWidget(),
+  );
+  GetIt.instance.registerSingleton<SearchBarWidget>(
+    SearchBarWidget(),
   );
   runApp(
     const MyApp(),
@@ -74,8 +79,9 @@ class MyApp extends StatelessWidget {
         '/provider': (context) => JobProviders(),
         '/bin': (context) => RecycleBin(),
         '/bulkMail': (context) => BulkMailPage(),
+        '/pendingApprovals': (context) => PendingApprovals(),
       },
-      initialRoute: '/provider',
+      initialRoute: '/login',
       onGenerateRoute: (RouteSettings settings) {
         switch (settings.name) {
           case '/':
@@ -116,6 +122,11 @@ class MyApp extends StatelessWidget {
           case '/bulkMail':
             return AuthGuard.redirectUnauthorizedToLogin(
               builder: (_) => BulkMailPage(),
+              redirectPath: '/login',
+            )(settings);
+          case '/pendingApprovals':
+            return AuthGuard.redirectUnauthorizedToLogin(
+              builder: (_) => PendingApprovals(),
               redirectPath: '/login',
             )(settings);
           default:

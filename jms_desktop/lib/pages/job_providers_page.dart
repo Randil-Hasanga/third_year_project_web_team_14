@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:jms_desktop/const/constants.dart';
 import 'package:jms_desktop/pages/test.dart';
 import 'package:jms_desktop/services/firebase_services.dart';
+import 'package:jms_desktop/widgets/Search_bar_widget.dart';
 import 'package:jms_desktop/widgets/richText.dart';
 
 double? _deviceWidth, _deviceHeight, _widthXheight;
@@ -20,7 +21,9 @@ class JobProviders extends StatefulWidget {
 
 class _JobProvidersState extends State<JobProviders> {
   FirebaseService? _firebaseService;
-  TextEditingController _searchController = TextEditingController();
+  SearchBarWidget? _searchBarWidget;
+  final TextEditingController _searchController =
+      TextEditingController(); // search fuction
   List<Map<String, dynamic>>? jobProviders;
   List<Map<String, dynamic>>? filteredJobProviders;
 
@@ -28,16 +31,37 @@ class _JobProvidersState extends State<JobProviders> {
   bool _isDetailsVisible = false;
   Map<String, dynamic>? _selectedProvider;
   bool _showLoader = true;
-  bool _showNoProvidersFound = false; // New flag to control message visibility
+  bool _showNoProvidersFound = false;
 
   @override
   void initState() {
     super.initState();
     _firebaseService = GetIt.instance.get<FirebaseService>();
     _richTextWidget = GetIt.instance.get<RichTextWidget>();
+    _searchBarWidget = GetIt.instance.get<SearchBarWidget>();
     _loadJobProviders();
     // Add listener to search controller
-    _searchController.addListener(_filterJobProviders);
+    _searchController.addListener(_filterJobProviders); // search fuction
+  }
+
+  // search fuction
+  void _filterJobProviders() {
+    String query = _searchController.text.toLowerCase();
+    setState(() {
+      filteredJobProviders = jobProviders?.where((provider) {
+        // Check if company_name exists and contains the query
+        if (provider['company_name'] != null &&
+            provider['company_name'].toLowerCase().contains(query)) {
+          return true;
+        }
+        // If company_name doesn't exist, check username
+        if (provider['username'] != null &&
+            provider['username'].toLowerCase().contains(query)) {
+          return true;
+        }
+        return false;
+      }).toList();
+    });
   }
 
   void _loadJobProviders() async {
@@ -45,22 +69,11 @@ class _JobProvidersState extends State<JobProviders> {
         await _firebaseService!.getJobProviderData();
     setState(() {
       jobProviders = data;
-      filteredJobProviders =
-          data; // Initialize filtered list with all providers
+
+      filteredJobProviders = data; // search fuction
       _showLoader = false; // Set showLoader to false after data is loaded
       _showNoProvidersFound =
           data == null || data.isEmpty; // Show message if no providers found
-    });
-  }
-
-  // Method to filter job providers based on search query
-  void _filterJobProviders() {
-    String query = _searchController.text.toLowerCase();
-    setState(() {
-      filteredJobProviders = jobProviders
-          ?.where((provider) =>
-              provider['username']?.toLowerCase().contains(query) ?? false)
-          .toList();
     });
   }
 
@@ -144,7 +157,7 @@ class _JobProvidersState extends State<JobProviders> {
               ),
             ),
           ),
-          _searchBar(),
+          _searchBarWidget!.searchBar(_searchController, "Search Provider..."),
           Expanded(
             child: Stack(
               children: [
@@ -165,18 +178,18 @@ class _JobProvidersState extends State<JobProviders> {
                 ),
                 Visibility(
                   visible: !(filteredJobProviders == null ||
-                      filteredJobProviders!.isEmpty), // Updated condition
+                      filteredJobProviders!.isEmpty),
                   child: Scrollbar(
                     controller: _scrollControllerLeft,
                     thumbVisibility: true,
                     child: ListView.builder(
                       controller: _scrollControllerLeft,
                       shrinkWrap: true,
-                      itemCount: (filteredJobProviders ?? []).length, // Updated
+                      itemCount: (filteredJobProviders ?? []).length,
                       scrollDirection: Axis.vertical,
                       itemBuilder: (context, index) {
                         return CurrentListViewBuilderWidget(
-                            (filteredJobProviders ?? [])[index]); // Updated
+                            (filteredJobProviders ?? [])[index]);
                       },
                     ),
                   ),
@@ -191,19 +204,6 @@ class _JobProvidersState extends State<JobProviders> {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _searchBar() {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: _deviceWidth! * 0.005, vertical: _deviceHeight! * 0.02),
-      child: TextField(
-        controller: _searchController,
-        decoration: const InputDecoration(
-          hintText: 'Search providers...',
-          prefixIcon: Icon(Icons.search),
-        ),
       ),
     );
   }
@@ -257,7 +257,9 @@ class _JobProvidersState extends State<JobProviders> {
                     SizedBox(
                       width: _deviceWidth! * 0.01,
                     ),
-                    if (provider['username'] != null) ...{
+                    if (provider['company_name'] != null) ...{
+                      Text(provider['company_name']),
+                    }else...{
                       Text(provider['username']),
                     },
                   ],

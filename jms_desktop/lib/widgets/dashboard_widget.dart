@@ -25,33 +25,49 @@ class _DashboardState extends State<DashboardWidget> {
     _firebaseService = GetIt.instance.get<FirebaseService>();
     _getDataFromDB();
     _GetCounts();
-
   }
 
   void _GetCounts() async {
-    int _ProvidersCount = await _firebaseService!.getProviderCount();
-    int _SeekerCount = await _firebaseService!.getJobSeekerCount();
-    int _ApprovalsCount = await _firebaseService!.getApprovalsCount();
-
-    setState(() {
-      _PendingApprovalsCount = _ApprovalsCount;
-      _JobProvidersCount = _ProvidersCount;
-      _jobSeekerCount = _SeekerCount;
+    // Fetch counts asynchronously
+    Future.wait([
+      _firebaseService!.getProviderCount(),
+      _firebaseService!.getJobSeekerCount(),
+      _firebaseService!.getApprovalsCount(),
+    ]).then((List<int> counts) {
+      if (mounted) {
+        setState(() {
+          _JobProvidersCount = counts[0];
+          _jobSeekerCount = counts[1];
+          _PendingApprovalsCount = counts[2];
+        });
+      }
+    }).catchError((error) {
+      print('Error fetching counts: $error');
     });
   }
 
   void _getDataFromDB() async {
-    List<Map<String, dynamic>>? data =
-        await _firebaseService!.getJobProviderData();
+    try {
+      // Fetch data asynchronously from multiple sources
+      List<List<Map<String, dynamic>>?> results = await Future.wait([
+        _firebaseService!.getJobProviderData(),
+        _firebaseService!.getApprovalsData(),
+      ]);
 
-    List<Map<String, dynamic>>? data2 =
-        await _firebaseService!.getApprovalsData();
-    setState(() {
-      jobProviders = data;
-      pendingApprovals = data2;
-      _showLoaderCurrent = false;
-      _showLoaderApprovals = false;
-    });
+      List<Map<String, dynamic>>? data = results[0];
+      List<Map<String, dynamic>>? data2 = results[1];
+
+      if (mounted) {
+        setState(() {
+          jobProviders = data;
+          pendingApprovals = data2;
+          _showLoaderCurrent = false;
+          _showLoaderApprovals = false;
+        });
+      }
+    } catch (error) {
+      print('Error fetching data: $error');
+    }
   }
 
   double? _deviceWidth, _deviceHeight, _widthXheight;
@@ -695,4 +711,3 @@ class _DashboardState extends State<DashboardWidget> {
     );
   }
 }
-

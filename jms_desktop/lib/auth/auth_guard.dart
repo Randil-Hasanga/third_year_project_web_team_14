@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:jms_desktop/pages/login_screen.dart';
 
 class AuthGuard {
-  static bool isAuthenticated = true;
+  static bool isAuthenticated = false;
 
   static RouteFactory redirectUnauthorizedToLogin({
     required Widget Function(BuildContext) builder,

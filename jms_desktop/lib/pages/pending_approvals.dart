@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:jms_desktop/const/constants.dart';
 import 'package:jms_desktop/pages/test.dart';
 import 'package:jms_desktop/services/firebase_services.dart';
+import 'package:jms_desktop/widgets/Search_bar_widget.dart';
 
 double? _deviceWidth, _deviceHeight, _widthXheight;
 
@@ -16,8 +17,10 @@ class PendingApprovals extends StatefulWidget {
 
 class _PendingApprovalsState extends State<PendingApprovals> {
   FirebaseService? _firebaseService;
+  SearchBarWidget? _searchBarWidget;
   List<Map<String, dynamic>>? pendingApprovals;
   bool _showLoader = true;
+  TextEditingController _searchController = TextEditingController();
 
   ScrollController _scrollControllerLeft = ScrollController();
   bool _isDetailsVisible = false;
@@ -27,7 +30,9 @@ class _PendingApprovalsState extends State<PendingApprovals> {
   void initState() {
     super.initState();
     _firebaseService = GetIt.instance.get<FirebaseService>();
+    _searchBarWidget = GetIt.instance.get<SearchBarWidget>();
     _loadJobProviders();
+    _searchController.addListener(_onSearchChanged);
   }
 
   void _loadJobProviders() async {
@@ -36,6 +41,24 @@ class _PendingApprovalsState extends State<PendingApprovals> {
     setState(() {
       pendingApprovals = data;
       _showLoader = false;
+    });
+  }
+
+  void _onSearchChanged() {
+    String searchText = _searchController.text.toLowerCase();
+    List<Map<String, dynamic>> filteredList = [];
+
+    if (searchText.isEmpty) {
+      filteredList = pendingApprovals!;
+    } else {
+      filteredList = pendingApprovals!
+          .where((provider) =>
+              provider['username'].toLowerCase().contains(searchText))
+          .toList();
+    }
+
+    setState(() {
+      pendingApprovals = filteredList;
     });
   }
 
@@ -115,6 +138,7 @@ class _PendingApprovalsState extends State<PendingApprovals> {
               ),
             ),
           ),
+          _searchBarWidget!.searchBar(_searchController, "Search"),
           Expanded(
             child: Stack(
               children: [
@@ -142,7 +166,9 @@ class _PendingApprovalsState extends State<PendingApprovals> {
                             ],
                           ),
                         ),
-                        if (!_showLoader && (pendingApprovals == null || pendingApprovals!.isEmpty))
+                        if (!_showLoader &&
+                            (pendingApprovals == null ||
+                                pendingApprovals!.isEmpty))
                           Center(
                             child: Text(
                               "No pending approvals found.",
@@ -153,7 +179,9 @@ class _PendingApprovalsState extends State<PendingApprovals> {
                   ),
                 ),
                 Visibility(
-                  visible: !_showLoader && (pendingApprovals != null && pendingApprovals!.isNotEmpty),
+                  visible: !_showLoader &&
+                      (pendingApprovals != null &&
+                          pendingApprovals!.isNotEmpty),
                   child: Scrollbar(
                     controller: _scrollControllerLeft,
                     thumbVisibility: true,
@@ -287,4 +315,3 @@ class SelectedApprovalDetailsWidget extends StatelessWidget {
     );
   }
 }
-
