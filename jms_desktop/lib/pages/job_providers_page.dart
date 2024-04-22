@@ -1,10 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:jms_desktop/const/constants.dart';
-import 'package:jms_desktop/pages/test.dart';
 import 'package:jms_desktop/services/firebase_services.dart';
 import 'package:jms_desktop/widgets/Search_bar_widget.dart';
 import 'package:jms_desktop/widgets/richText.dart';
@@ -13,6 +9,8 @@ double? _deviceWidth, _deviceHeight, _widthXheight;
 RichTextWidget? _richTextWidget;
 
 class JobProviders extends StatefulWidget {
+  const JobProviders({super.key});
+
   @override
   State<StatefulWidget> createState() {
     return _JobProvidersState();
@@ -27,7 +25,7 @@ class _JobProvidersState extends State<JobProviders> {
   List<Map<String, dynamic>>? jobProviders;
   List<Map<String, dynamic>>? filteredJobProviders;
 
-  ScrollController _scrollControllerLeft = ScrollController();
+  final ScrollController _scrollControllerLeft = ScrollController();
   bool _isDetailsVisible = false;
   Map<String, dynamic>? _selectedProvider;
   bool _showLoader = true;
@@ -347,7 +345,7 @@ class _JobProvidersState extends State<JobProviders> {
 class SelectedProviderDetailsWidget extends StatefulWidget {
   final Map<String, dynamic>? provider;
 
-  const SelectedProviderDetailsWidget(this.provider);
+  const SelectedProviderDetailsWidget(this.provider, {super.key});
 
   @override
   State<SelectedProviderDetailsWidget> createState() =>

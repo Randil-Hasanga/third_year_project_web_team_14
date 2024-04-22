@@ -1,6 +1,6 @@
-import 'package:flutter/cupertino.dart';
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jms_desktop/const/constants.dart';
 import 'package:jms_desktop/services/email_services.dart';
@@ -610,12 +610,10 @@ class _BulkMailPageState extends State<BulkMailPage> {
     emailList ??= {};
 
     // Add new emails to the emailList set if they are not null
-    if (newEmailList != null) {
-      for (String email in newEmailList) {
-        emailList!.add(email);
-      }
+    for (String email in newEmailList) {
+      emailList!.add(email);
     }
-
+  
     List<String> emailListAsList = emailList!.toList();
     print(emailListAsList);
     setState(() {
@@ -648,6 +646,7 @@ class _BulkMailPageState extends State<BulkMailPage> {
             if (value == null) {
               return "Subject is Required";
             }
+            return null;
           },
         ),
       ),
@@ -675,6 +674,7 @@ class _BulkMailPageState extends State<BulkMailPage> {
             if (value == null) {
               return "Message body is Required";
             }
+            return null;
           },
         ),
       ),
