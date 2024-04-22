@@ -354,5 +354,15 @@ class FirebaseService {
     }
     return providerEmails;
   }
+
+  Future<void> logout() async {
+    try {
+      await _auth.signOut();
+      print("Logged out successfully");
+    } catch (e) {
+      print("Logging out failed : $e");
+    }
+    
+  }
 }
 

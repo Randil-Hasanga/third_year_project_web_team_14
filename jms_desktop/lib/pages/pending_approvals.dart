@@ -36,12 +36,19 @@ class _PendingApprovalsState extends State<PendingApprovals> {
   }
 
   void _loadJobProviders() async {
-    List<Map<String, dynamic>>? data =
-        await _firebaseService!.getApprovalsData();
-    setState(() {
-      pendingApprovals = data;
-      _showLoader = false;
-    });
+    try {
+      List<Map<String, dynamic>>? data =
+          await _firebaseService!.getApprovalsData();
+
+      if (mounted) {
+        setState(() {
+          pendingApprovals = data;
+          _showLoader = false;
+        });
+      }
+    } catch (error) {
+      print('Error fetching data: $error');
+    }
   }
 
   void _onSearchChanged() {
