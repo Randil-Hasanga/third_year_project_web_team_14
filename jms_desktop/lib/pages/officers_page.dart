@@ -20,7 +20,7 @@ class _OfficersPageStete extends State<OfficersPage> {
   FirebaseService? _firebaseService;
   List<Map<String, dynamic>>? officer;
 
-  ScrollController _scrollControllerLeft = ScrollController();
+  final ScrollController _scrollControllerLeft = ScrollController();
   bool _isDetailsVisible = false;
   Map<String, dynamic>? _selectedOfficer;
   bool _showLoader = true;
@@ -113,6 +113,20 @@ class _OfficersPageStete extends State<OfficersPage> {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
+                  ElevatedButton(
+                    onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => CreateOfficerPage()),
+                    ),
+                    child: const Text(
+                      "Add Officer",
+                      style: TextStyle(
+                        color: Color.fromARGB(255, 47, 146, 50),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -158,40 +172,6 @@ class _OfficersPageStete extends State<OfficersPage> {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildSectionTitle(String title) {
-    return Align(
-      alignment: Alignment.topLeft,
-      child: Padding(
-        padding: EdgeInsets.only(
-            top: _widthXheight! * 0.7, left: _widthXheight! * 0.1),
-        child: Row(
-          children: [
-            Text(
-              title,
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: _widthXheight! * 0.7,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            if (title == "Create Officer")
-              ElevatedButton(
-                onPressed: () {
-                  // Navigate to the create officer page
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => CreateOfficerPage()),
-                  );
-                },
-                child: Text("Create Officer"),
-              ),
-          ],
-        ),
       ),
     );
   }
