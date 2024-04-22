@@ -38,7 +38,7 @@ class _RecycleBinState extends State<RecycleBin> {
                 color: Colors.black,
                 fontSize: _widthXheight! * 0.7,
                 fontWeight: FontWeight.w600,
-              ),  
+              ),
             ),
           ),
         )
@@ -84,12 +84,18 @@ class _RecycleBinState extends State<RecycleBin> {
   }
 
   void _getDataFromDB() async {
-    List<Map<String, dynamic>>? data =
-        await _firebaseService!.getDeletedUsersData(_dropDownValue);
-    setState(() {
-      _deletedJobProviders = data;
-      // _deletedJobSeekers = data2;
-    });
+    try {
+      List<Map<String, dynamic>>? data =
+          await _firebaseService!.getDeletedUsersData(_dropDownValue);
+
+      if (mounted) {
+        setState(() {
+          _deletedJobProviders = data;
+        });
+      }
+    } catch (error) {
+      print('Error fetching data: $error');
+    }
   }
 
   @override

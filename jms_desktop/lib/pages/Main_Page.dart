@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:jms_desktop/auth/auth_guard.dart';
 import 'package:jms_desktop/const/constants.dart';
 import 'package:jms_desktop/pages/BulkMailPages/bulk_mail.dart';
@@ -9,6 +10,7 @@ import 'package:jms_desktop/pages/officers_page.dart';
 import 'package:jms_desktop/pages/pending_approvals.dart';
 import 'package:jms_desktop/pages/profile_page.dart';
 import 'package:jms_desktop/pages/recycle_bin.dart';
+import 'package:jms_desktop/services/firebase_services.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -23,6 +25,15 @@ class _MainPageState extends State<MainPage> {
   int _currentPage = 0;
   double? _deviceHeight;
 
+  FirebaseService? _firebaseService;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _firebaseService = GetIt.instance.get<FirebaseService>();
+  }
+
   final List<Widget> _pages = [
     const Dashboard(),
     ProfilePage(),
@@ -31,6 +42,7 @@ class _MainPageState extends State<MainPage> {
     PendingApprovals(),
     BulkMailPage(),
     RecycleBin(),
+    LoginScreen(),
   ];
   @override
   Widget build(BuildContext context) {
@@ -47,9 +59,13 @@ class _MainPageState extends State<MainPage> {
                   ),
                   minWidth: 100,
                   onDestinationSelected: (int index) {
-                    setState(() {
-                      _currentPage = index;
-                    });
+                    if (index == (_pages.length - 1)) {
+                      _logout();
+                    } else {
+                      setState(() {
+                        _currentPage = index;
+                      });
+                    }
                   },
                   indicatorColor: selectionColor,
                   destinations: const [
@@ -109,6 +125,14 @@ class _MainPageState extends State<MainPage> {
                         style: TextStyle(color: Colors.white, fontSize: 18),
                       ),
                     ),
+                    NavigationRailDestination(
+                      padding: EdgeInsets.symmetric(vertical: 7),
+                      icon: Icon(Icons.logout),
+                      label: Text(
+                        'Log Out',
+                        style: TextStyle(color: Colors.white, fontSize: 18),
+                      ),
+                    ),
                   ],
                   selectedIndex: _currentPage,
                 ),
@@ -117,5 +141,18 @@ class _MainPageState extends State<MainPage> {
             ),
           )
         : const LoginScreen(); // Redirect to login page if not authenticated
+  }
+
+  Future<void> _logout() async {
+    try {
+      _firebaseService!.logout();
+      AuthGuard.isAuthenticated = false;
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LoginScreen()),
+      );
+    } catch (e) {
+      print("Error signing out: $e");
+    }
   }
 }

@@ -65,17 +65,23 @@ class _JobProvidersState extends State<JobProviders> {
   }
 
   void _loadJobProviders() async {
-    List<Map<String, dynamic>>? data =
-        await _firebaseService!.getJobProviderData();
-    setState(() {
-      jobProviders = data;
+  try {
+    
+    List<Map<String, dynamic>>? data = await _firebaseService!.getJobProviderData();
 
-      filteredJobProviders = data; // search fuction
-      _showLoader = false; // Set showLoader to false after data is loaded
-      _showNoProvidersFound =
-          data == null || data.isEmpty; // Show message if no providers found
-    });
+    if (mounted) {
+      setState(() {
+        jobProviders = data;
+        filteredJobProviders = data;
+        _showLoader = false;
+        _showNoProvidersFound = data == null || data.isEmpty;
+      });
+    }
+  } catch (error) {
+    print('Error fetching data: $error');
   }
+}
+
 
   @override
   Widget build(BuildContext context) {

@@ -19,6 +19,9 @@ class _LoginScreenState extends State<LoginScreen> {
   String? _email, _password;
   FirebaseService? _firebaseService;
 
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -61,15 +64,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     _loginForm(),
                     _loginButton(),
                     const SizedBox(height: 10.0),
-                    /* ElevatedButton(
-                      onPressed: _login, // here navegation the forgot password page
-                      child: const Text(
-                        'Forgot Password?',
-                        style: TextStyle(
-                          fontSize: 12.0,
-                        ),
-                      ),
-                    ),*/
                   ],
                 ),
               ),
@@ -103,6 +97,7 @@ class _LoginScreenState extends State<LoginScreen> {
         borderRadius: BorderRadius.circular(10.0),
       ),
       child: TextFormField(
+        controller: _emailController,
         decoration: const InputDecoration(
           hintText: 'Email',
           border: InputBorder.none,
@@ -120,6 +115,7 @@ class _LoginScreenState extends State<LoginScreen> {
           );
           return _result ? null : "Please enter a valid email";
         },
+        onFieldSubmitted: (_) => _loginUser(),
       ),
     );
   }
@@ -132,6 +128,7 @@ class _LoginScreenState extends State<LoginScreen> {
         borderRadius: BorderRadius.circular(10.0),
       ),
       child: TextFormField(
+        controller: _passwordController,
         decoration: const InputDecoration(
           hintText: 'Password',
           border: InputBorder.none,
@@ -143,9 +140,10 @@ class _LoginScreenState extends State<LoginScreen> {
           });
         },
         validator: (_value) => _value!.length >= 8
-                          ? null
-                          : "Please enter password greater than 8 characters",
+            ? null
+            : "Please enter password greater than 8 characters",
         obscureText: true,
+        onFieldSubmitted: (_) => _loginUser(),
       ),
     );
   }
@@ -161,7 +159,7 @@ class _LoginScreenState extends State<LoginScreen> {
       child: _isLoading
           ? const CircularProgressIndicator(
               valueColor: AlwaysStoppedAnimation<Color>(Colors
-                  .orange), // make the progress indicator white to make it visible on the orange button
+                  .orange),
             )
           : const Text(
               "Login",
@@ -179,8 +177,8 @@ class _LoginScreenState extends State<LoginScreen> {
     );
     if (_loginFormKey.currentState!.validate()) {
       _loginFormKey.currentState!.save();
-      bool _result = await _firebaseService!
-          .loginUser(email: _email!, password: _password!);
+      bool _result = await _firebaseService!.loginUser(
+          email: _emailController.text, password: _passwordController.text);
 
       setState(
         () {
