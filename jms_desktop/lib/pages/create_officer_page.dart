@@ -20,82 +20,123 @@ class _CreateOfficerPageState extends State<CreateOfficerPage> {
   FirebaseService? _firebaseService;
   List<Map<String, dynamic>>? officer;
 
+  final userNameController = TextEditingController();
+  final regNoController = TextEditingController();
+  final positionController = TextEditingController();
+  final genderController = TextEditingController();
+  final contactNoController = TextEditingController();
+  final emailController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     _deviceHeight = MediaQuery.of(context).size.height;
     _deviceWidth = MediaQuery.of(context).size.width;
+    _widthXheight = _deviceHeight! * _deviceWidth! / 50000;
 
     return Scaffold(
-      body: SafeArea(
-        child: Row(
-          children: [
-            Expanded(
-              flex: 6,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  TextFormField(
-                    decoration: const InputDecoration(labelText: 'Name'),
-                  ),
-                  TextFormField(
-                    decoration:
-                        const InputDecoration(labelText: 'Registration No'),
-                  ),
-                  TextFormField(
-                    decoration: const InputDecoration(labelText: 'Position'),
-                  ),
-                  TextFormField(
-                    decoration: const InputDecoration(labelText: 'Gender'),
-                  ),
-                  TextFormField(
-                    decoration: const InputDecoration(labelText: 'Contact No'),
-                  ),
-                  TextFormField(
-                    decoration: const InputDecoration(labelText: 'Email'),
-                  ),
-                  const SizedBox(
-                    height: 10.0,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      ElevatedButton(
-                        onPressed: () {
-                          // Add functionality to save officer details
-                        },
-                        child: Text(
-                          "Clear",
-                          style: TextStyle(
-                            fontSize: _deviceWidth! * 0.012,
-                            color: selectionColor,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          // Add functionality to clear the form
-                        },
-                        child: Text(
-                          "Save",
-                          style: TextStyle(
-                            fontSize: _deviceWidth! * 0.012,
-                            color: selectionColor,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+      body: Container(
+        margin: EdgeInsets.only(
+            left: _deviceWidth! * 0.3,
+            bottom: _deviceHeight! * 0.02,
+            top: _deviceHeight! * 0.02,
+            right: _deviceWidth! * 0.3),
+        child: Form(
+          child: Column(
+            children: [
+              const SizedBox(
+                height: 30.0,
+                child: Text(
+                  'Create new officer',
+                  style: TextStyle(fontSize: 20),
+                ),
               ),
-            ),
-            const Expanded(
-                flex: 2,
-                child: SizedBox(
-                  width: 1.0,
-                ))
-          ],
+              TextFormField(
+                controller: userNameController,
+                decoration: InputDecoration(
+                  labelText: 'User Name',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                ),
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'Please enter a username';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(
+                height: 16.0,
+              ),
+              TextFormField(
+                controller: regNoController,
+                decoration: InputDecoration(
+                    labelText: 'Registration No',
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0))),
+              ),
+              const SizedBox(
+                height: 16.0,
+              ),
+              TextFormField(
+                controller: positionController,
+                decoration: InputDecoration(
+                    labelText: 'Position',
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0))),
+              ),
+              const SizedBox(
+                height: 16.0,
+              ),
+              TextFormField(
+                controller: genderController,
+                decoration: InputDecoration(
+                    labelText: 'Gender',
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0))),
+              ),
+              const SizedBox(
+                height: 16.0,
+              ),
+              TextFormField(
+                controller: contactNoController,
+                decoration: InputDecoration(
+                    labelText: 'Contact No',
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0))),
+              ),
+              const SizedBox(
+                height: 16.0,
+              ),
+              TextFormField(
+                controller: emailController,
+                decoration: InputDecoration(
+                    labelText: 'Email',
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0))),
+              ),
+              const SizedBox(
+                height: 16.0,
+              ),
+              Container(
+                  height: 50,
+                  width: double.infinity,
+                  child: ElevatedButton(
+                      onPressed: () {
+                        CollectionReference addOfficer =
+                            FirebaseFirestore.instance.collection('users');
+                        addOfficer.add({
+                          'username': userNameController.text,
+                          'reg_no': regNoController.text,
+                          'position': positionController.text,
+                          'gender': genderController.text,
+                          'contact': contactNoController.text,
+                          'email': emailController.text
+                        });
+                      },
+                      child: Text('Submit')))
+            ],
+          ),
         ),
       ),
     );
