@@ -16,6 +16,7 @@ import 'package:jms_desktop/pages/recycle_bin.dart';
 import 'package:jms_desktop/services/email_services.dart';
 import 'package:jms_desktop/services/firebase_services.dart';
 import 'package:jms_desktop/widgets/Search_bar_widget.dart';
+import 'package:jms_desktop/widgets/buttons.dart';
 import 'package:jms_desktop/widgets/richText.dart';
 
 void main() async {
@@ -40,6 +41,9 @@ void main() async {
   );
   GetIt.instance.registerSingleton<SearchBarWidget>(
     SearchBarWidget(),
+  );
+  GetIt.instance.registerSingleton<ButtonWidgets>(
+    ButtonWidgets(),
   );
   runApp(
     const MyApp(),
@@ -81,7 +85,7 @@ class MyApp extends StatelessWidget {
         '/bulkMail': (context) => BulkMailPage(),
         '/pendingApprovals': (context) => PendingApprovals(),
       },
-      initialRoute: '/login',
+      initialRoute: '/pendingApprovals',
       onGenerateRoute: (RouteSettings settings) {
         switch (settings.name) {
           case '/':

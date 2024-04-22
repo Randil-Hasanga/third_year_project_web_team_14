@@ -45,77 +45,101 @@ class FirebaseService {
   }
 
   Future<List<Map<String, dynamic>>?> getJobProviderData() async {
-  try {
-    QuerySnapshot<Map<String, dynamic>>? querySnapshot = await _db
-        .collection(USER_COLLECTION)
-        .where('type', isEqualTo: 'provider')
-        .where('pending', isEqualTo: false)
-        .where('disabled', isEqualTo: false)
-        .get();
-
-    List<Map<String, dynamic>> jobProviders = [];
-
-    for (QueryDocumentSnapshot<Map<String, dynamic>> doc in querySnapshot.docs) {
-      // Fetch basic data
-      Map<String, dynamic> providerData = doc.data();
-
-      // Check if additional data exists
-      DocumentSnapshot additionalDataSnapshot = await _db
-          .collection(PROVIDER_COLLECTION)
-          .doc(doc.id)
+    try {
+      QuerySnapshot<Map<String, dynamic>>? querySnapshot = await _db
+          .collection(USER_COLLECTION)
+          .where('type', isEqualTo: 'provider')
+          .where('pending', isEqualTo: false)
+          .where('disabled', isEqualTo: false)
           .get();
 
-      if (additionalDataSnapshot.exists) {
-        // Cast the data to Map<String, dynamic>
-        Map<String, dynamic> additionalData =
-            additionalDataSnapshot.data() as Map<String, dynamic>;
-        // Merge additional data with basic data
-        providerData.addAll(additionalData);
+      List<Map<String, dynamic>> jobProviders = [];
+
+      for (QueryDocumentSnapshot<Map<String, dynamic>> doc
+          in querySnapshot.docs) {
+        // Fetch basic data
+        Map<String, dynamic> providerData = doc.data();
+
+        // Check if additional data exists
+        DocumentSnapshot additionalDataSnapshot =
+            await _db.collection(PROVIDER_COLLECTION).doc(doc.id).get();
+
+        if (additionalDataSnapshot.exists) {
+          // Cast the data to Map<String, dynamic>
+          Map<String, dynamic> additionalData =
+              additionalDataSnapshot.data() as Map<String, dynamic>;
+          // Merge additional data with basic data
+          providerData.addAll(additionalData);
+        }
+
+        jobProviders.add(providerData);
       }
 
-      jobProviders.add(providerData);
-    }
-
-    if (jobProviders.isNotEmpty) {
-      return jobProviders;
-    } else {
+      if (jobProviders.isNotEmpty) {
+        return jobProviders;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print("Error getting provider data : $e");
       return null;
     }
-  } catch (e) {
-    print("Error getting provider data : $e");
-    return null;
   }
-}
-
 
   Future<int> getProviderCount() async {
-    QuerySnapshot<Map<String, dynamic>>? _querySnapshot = await _db
-        .collection(USER_COLLECTION)
-        .where('type', isEqualTo: 'provider')
-        .where('pending', isEqualTo: false)
-        .where('disabled', isEqualTo: false)
-        .get();
+    try {
+      QuerySnapshot<Map<String, dynamic>>? _querySnapshot = await _db
+          .collection(USER_COLLECTION)
+          .where('type', isEqualTo: 'provider')
+          .where('pending', isEqualTo: false)
+          .where('disabled', isEqualTo: false)
+          .get();
 
-    return _querySnapshot.docs.length;
+      return _querySnapshot.docs.length;
+    } catch (e) {
+      print("Error getting provider count : $e");
+      return 0;
+    }
   }
 
   Future<List<Map<String, dynamic>>?> getApprovalsData() async {
-    QuerySnapshot<Map<String, dynamic>>? _querySnapshot = await _db
-        .collection(USER_COLLECTION)
-        .where('type', isEqualTo: 'provider')
-        .where('pending', isEqualTo: true)
-        .get();
+    try {
+      QuerySnapshot<Map<String, dynamic>>? querySnapshot = await _db
+          .collection(USER_COLLECTION)
+          .where('type', isEqualTo: 'provider')
+          .where('pending', isEqualTo: true)
+          .where('disabled', isEqualTo: false)
+          .get();
 
-    List<Map<String, dynamic>> jobProviders = [];
+      List<Map<String, dynamic>> approvals = [];
 
-    for (QueryDocumentSnapshot<Map<String, dynamic>> doc
-        in _querySnapshot.docs) {
-      jobProviders.add(doc.data());
-    }
+      for (QueryDocumentSnapshot<Map<String, dynamic>> doc
+          in querySnapshot.docs) {
+        // Fetch basic data
+        Map<String, dynamic> approvalsData = doc.data();
 
-    if (jobProviders.isNotEmpty) {
-      return jobProviders;
-    } else {
+        // Check if additional data exists
+        DocumentSnapshot additionalDataSnapshot =
+            await _db.collection(PROVIDER_COLLECTION).doc(doc.id).get();
+
+        if (additionalDataSnapshot.exists) {
+          // Cast the data to Map<String, dynamic>
+          Map<String, dynamic> additionalData =
+              additionalDataSnapshot.data() as Map<String, dynamic>;
+          // Merge additional data with basic data
+          approvalsData.addAll(additionalData);
+        }
+
+        approvals.add(approvalsData);
+      }
+
+      if (approvals.isNotEmpty) {
+        return approvals;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print("Error getting provider data : $e");
       return null;
     }
   }
@@ -231,7 +255,7 @@ class FirebaseService {
     }
   }
 
-  Future<List<String>> fetchData(
+  Future<List<String>> fetchDataforEmails(
     String reciType,
     String location,
     String industry,
@@ -362,7 +386,25 @@ class FirebaseService {
     } catch (e) {
       print("Logging out failed : $e");
     }
-    
+  }
+
+  Future<void> deleteProvider(String providerId) async {
+    try {
+      await _db.collection('provider_details').doc(providerId).delete();
+    } catch (error) {
+      print('Error deleting provider document: $error');
+      throw error;
+    }
+  }
+
+  Future<void> approveUser(String userId) async {
+  try {
+    await _db.collection('users').doc(userId).update({'pending': false});
+    print('User approved successfully.');
+  } catch (error) {
+    print('Error approving user: $error');
+    throw error; // Rethrow the error to propagate it up the call stack
   }
 }
 
+}

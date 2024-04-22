@@ -29,7 +29,6 @@ class _MainPageState extends State<MainPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _firebaseService = GetIt.instance.get<FirebaseService>();
   }
