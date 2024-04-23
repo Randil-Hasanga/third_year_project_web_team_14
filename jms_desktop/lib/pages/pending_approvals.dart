@@ -384,9 +384,9 @@ class _SelectedApprovalDetailsWidgetState
                                 const Divider(),
                                 _richTextWidget!.KeyValuePairrichText(
                                     "User Name : ",
-                                    "${widget.provider!['username']}"),
+                                    "${widget.provider!['username']}",18,),
                                 _richTextWidget!.KeyValuePairrichText(
-                                    "Email : ", "${widget.provider!['email']}")
+                                    "Email : ", "${widget.provider!['email']}",18,)
                               ],
                             ),
                           ),
@@ -419,22 +419,22 @@ class _SelectedApprovalDetailsWidgetState
                                   const Divider(),
                                   _richTextWidget!.KeyValuePairrichText(
                                       "Name : ",
-                                      "${widget.provider!['repName']}"),
+                                      "${widget.provider!['repName']}",18,),
                                   _richTextWidget!.KeyValuePairrichText(
                                       "Designation : ",
-                                      "${widget.provider!['repPost']}"),
+                                      "${widget.provider!['repPost']}",18,),
                                   _richTextWidget!.KeyValuePairrichText(
                                       "Email : ",
-                                      "${widget.provider!['repEmail']}"),
+                                      "${widget.provider!['repEmail']}",18,),
                                   _richTextWidget!.KeyValuePairrichText(
                                       "Mobile : ",
-                                      "${widget.provider!['repMobile']}"),
+                                      "${widget.provider!['repMobile']}",18,),
                                   _richTextWidget!.KeyValuePairrichText(
                                       "Telephone : ",
-                                      "${widget.provider!['repTelephone']}"),
+                                      "${widget.provider!['repTelephone']}",18,),
                                   _richTextWidget!.KeyValuePairrichText(
                                       "Fax : ",
-                                      "${widget.provider!['repFax']}"),
+                                      "${widget.provider!['repFax']}",18,),
                                 ],
                               ),
                             ),
@@ -478,19 +478,19 @@ class _SelectedApprovalDetailsWidgetState
                                   const Divider(),
                                   _richTextWidget!.KeyValuePairrichText(
                                       "Company Name : ",
-                                      "${widget.provider!['company_name']}"),
+                                      "${widget.provider!['company_name']}",18,),
                                   _richTextWidget!.KeyValuePairrichText(
                                       "Address : ",
-                                      "${widget.provider!['company_address']}"),
+                                      "${widget.provider!['company_address']}",18,),
                                   _richTextWidget!.KeyValuePairrichText(
                                       "District : ",
-                                      "${widget.provider!['district']}"),
+                                      "${widget.provider!['district']}",18,),
                                   _richTextWidget!.KeyValuePairrichText(
                                       "Industry : ",
-                                      "${widget.provider!['industry']}"),
+                                      "${widget.provider!['industry']}",18,),
                                   _richTextWidget!.KeyValuePairrichText(
                                       "Organization type : ",
-                                      "${widget.provider!['org_type']}"),
+                                      "${widget.provider!['org_type']}",18,),
                                 ],
                               ),
                             ),

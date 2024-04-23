@@ -1,14 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class RichTextWidget {
   RichTextWidget();
 
-  Widget KeyValuePairrichText(String keyText, String valueText) {
+  Widget simpleText(String text, double? fontSize, Color color, FontWeight? fontweight) {
+    return RichText(
+      softWrap: true,
+      text: TextSpan(
+          text: text,
+          style: TextStyle(
+            fontSize: fontSize,
+            fontFamily: GoogleFonts.poppins().fontFamily,
+            color: color,
+            fontWeight: fontweight,
+          ),),
+    );
+  }
+
+  Widget KeyValuePairrichText(
+      String keyText, String valueText, double fontSize) {
     return Column(
       children: [
         Table(
-          columnWidths: const{
+          columnWidths: const {
             0: FixedColumnWidth(200),
           },
           children: [
@@ -21,7 +37,7 @@ class RichTextWidget {
                       text: TextSpan(
                         text: keyText,
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: fontSize,
                           fontFamily: GoogleFonts.poppins().fontFamily,
                         ),
                       ),
@@ -35,7 +51,7 @@ class RichTextWidget {
                       text: TextSpan(
                         text: valueText,
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: fontSize,
                           fontWeight: FontWeight.w600,
                           fontFamily: GoogleFonts.poppins().fontFamily,
                         ),

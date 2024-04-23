@@ -7,7 +7,7 @@ import 'package:get_it/get_it.dart';
 import 'package:jms_desktop/const/constants.dart';
 import 'package:jms_desktop/services/firebase_services.dart';
 import 'package:jms_desktop/widgets/dashboard_widget.dart';
-
+import 'package:jms_desktop/widgets/richText.dart';
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -19,6 +19,7 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   double? _deviceWidth, _deviceHeight, _widthXheight;
   FirebaseService? _firebaseService;
+  RichTextWidget? _richTextWidget;
   String? _fname, _lname, _regNo, _post, _email, _contactNo;
 
   @override
@@ -26,6 +27,7 @@ class _ProfilePageState extends State<ProfilePage> {
     // TODO: implement initState
     super.initState();
     _firebaseService = GetIt.instance.get<FirebaseService>();
+    _richTextWidget = GetIt.instance.get<RichTextWidget>();
   }
 
   @override
@@ -120,176 +122,28 @@ class _ProfilePageState extends State<ProfilePage> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Name : ",
-                style: TextStyle(
-                  fontSize: _deviceWidth! * 0.014,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              Row(
-                children: [
-                  SizedBox(
-                    width: _widthXheight! * 4,
-                  ),
-                  Text(
-                    "$_fname $_lname", //TODO: add name
-                    style: TextStyle(
-                      fontSize: _deviceWidth! * 0.014,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
+          _richTextWidget!.KeyValuePairrichText(
+              "Name : ", "$_fname $_lname", _deviceWidth! * 0.014),
           SizedBox(
             height: _widthXheight! * 0.35,
           ),
-          Container(
-            color: Colors.grey,
-            height: 1,
-          ),
+          _richTextWidget!.KeyValuePairrichText(
+              "Reg No : ", "$_regNo", _deviceWidth! * 0.014),
           SizedBox(
             height: _widthXheight! * 0.35,
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Reg No : ",
-                style: TextStyle(
-                  fontSize: _deviceWidth! * 0.014,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              Row(
-                children: [
-                  SizedBox(
-                    width: _widthXheight! * 4,
-                  ),
-                  Text(
-                    "$_regNo", //TODO: add reg no
-                    style: TextStyle(
-                      fontSize: _deviceWidth! * 0.014,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
+          _richTextWidget!.KeyValuePairrichText(
+              "Position : ", "$_post", _deviceWidth! * 0.014),
           SizedBox(
             height: _widthXheight! * 0.35,
           ),
-          Container(
-            color: Colors.grey,
-            height: 1,
-          ),
+          _richTextWidget!.KeyValuePairrichText(
+              "Contact No : ", "$_contactNo", _deviceWidth! * 0.014),
           SizedBox(
             height: _widthXheight! * 0.35,
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Position : ",
-                style: TextStyle(
-                  fontSize: _deviceWidth! * 0.014,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              Row(
-                children: [
-                  SizedBox(
-                    width: _widthXheight! * 4,
-                  ),
-                  Text(
-                    "$_post", //TODO: add position
-                    style: TextStyle(
-                      fontSize: _deviceWidth! * 0.014,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          SizedBox(
-            height: _widthXheight! * 0.35,
-          ),
-          Container(
-            color: Colors.grey,
-            height: 1,
-          ),
-          SizedBox(
-            height: _widthXheight! * 0.35,
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Contact No : ",
-                style: TextStyle(
-                  fontSize: _deviceWidth! * 0.014,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              Row(
-                children: [
-                  SizedBox(
-                    width: _widthXheight! * 4,
-                  ),
-                  Text(
-                    "$_contactNo", //TODO: add contact no
-                    style: TextStyle(
-                      fontSize: _deviceWidth! * 0.014,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          SizedBox(
-            height: _widthXheight! * 0.35,
-          ),
-          Container(
-            color: Colors.grey,
-            height: 1,
-          ),
-          SizedBox(
-            height: _widthXheight! * 0.35,
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "E-Mail : ",
-                style: TextStyle(
-                  fontSize: _deviceWidth! * 0.014,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              Row(
-                children: [
-                  SizedBox(
-                    width: _widthXheight! * 4,
-                  ),
-                  Text(
-                    "$_email", //TODO: add gmail
-                    style: TextStyle(
-                      fontSize: _deviceWidth! * 0.014,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
+          _richTextWidget!.KeyValuePairrichText(
+              "E-Mail : ", "$_email", _deviceWidth! * 0.014),
         ],
       ),
     );

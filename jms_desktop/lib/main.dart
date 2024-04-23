@@ -85,7 +85,9 @@ class MyApp extends StatelessWidget {
         '/bulkMail': (context) => BulkMailPage(),
         '/pendingApprovals': (context) => PendingApprovals(),
       },
-      initialRoute: '/pendingApprovals',
+
+      // ******************* auth guard file eke isAuthenticated = true karala inna weda krnna kalin *******************
+      initialRoute: '/login',
       onGenerateRoute: (RouteSettings settings) {
         switch (settings.name) {
           case '/':

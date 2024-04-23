@@ -63,23 +63,22 @@ class _JobProvidersState extends State<JobProviders> {
   }
 
   void _loadJobProviders() async {
-  try {
-    
-    List<Map<String, dynamic>>? data = await _firebaseService!.getJobProviderData();
+    try {
+      List<Map<String, dynamic>>? data =
+          await _firebaseService!.getJobProviderData();
 
-    if (mounted) {
-      setState(() {
-        jobProviders = data;
-        filteredJobProviders = data;
-        _showLoader = false;
-        _showNoProvidersFound = data == null || data.isEmpty;
-      });
+      if (mounted) {
+        setState(() {
+          jobProviders = data;
+          filteredJobProviders = data;
+          _showLoader = false;
+          _showNoProvidersFound = data == null || data.isEmpty;
+        });
+      }
+    } catch (error) {
+      print('Error fetching data: $error');
     }
-  } catch (error) {
-    print('Error fetching data: $error');
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
@@ -98,14 +97,12 @@ class _JobProvidersState extends State<JobProviders> {
               flex: 2,
               child: _isDetailsVisible
                   ? SelectedProviderDetailsWidget(_selectedProvider)
-                  : Container(
-                      child: Center(
-                          child: Text(
-                        "Select a provider to view details",
-                        style: TextStyle(
-                          fontSize: _widthXheight! * 0.5,
-                        ),
-                      )),
+                  : Center(
+                      child: _richTextWidget!.simpleText(
+                          "Select a provider to view details",
+                          18,
+                          Colors.black,
+                          null),
                     ),
             )
           ],
@@ -149,14 +146,8 @@ class _JobProvidersState extends State<JobProviders> {
                     size: _widthXheight! * 1.5,
                   ),
                   SizedBox(width: _deviceWidth! * 0.01),
-                  Text(
-                    "Current Providers",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: _widthXheight! * 0.9,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+                  _richTextWidget!.simpleText(
+                      "Current Providers", 25, Colors.black, FontWeight.w600),
                 ],
               ),
             ),
@@ -167,15 +158,16 @@ class _JobProvidersState extends State<JobProviders> {
               children: [
                 Visibility(
                   visible: _showLoader,
-                  child: const Center(
+                  child: Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        CircularProgressIndicator(
+                        const CircularProgressIndicator(
                           color: selectionColor,
                         ),
-                        SizedBox(height: 8),
-                        Text("Loading..."),
+                        const SizedBox(height: 8),
+                        _richTextWidget!
+                            .simpleText("Loading...", null, Colors.black, null),
                       ],
                     ),
                   ),
@@ -200,8 +192,9 @@ class _JobProvidersState extends State<JobProviders> {
                 ),
                 Visibility(
                   visible: _showNoProvidersFound,
-                  child: const Center(
-                    child: Text("No job providers found."),
+                  child: Center(
+                    child: _richTextWidget!.simpleText(
+                        "No job providers found.", null, Colors.black, null),
                   ),
                 ),
               ],
@@ -262,9 +255,11 @@ class _JobProvidersState extends State<JobProviders> {
                       width: _deviceWidth! * 0.01,
                     ),
                     if (provider['company_name'] != null) ...{
-                      Text(provider['company_name']),
-                    }else...{
-                      Text(provider['username']),
+                      _richTextWidget!.simpleText(
+                          provider['company_name'], null, Colors.black, null),
+                    } else ...{
+                      _richTextWidget!.simpleText(
+                          provider['username'], null, Colors.black, null),
                     },
                   ],
                 ),
@@ -297,23 +292,22 @@ class _JobProvidersState extends State<JobProviders> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Row(
+          title: Row(
             children: [
-              Icon(
+              const Icon(
                 Icons.warning,
                 color: Colors.red,
               ),
-              SizedBox(width: 8),
-              Text(
-                "Delete Job Provider",
-                style: TextStyle(color: Colors.red),
-              ),
+              const SizedBox(width: 8),
+              _richTextWidget!
+                  .simpleText("Delete Job Provider", null, Colors.red, null),
             ],
           ),
-          content: const Text(
-            "Are you sure you want to delete this job provider?",
-            style: TextStyle(color: Colors.black87),
-          ),
+          content: _richTextWidget!.simpleText(
+              "Are you sure you want to delete this job provider?",
+              null,
+              Colors.black87,
+              null),
           actions: [
             TextButton(
               onPressed: () async {
@@ -321,19 +315,14 @@ class _JobProvidersState extends State<JobProviders> {
                 _loadJobProviders();
                 Navigator.pop(context);
               },
-              child: const Text(
-                "Yes",
-                style: TextStyle(color: Colors.red),
-              ),
+              child: _richTextWidget!.simpleText("Yes", null, Colors.red, null),
             ),
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: const Text(
-                "No",
-                style: TextStyle(color: Colors.black87),
-              ),
+              child:
+                  _richTextWidget!.simpleText("No", null, Colors.black, null),
             ),
           ],
         );
@@ -366,184 +355,210 @@ class _SelectedProviderDetailsWidgetState
     _deviceWidth = MediaQuery.of(context).size.width;
     _widthXheight = _deviceHeight! * _deviceWidth! / 50000;
 
-    return Container(
-      margin: EdgeInsets.symmetric(
-          horizontal: _deviceWidth! * 0.01, vertical: _deviceHeight! * 0.02),
-      padding: EdgeInsets.symmetric(
-        horizontal: _deviceWidth! * 0.01,
-        vertical: _widthXheight! * 0.7,
-      ),
-      decoration: BoxDecoration(
-        color: cardBackgroundColorLayer2,
-        borderRadius: BorderRadius.circular(_widthXheight! * 1),
-        boxShadow: const [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 5,
-            offset: Offset(0, 0),
-          ),
-        ],
-      ),
+    return SingleChildScrollView(
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            "Details of Selected Job Provider",
-            style: TextStyle(
-              fontSize: _widthXheight! * 0.9,
-              fontWeight: FontWeight.bold,
+          Container(
+            margin: EdgeInsets.symmetric(
+                horizontal: _deviceWidth! * 0.01, vertical: _deviceHeight! * 0.02),
+            padding: EdgeInsets.symmetric(
+              horizontal: _deviceWidth! * 0.01,
+              vertical: _widthXheight! * 0.7,
             ),
-          ),
-          const SizedBox(height: 20),
-          if (widget.provider != null) ...{
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
+            decoration: BoxDecoration(
+              color: cardBackgroundColorLayer2,
+              borderRadius: BorderRadius.circular(_widthXheight! * 1),
+              boxShadow: const [
+                BoxShadow(
+                  color: Colors.black12,
+                  blurRadius: 5,
+                  offset: Offset(0, 0),
+                ),
+              ],
+            ),
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
               children: [
-                Expanded(
-                  child: Column(
+                _richTextWidget!.simpleText("Details of Selected Job Provider",
+                    _widthXheight! * 0.9, Colors.black, FontWeight.bold),
+                const SizedBox(height: 20),
+                if (widget.provider != null) ...{
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Container(
-                        padding: const EdgeInsets.all(8.0),
-                        decoration: BoxDecoration(
-                          color: cardBackgroundColor,
-                          borderRadius: BorderRadius.circular(15),
-                          boxShadow: const [
-                            BoxShadow(
-                              color: Colors.black12,
-                              blurRadius: 5,
-                              offset: Offset(0, 0),
-                            ),
-                          ],
-                        ),
+                      Expanded(
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Text(
-                              "Basic data",
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.w600),
+                            Container(
+                              padding: const EdgeInsets.all(8.0),
+                              decoration: BoxDecoration(
+                                color: cardBackgroundColor,
+                                borderRadius: BorderRadius.circular(15),
+                                boxShadow: const [
+                                  BoxShadow(
+                                    color: Colors.black12,
+                                    blurRadius: 5,
+                                    offset: Offset(0, 0),
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  _richTextWidget!.simpleText("Basic data", 20,
+                                      Colors.black, FontWeight.w600),
+                                  const Divider(),
+                                  _richTextWidget!.KeyValuePairrichText(
+                                    "User Name : ",
+                                    "${widget.provider!['username']}",
+                                    18,
+                                  ),
+                                  _richTextWidget!.KeyValuePairrichText(
+                                    "Email : ",
+                                    "${widget.provider!['email']}",
+                                    18,
+                                  )
+                                ],
+                              ),
                             ),
-                            const Divider(),
-                            _richTextWidget!.KeyValuePairrichText(
-                                "User Name : ",
-                                "${widget.provider!['username']}"),
-                            _richTextWidget!.KeyValuePairrichText(
-                                "Email : ", "${widget.provider!['email']}")
+                            SizedBox(height: _deviceHeight! * 0.02),
+                            if (widget.provider!['company_name'] != null) ...{
+                              Container(
+                                padding: const EdgeInsets.all(8.0),
+                                decoration: BoxDecoration(
+                                  color: cardBackgroundColor,
+                                  borderRadius: BorderRadius.circular(15),
+                                  boxShadow: const [
+                                    BoxShadow(
+                                      color: Colors.black12,
+                                      blurRadius: 5,
+                                      offset: Offset(0, 0),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    _richTextWidget!.simpleText(
+                                        "Contact person details",
+                                        20,
+                                        Colors.black,
+                                        FontWeight.w600),
+                                    const Divider(),
+                                    _richTextWidget!.KeyValuePairrichText(
+                                      "Name : ",
+                                      "${widget.provider!['repName']}",
+                                      18,
+                                    ),
+                                    _richTextWidget!.KeyValuePairrichText(
+                                      "Designation : ",
+                                      "${widget.provider!['repPost']}",
+                                      18,
+                                    ),
+                                    _richTextWidget!.KeyValuePairrichText(
+                                      "Email : ",
+                                      "${widget.provider!['repEmail']}",
+                                      18,
+                                    ),
+                                    _richTextWidget!.KeyValuePairrichText(
+                                      "Mobile : ",
+                                      "${widget.provider!['repMobile']}",
+                                      18,
+                                    ),
+                                    _richTextWidget!.KeyValuePairrichText(
+                                      "Telephone : ",
+                                      "${widget.provider!['repTelephone']}",
+                                      18,
+                                    ),
+                                    _richTextWidget!.KeyValuePairrichText(
+                                      "Fax : ",
+                                      "${widget.provider!['repFax']}",
+                                      18,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            }
                           ],
                         ),
                       ),
-                      SizedBox(height: _deviceHeight! * 0.02),
+                      SizedBox(
+                          width: _deviceHeight! *
+                              0.02), // Add space between the containers
+          
                       if (widget.provider!['company_name'] != null) ...{
-                        Container(
-                          padding: const EdgeInsets.all(8.0),
-                          decoration: BoxDecoration(
-                            color: cardBackgroundColor,
-                            borderRadius: BorderRadius.circular(15),
-                            boxShadow: const [
-                              BoxShadow(
-                                color: Colors.black12,
-                                blurRadius: 5,
-                                offset: Offset(0, 0),
-                              ),
-                            ],
-                          ),
+                        Expanded(
                           child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Text(
-                                "Contact person details",
-                                style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.w600),
+                              if (widget.provider!['logo'] != null) ...{
+                                _logo(),
+                              },
+                              SizedBox(height: _deviceHeight! * 0.02),
+                              Container(
+                                padding: const EdgeInsets.all(8.0),
+                                decoration: BoxDecoration(
+                                  color: cardBackgroundColor,
+                                  borderRadius: BorderRadius.circular(15),
+                                  boxShadow: const [
+                                    BoxShadow(
+                                      color: Colors.black12,
+                                      blurRadius: 5,
+                                      offset: Offset(0, 0),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    _richTextWidget!.simpleText("Company details", 20,
+                                        Colors.black, FontWeight.w600),
+                                    const Divider(),
+                                    _richTextWidget!.KeyValuePairrichText(
+                                      "Company Name : ",
+                                      "${widget.provider!['company_name']}",
+                                      18,
+                                    ),
+                                    _richTextWidget!.KeyValuePairrichText(
+                                      "Address : ",
+                                      "${widget.provider!['company_address']}",
+                                      18,
+                                    ),
+                                    _richTextWidget!.KeyValuePairrichText(
+                                      "District : ",
+                                      "${widget.provider!['district']}",
+                                      18,
+                                    ),
+                                    _richTextWidget!.KeyValuePairrichText(
+                                      "Industry : ",
+                                      "${widget.provider!['industry']}",
+                                      18,
+                                    ),
+                                    _richTextWidget!.KeyValuePairrichText(
+                                      "Organization type : ",
+                                      "${widget.provider!['org_type']}",
+                                      18,
+                                    ),
+                                  ],
+                                ),
                               ),
-                              const Divider(),
-                              _richTextWidget!.KeyValuePairrichText(
-                                  "Name : ", "${widget.provider!['repName']}"),
-                              _richTextWidget!.KeyValuePairrichText(
-                                  "Designation : ",
-                                  "${widget.provider!['repPost']}"),
-                              _richTextWidget!.KeyValuePairrichText("Email : ",
-                                  "${widget.provider!['repEmail']}"),
-                              _richTextWidget!.KeyValuePairrichText("Mobile : ",
-                                  "${widget.provider!['repMobile']}"),
-                              _richTextWidget!.KeyValuePairrichText(
-                                  "Telephone : ",
-                                  "${widget.provider!['repTelephone']}"),
-                              _richTextWidget!.KeyValuePairrichText(
-                                  "Fax : ", "${widget.provider!['repFax']}"),
                             ],
                           ),
                         ),
                       }
                     ],
                   ),
-                ),
-                SizedBox(
-                    width: _deviceHeight! *
-                        0.02), // Add space between the containers
-
-                if (widget.provider!['company_name'] != null) ...{
-                  Expanded(
-                    child: Column(
-                      children: [
-                        if (widget.provider!['logo'] != null) ...{
-                          _logo(),
-                        },
-                        SizedBox(height: _deviceHeight! * 0.02),
-                        Container(
-                          padding: const EdgeInsets.all(8.0),
-                          decoration: BoxDecoration(
-                            color: cardBackgroundColor,
-                            borderRadius: BorderRadius.circular(15),
-                            boxShadow: const [
-                              BoxShadow(
-                                color: Colors.black12,
-                                blurRadius: 5,
-                                offset: Offset(0, 0),
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Text(
-                                "Company details",
-                                style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.w600),
-                              ),
-                              const Divider(),
-                              _richTextWidget!.KeyValuePairrichText(
-                                  "Company Name : ",
-                                  "${widget.provider!['company_name']}"),
-                              _richTextWidget!.KeyValuePairrichText(
-                                  "Address : ",
-                                  "${widget.provider!['company_address']}"),
-                              _richTextWidget!.KeyValuePairrichText(
-                                  "District : ",
-                                  "${widget.provider!['district']}"),
-                              _richTextWidget!.KeyValuePairrichText(
-                                  "Industry : ",
-                                  "${widget.provider!['industry']}"),
-                              _richTextWidget!.KeyValuePairrichText(
-                                  "Organization type : ",
-                                  "${widget.provider!['org_type']}"),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
                 }
               ],
             ),
-          }
+          ),
         ],
       ),
     );
