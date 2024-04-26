@@ -7,6 +7,7 @@ import 'package:jms_desktop/widgets/richText.dart';
 
 double? _deviceWidth, _deviceHeight, _widthXheight;
 RichTextWidget? _richTextWidget;
+FirebaseService? _firebaseService;
 
 class JobProviders extends StatefulWidget {
   const JobProviders({super.key});
@@ -18,7 +19,6 @@ class JobProviders extends StatefulWidget {
 }
 
 class _JobProvidersState extends State<JobProviders> {
-  FirebaseService? _firebaseService;
   SearchBarWidget? _searchBarWidget;
   final TextEditingController _searchController =
       TextEditingController(); // search fuction
@@ -67,14 +67,12 @@ class _JobProvidersState extends State<JobProviders> {
       List<Map<String, dynamic>>? data =
           await _firebaseService!.getJobProviderData();
 
-      if (mounted) {
-        setState(() {
-          jobProviders = data;
-          filteredJobProviders = data;
-          _showLoader = false;
-          _showNoProvidersFound = data == null || data.isEmpty;
-        });
-      }
+      setState(() {
+        jobProviders = data;
+        filteredJobProviders = data;
+        _showLoader = false;
+        _showNoProvidersFound = data == null || data.isEmpty;
+      });
     } catch (error) {
       print('Error fetching data: $error');
     }
@@ -94,7 +92,7 @@ class _JobProvidersState extends State<JobProviders> {
               child: CurrentProvidersListWidget(),
             ),
             Expanded(
-              flex: 2,
+              flex: 3,
               child: _isDetailsVisible
                   ? SelectedProviderDetailsWidget(_selectedProvider)
                   : Center(
@@ -143,11 +141,11 @@ class _JobProvidersState extends State<JobProviders> {
                 children: [
                   Icon(
                     Icons.handshake,
-                    size: _widthXheight! * 1.5,
+                    size: _deviceWidth! * 0.02,
                   ),
-                  SizedBox(width: _deviceWidth! * 0.01),
-                  _richTextWidget!.simpleText(
-                      "Current Providers", 25, Colors.black, FontWeight.w600),
+                  SizedBox(width: _deviceWidth! * 0.005),
+                  _richTextWidget!.simpleText("Current Providers",
+                      _deviceWidth! * 0.015, Colors.black, FontWeight.w600),
                 ],
               ),
             ),
@@ -343,10 +341,29 @@ class SelectedProviderDetailsWidget extends StatefulWidget {
 
 class _SelectedProviderDetailsWidgetState
     extends State<SelectedProviderDetailsWidget> {
+  final ScrollController _scrollController = ScrollController();
+  List<Map<String, dynamic>>? vacancies;
   @override
   void initState() {
     super.initState();
     _richTextWidget = GetIt.instance.get<RichTextWidget>();
+    _loadVacancies();
+  }
+
+  void _loadVacancies() async {
+    try {
+      List<Map<String, dynamic>>? data =
+          await _firebaseService!.getProviderVacancies(widget.provider!['uid']);
+
+      if (mounted) {
+        setState(() {
+          vacancies = data;
+        });
+      }
+      print(vacancies);
+    } catch (error) {
+      print('Error fetching data: $error');
+    }
   }
 
   @override
@@ -359,8 +376,11 @@ class _SelectedProviderDetailsWidgetState
       child: Column(
         children: [
           Container(
-            margin: EdgeInsets.symmetric(
-                horizontal: _deviceWidth! * 0.01, vertical: _deviceHeight! * 0.02),
+            margin: EdgeInsets.only(
+                left: _deviceWidth! * 0.01,
+                right: _deviceWidth! * 0.02,
+                top: _deviceHeight! * 0.02,
+                bottom: _deviceHeight! * 0.02),
             padding: EdgeInsets.symmetric(
               horizontal: _deviceWidth! * 0.01,
               vertical: _widthXheight! * 0.7,
@@ -491,7 +511,7 @@ class _SelectedProviderDetailsWidgetState
                       SizedBox(
                           width: _deviceHeight! *
                               0.02), // Add space between the containers
-          
+
                       if (widget.provider!['company_name'] != null) ...{
                         Expanded(
                           child: Column(
@@ -518,8 +538,11 @@ class _SelectedProviderDetailsWidgetState
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    _richTextWidget!.simpleText("Company details", 20,
-                                        Colors.black, FontWeight.w600),
+                                    _richTextWidget!.simpleText(
+                                        "Company details",
+                                        20,
+                                        Colors.black,
+                                        FontWeight.w600),
                                     const Divider(),
                                     _richTextWidget!.KeyValuePairrichText(
                                       "Company Name : ",
@@ -559,6 +582,53 @@ class _SelectedProviderDetailsWidgetState
               ],
             ),
           ),
+          if (vacancies != null) ...{
+            Container(
+              //height: _deviceHeight! * 0.5,
+              margin: EdgeInsets.only(
+                  left: _deviceWidth! * 0.01,
+                  right: _deviceWidth! * 0.02,
+                  bottom: _deviceHeight! * 0.02),
+              padding: EdgeInsets.symmetric(
+                horizontal: _deviceWidth! * 0.01,
+                vertical: _widthXheight! * 0.7,
+              ),
+              decoration: BoxDecoration(
+                color: cardBackgroundColorLayer2,
+                borderRadius: BorderRadius.circular(_widthXheight! * 1),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 5,
+                    offset: Offset(0, 0),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _richTextWidget!.simpleText("Posted Job Vacancies",
+                      _widthXheight! * 0.9, Colors.black, FontWeight.bold),
+                  const SizedBox(height: 20),
+                  Container(
+                    padding: const EdgeInsets.all(8.0),
+                    decoration: BoxDecoration(
+                      color: cardBackgroundColor,
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 5,
+                          offset: Offset(0, 0),
+                        ),
+                      ],
+                    ),
+                    child: _vacanciesGridWidget(), // vacancy grid widget
+                  ),
+                ],
+              ),
+            ),
+          }
         ],
       ),
     );
@@ -576,8 +646,7 @@ class _SelectedProviderDetailsWidgetState
       child: ClipRRect(
         borderRadius: BorderRadius.circular(20),
         child: Image.network(
-          widget.provider!['logo'], //TODO: profile pic
-          fit: BoxFit.cover,
+          widget.provider!['logo'],
           loadingBuilder: (BuildContext context, Widget child,
               ImageChunkEvent? loadingProgress) {
             if (loadingProgress == null) {
@@ -599,6 +668,88 @@ class _SelectedProviderDetailsWidgetState
           },
         ),
       ),
+    );
+  }
+
+  Widget _vacanciesGridWidget() {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        int crossAxisCount = 3;
+
+        // Adjust cross axis count based on available width
+        if (constraints.maxWidth < 700) {
+          crossAxisCount = 1;
+        } else if (constraints.maxWidth < 1000) {
+          crossAxisCount = 2;
+        } else {
+          crossAxisCount = 3;
+        }
+
+        return Theme(
+          data: ThemeData(
+            scrollbarTheme: ScrollbarThemeData(
+              thumbColor: MaterialStateProperty.all(const Color.fromARGB(
+                  255, 244, 124, 54)), // Change thumb color
+              trackColor: MaterialStateProperty.all(Colors.blue),
+              thickness: MaterialStateProperty.all(17),
+            ),
+          ),
+          child: SizedBox(
+            height: 400,
+            child: GridView.builder(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: crossAxisCount, // Adjusted cross axis count
+                childAspectRatio: 3, // control item height
+              ),
+              itemCount: vacancies?.length ?? 0,
+              itemBuilder: (context, index) {
+                final vacancy = vacancies![index];
+                return Card(
+                  color: cardBackgroundColorLayer3,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _richTextWidget!.simpleTextWithIconLeft(
+                            Icons.work,
+                            vacancy['job_position'],
+                            20,
+                            Colors.black,
+                            FontWeight.w700),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            _richTextWidget!.simpleTextWithIconRight(
+                                Icons.location_pin,
+                                vacancy['location'],
+                                15,
+                                Colors.black,
+                                FontWeight.w700),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            _richTextWidget!.simpleTextWithIconRight(
+                                Icons.money_rounded,
+                                "Rs. ${vacancy['salary']}",
+                                20,
+                                Colors.black,
+                                FontWeight.w700),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        );
+      },
     );
   }
 }

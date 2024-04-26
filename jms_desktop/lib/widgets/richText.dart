@@ -5,17 +5,73 @@ import 'package:google_fonts/google_fonts.dart';
 class RichTextWidget {
   RichTextWidget();
 
-  Widget simpleText(String text, double? fontSize, Color color, FontWeight? fontweight) {
+  Widget simpleText(
+      String text, double? fontSize, Color color, FontWeight? fontweight) {
     return RichText(
       softWrap: true,
       text: TextSpan(
-          text: text,
-          style: TextStyle(
-            fontSize: fontSize,
-            fontFamily: GoogleFonts.poppins().fontFamily,
-            color: color,
-            fontWeight: fontweight,
-          ),),
+        text: text,
+        style: TextStyle(
+          fontSize: fontSize,
+          fontFamily: GoogleFonts.poppins().fontFamily,
+          color: color,
+          fontWeight: fontweight,
+        ),
+      ),
+    );
+  }
+
+  Widget simpleTextWithIconLeft(IconData icon, String text, double? fontSize,
+      Color color, FontWeight? fontweight) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Icon(icon),
+        SizedBox(
+          width: 10,
+        ),
+        RichText(
+          softWrap: true,
+          text: TextSpan(
+            text: text,
+            style: TextStyle(
+              fontSize: fontSize,
+              fontFamily: GoogleFonts.poppins().fontFamily,
+              color: color,
+              fontWeight: fontweight,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget simpleTextWithIconRight(IconData icon, String text, double? fontSize,
+      Color color, FontWeight? fontweight) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        RichText(
+          softWrap: true,
+          text: TextSpan(
+            text: text,
+            style: TextStyle(
+              fontSize: fontSize,
+              fontFamily: GoogleFonts.poppins().fontFamily,
+              color: color,
+              fontWeight: fontweight,
+            ),
+          ),
+        ),
+        SizedBox(
+          width: 6,
+        ),
+        Icon(icon),
+      ],
     );
   }
 
