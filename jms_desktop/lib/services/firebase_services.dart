@@ -454,4 +454,31 @@ class FirebaseService {
       return null;
     }
   }
+
+  //get vacancy data from relavant user
+
+  Future<List<Map<String, dynamic>>?> getProviderVacancies(
+      String? userId) async {
+    QuerySnapshot<Map<String, dynamic>>? _querySnapshot;
+
+    _querySnapshot = await _db
+        .collection(VACANCY_COLLECTION)
+        .where('uid', isEqualTo: userId)
+        .get();
+
+    List<Map<String, dynamic>> vacancies = [];
+
+    for (QueryDocumentSnapshot<Map<String, dynamic>> doc
+        in _querySnapshot!.docs) {
+      vacancies.add(doc.data());
+    }
+
+    if (vacancies.isNotEmpty) {
+      print(vacancies);
+      return vacancies;
+    } else {
+      print("no vacancies");
+      return null;
+    }
+  }
 }
