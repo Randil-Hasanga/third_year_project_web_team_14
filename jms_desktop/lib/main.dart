@@ -13,6 +13,7 @@ import 'package:jms_desktop/pages/officers_page.dart';
 import 'package:jms_desktop/pages/pending_approvals.dart';
 import 'package:jms_desktop/pages/profile_page.dart';
 import 'package:jms_desktop/pages/recycle_bin.dart';
+import 'package:jms_desktop/pages/report_page.dart';
 import 'package:jms_desktop/services/email_services.dart';
 import 'package:jms_desktop/services/firebase_services.dart';
 import 'package:jms_desktop/widgets/Search_bar_widget.dart';
@@ -84,6 +85,7 @@ class MyApp extends StatelessWidget {
         '/bin': (context) => RecycleBin(),
         '/bulkMail': (context) => BulkMailPage(),
         '/pendingApprovals': (context) => PendingApprovals(),
+        '/report': (context) => Report(),
       },
 
       // ******************* auth guard file eke isAuthenticated = true karala inna weda krnna kalin *******************
@@ -133,6 +135,11 @@ class MyApp extends StatelessWidget {
           case '/pendingApprovals':
             return AuthGuard.redirectUnauthorizedToLogin(
               builder: (_) => PendingApprovals(),
+              redirectPath: '/login',
+            )(settings);
+          case '/report':
+            return AuthGuard.redirectUnauthorizedToLogin(
+              builder: (_) => Report(),
               redirectPath: '/login',
             )(settings);
           default:
