@@ -45,6 +45,7 @@ class _OfficersPageStete extends State<OfficersPage> {
     setState(() {
       officer = data;
     });
+    print(data);
   }
 
   @override

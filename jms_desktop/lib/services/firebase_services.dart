@@ -5,6 +5,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 const String USER_COLLECTION = 'users';
 const String POSTS_COLLECTION = 'posts';
 const String PROVIDER_COLLECTION = 'provider_details';
+const String VACANCY_COLLECTION = 'vacancy';
 
 class FirebaseService {
   FirebaseService();
@@ -398,13 +399,59 @@ class FirebaseService {
   }
 
   Future<void> approveUser(String userId) async {
-  try {
-    await _db.collection('users').doc(userId).update({'pending': false});
-    print('User approved successfully.');
-  } catch (error) {
-    print('Error approving user: $error');
-    throw error; // Rethrow the error to propagate it up the call stack
+    try {
+      await _db.collection('users').doc(userId).update({'pending': false});
+      print('User approved successfully.');
+    } catch (error) {
+      print('Error approving user: $error');
+      throw error; // Rethrow the error to propagate it up the call stack
+    }
   }
-}
 
+//get vacancy data
+  Future<List<Map<String, dynamic>>?> getVacancyData(
+    DateTime startDate,
+    DateTime endDate,
+  ) async {
+    try {
+      QuerySnapshot<Map<String, dynamic>>? querySnapshot = await _db
+          .collection(VACANCY_COLLECTION)
+          .where('issue_date', isGreaterThanOrEqualTo: startDate)
+          .where('issue_date', isLessThanOrEqualTo: endDate)
+          .get();
+
+      List<Map<String, dynamic>> vacancyList = [];
+
+      for (QueryDocumentSnapshot<Map<String, dynamic>> doc
+          in querySnapshot.docs) {
+        // Fetch basic data
+        Map<String, dynamic> providerData = doc.data();
+
+        // Check if additional data exists
+        DocumentSnapshot additionalDataSnapshot =
+            await _db.collection(VACANCY_COLLECTION).doc(doc.id).get();
+
+        if (additionalDataSnapshot.exists) {
+          // Cast the data to Map<String, dynamic>
+          Map<String, dynamic> additionalData =
+              additionalDataSnapshot.data() as Map<String, dynamic>;
+          // Merge additional data with basic data
+          providerData.addAll(additionalData);
+        }
+
+        vacancyList.add(providerData);
+      }
+
+      if (vacancyList.isNotEmpty) {
+        print(vacancyList);
+        return vacancyList;
+      } else {
+        print("Empty");
+        return null;
+      }
+    } catch (e) {
+      print("Error getting vacancy data : $e");
+      return null;
+    }
+  }
 }

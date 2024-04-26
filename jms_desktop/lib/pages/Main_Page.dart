@@ -10,6 +10,7 @@ import 'package:jms_desktop/pages/officers_page.dart';
 import 'package:jms_desktop/pages/pending_approvals.dart';
 import 'package:jms_desktop/pages/profile_page.dart';
 import 'package:jms_desktop/pages/recycle_bin.dart';
+import 'package:jms_desktop/pages/report_page.dart';
 import 'package:jms_desktop/services/firebase_services.dart';
 
 class MainPage extends StatefulWidget {
@@ -41,6 +42,7 @@ class _MainPageState extends State<MainPage> {
     PendingApprovals(),
     BulkMailPage(),
     RecycleBin(),
+    Report(),
     LoginScreen(),
   ];
   @override
@@ -121,6 +123,14 @@ class _MainPageState extends State<MainPage> {
                       icon: Icon(Icons.recycling_rounded),
                       label: Text(
                         'Recycle Bin',
+                        style: TextStyle(color: Colors.white, fontSize: 18),
+                      ),
+                    ),
+                    NavigationRailDestination(
+                      padding: EdgeInsets.symmetric(vertical: 7),
+                      icon: Icon(Icons.report),
+                      label: Text(
+                        'Report',
                         style: TextStyle(color: Colors.white, fontSize: 18),
                       ),
                     ),
