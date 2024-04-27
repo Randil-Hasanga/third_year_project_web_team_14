@@ -6,8 +6,11 @@ import 'package:get_it/get_it.dart';
 import 'package:jms_desktop/const/constants.dart';
 import 'package:jms_desktop/pages/create_officer_page.dart';
 import 'package:jms_desktop/services/firebase_services.dart';
+import 'package:jms_desktop/widgets/Search_bar_widget.dart';
+import 'package:jms_desktop/widgets/richText.dart';
 
 double? _deviceWidth, _deviceHeight, _widthXheight;
+RichTextWidget? _richTextWidget;
 
 class OfficersPage extends StatefulWidget {
   @override
@@ -17,6 +20,9 @@ class OfficersPage extends StatefulWidget {
 }
 
 class _OfficersPageStete extends State<OfficersPage> {
+  SearchBarWidget? _searchBarWidget;
+  final TextEditingController _searchController =
+      TextEditingController(); // search fuction
   FirebaseService? _firebaseService;
   List<Map<String, dynamic>>? officer;
 
@@ -29,6 +35,8 @@ class _OfficersPageStete extends State<OfficersPage> {
   void initState() {
     super.initState();
     _firebaseService = GetIt.instance.get<FirebaseService>();
+    _richTextWidget = GetIt.instance.get<RichTextWidget>();
+    _searchBarWidget = GetIt.instance.get<SearchBarWidget>();
     _loadOfficer();
 
     Future.delayed(const Duration(seconds: 3), () {
@@ -106,11 +114,15 @@ class _OfficersPageStete extends State<OfficersPage> {
                   top: _widthXheight! * 0.7, left: _widthXheight! * 0.1),
               child: Row(
                 children: [
+                  Icon(
+                    Icons.work,
+                    size: _widthXheight! * 1,
+                  ),
                   Text(
-                    "Current Officer",
+                    "Current Officer  ",
                     style: TextStyle(
                       color: Colors.black,
-                      fontSize: _widthXheight! * 0.7,
+                      fontSize: _widthXheight! * 1.0,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -132,6 +144,7 @@ class _OfficersPageStete extends State<OfficersPage> {
               ),
             ),
           ),
+          _searchBarWidget!.searchBar(_searchController, "Search Officers..."),
           Expanded(
             child: Stack(
               children: [
