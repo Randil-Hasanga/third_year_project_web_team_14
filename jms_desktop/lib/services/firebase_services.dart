@@ -6,6 +6,7 @@ const String USER_COLLECTION = 'users';
 const String POSTS_COLLECTION = 'posts';
 const String PROVIDER_COLLECTION = 'provider_details';
 const String VACANCY_COLLECTION = 'vacancy';
+const String SEEKER_COLLECTION = 'profileJobSeeker';
 
 class FirebaseService {
   FirebaseService();
@@ -478,6 +479,110 @@ class FirebaseService {
       return vacancies;
     } else {
       print("no vacancies");
+      return null;
+    }
+  }
+
+//get provider detailes in company , use this details in provider report
+  Future<List<Map<String, dynamic>>?> getJobProviderReport() async {
+    try {
+      QuerySnapshot<Map<String, dynamic>>? querySnapshot = await _db
+          .collection(PROVIDER_COLLECTION)
+          // .where('issue_date', isGreaterThanOrEqualTo: startDate)
+          // .where('issue_date', isLessThanOrEqualTo: endDate)
+          .get();
+
+      List<Map<String, dynamic>> providerList = [];
+
+      for (QueryDocumentSnapshot<Map<String, dynamic>> doc
+          in querySnapshot.docs) {
+        // Fetch basic data
+        Map<String, dynamic> providerData = doc.data();
+
+        // Check if additional data exists
+        DocumentSnapshot additionalDataSnapshot =
+            await _db.collection(PROVIDER_COLLECTION).doc(doc.id).get();
+
+        if (additionalDataSnapshot.exists) {
+          // Cast the data to Map<String, dynamic>
+          Map<String, dynamic> additionalData =
+              additionalDataSnapshot.data() as Map<String, dynamic>;
+          // Merge additional data with basic data
+          providerData.addAll(additionalData);
+        }
+
+        providerList.add(providerData);
+      }
+
+      if (providerList.isNotEmpty) {
+        // print(providerList);
+        return providerList;
+      } else {
+        print("Empty");
+        return null;
+      }
+    } catch (e) {
+      print("Error getting provider data : $e");
+      return null;
+    }
+  }
+
+  Future<int> getMonthlyProviderCount() async {
+    try {
+      QuerySnapshot<Map<String, dynamic>>? _querySnapshot = await _db
+          .collection(USER_COLLECTION)
+          .where('type', isEqualTo: 'provider')
+          .where('pending', isEqualTo: false)
+          .where('disabled', isEqualTo: false)
+          .get();
+
+      return _querySnapshot.docs.length;
+    } catch (e) {
+      print("Error getting provider count : $e");
+      return 0;
+    }
+  }
+
+  //get Seeker detailes in DB , use this details in seeker report
+  Future<List<Map<String, dynamic>>?> getSeekerReport() async {
+    try {
+      QuerySnapshot<Map<String, dynamic>>? querySnapshot = await _db
+          .collection(SEEKER_COLLECTION)
+          // .where('issue_date', isGreaterThanOrEqualTo: startDate)
+          // .where('issue_date', isLessThanOrEqualTo: endDate)
+          .get();
+
+      List<Map<String, dynamic>> seekerList = [];
+
+      for (QueryDocumentSnapshot<Map<String, dynamic>> doc
+          in querySnapshot.docs) {
+        // Fetch basic data
+        Map<String, dynamic> seekerData = doc.data();
+
+        // Check if additional data exists
+        DocumentSnapshot additionalDataSnapshot =
+            await _db.collection(SEEKER_COLLECTION).doc(doc.id).get();
+
+        if (additionalDataSnapshot.exists) {
+          // Cast the data to Map<String, dynamic>
+          Map<String, dynamic> additionalData =
+              additionalDataSnapshot.data() as Map<String, dynamic>;
+          // Merge additional data with basic data
+          seekerData.addAll(additionalData);
+        }
+
+        seekerList.add(seekerData);
+      }
+
+      if (seekerList.isNotEmpty) {
+        // print(providerList);
+        return seekerList;
+      } else {
+        print("Empty");
+        return null;
+      }
+    } catch (e) {
+      print("Error getting provider data : $e");
       return null;
     }
   }

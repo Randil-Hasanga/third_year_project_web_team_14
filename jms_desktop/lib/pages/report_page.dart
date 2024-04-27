@@ -1,13 +1,15 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jms_desktop/const/constants.dart';
-import 'package:jms_desktop/pages/BulkMailPages/bulk_mail.dart';
 import 'package:jms_desktop/services/firebase_services.dart';
-import 'package:jms_desktop/widgets/Search_bar_widget.dart';
-import 'package:jms_desktop/widgets/buttons.dart';
 import 'package:jms_desktop/widgets/richText.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
 
 double? _deviceWidth, _deviceHeight, _widthXheight;
 FirebaseService? _firebaseService;
@@ -21,26 +23,160 @@ class Report extends StatefulWidget {
 }
 
 class _ReportState extends State<Report> {
-  final ScrollController _scrollControllerLeft = ScrollController();
-  String? _timePeriod = "This month";
   bool _isLoading = false;
   bool _isSending = false;
   List<Map<String, dynamic>>? vacancies;
-  static const List<String> _timePeriodList = [
-    "This month",
-    "Last month",
-    "Last two month",
-    "Last tree month",
-    "Last six month",
-    "Last year",
-  ];
+  late final List<String> _monthList = _generateMonthList();
+
+  late String _providerMonth = _genarateFirstMonth();
+  late String _seekerMonth = _genarateFirstMonth();
+
+  String _genarateFirstMonth() {
+    String firstMonth;
+    if (_monthList.isNotEmpty) {
+      firstMonth = _monthList[0]; // Access the first element safely
+    } else {
+      firstMonth = 'List is empty'; // Default value if the list is empty
+    }
+    return firstMonth;
+  }
+
+  List<String> _generateMonthList() {
+    DateTime currentDate = DateTime.now();
+    List<String> monthList = [];
+
+    // Map for month names
+    const List<String> monthNames = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December'
+    ];
+
+    for (int i = 0; i < 12; i++) {
+      // Get a DateTime object for the past 12 months
+      DateTime pastDate = DateTime(
+        currentDate.year,
+        currentDate.month - i,
+      );
+
+      // Adjust year and month if it goes out of bounds
+      while (pastDate.month < 1) {
+        pastDate = DateTime(pastDate.year - 1, 12 + pastDate.month);
+      }
+
+      String year = pastDate.year.toString();
+      String monthName =
+          monthNames[pastDate.month - 1]; // Get month name from map
+
+      String element = '$monthName $year'; // Using month name
+      monthList.add(element);
+    }
+
+    return monthList;
+  }
 
   @override
   void initState() {
     super.initState();
     _firebaseService = GetIt.instance.get<FirebaseService>();
     _richTextWidget = GetIt.instance.get<RichTextWidget>();
-    _loadVacancies();
+    // _loadVacancies();
+  }
+
+  pw.Widget _createProviderSummaryTable(Map<String, String> data) {
+    return pw.Column(
+      crossAxisAlignment:
+          pw.CrossAxisAlignment.start, // Aligns text to the start (left)
+      children: data.entries.map((entry) {
+        return pw.Row(
+          children: [
+            pw.Text(
+              '${entry.key}:', // Key (field name)
+              style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+            ),
+            pw.SizedBox(width: 10), // Space between key and value
+            pw.Text(entry.value), // Value (field data)
+          ],
+        );
+      }).toList(),
+    );
+  }
+
+  //feach the provider data and map the details
+  pw.Widget _createProviderTable(List<Map<String, String>> data) {
+    // ignore: deprecated_member_use
+    return pw.Table.fromTextArray(
+      // Setting the style for the table headers
+      headerStyle: pw.TextStyle(
+        fontSize: 10,
+        fontWeight: pw.FontWeight.bold, // Make the headers bold
+      ),
+      // Setting the style for the table body cells
+      cellStyle: const pw.TextStyle(
+        fontSize: 8,
+      ),
+      cellAlignment: pw.Alignment.centerLeft, // Align text in cells to the left
+      border: pw.TableBorder.all(), // Adding borders to the table
+      data: <List<String>>[
+        [
+          'Campany Name',
+          'Address',
+          'Contact Parson Name',
+          'Position',
+          'Contact No',
+          'Contact Person Email'
+        ], // Table headers
+        for (var row in data)
+          [
+            row['company_name']!,
+            row['company_address']!,
+            row['repName']!,
+            row['repPost']!,
+            row['repMobile']!,
+            row['repEmail']!
+          ],
+      ],
+    );
+  }
+
+  //feach the seeker data and map the details
+  pw.Widget _createSeekerTable(List<Map<String, String>> data) {
+    // ignore: deprecated_member_use
+    return pw.Table.fromTextArray(
+      // Setting the style for the table headers
+      headerStyle: pw.TextStyle(
+        fontSize: 10,
+        fontWeight: pw.FontWeight.bold, // Make the headers bold
+      ),
+      // Setting the style for the table body cells
+      cellStyle: const pw.TextStyle(
+        fontSize: 8,
+      ),
+      cellAlignment: pw.Alignment.centerLeft, // Align text in cells to the left
+      border: pw.TableBorder.all(), // Adding borders to the table
+      data: <List<String>>[
+        [
+          'Name of the Job Seeker',
+          'Address',
+          'Gender',
+          'Contact No',
+          'Name of the Placed Company',
+          'Job Position',
+          'Company Contact'
+        ], // Table headers
+        for (var row in data)
+          [row['fullname']!, row['address']!, row['gender']!, row['contact']!],
+      ],
+    );
   }
 
   @override
@@ -59,7 +195,15 @@ class _ReportState extends State<Report> {
                     children: [
                       SizedBox(height: _deviceHeight! * 0.02),
                       Container(
-                        padding: const EdgeInsets.all(8.0),
+                        margin: EdgeInsets.only(
+                          left: _deviceWidth! * 0.01,
+                          bottom: _deviceHeight! * 0.02,
+                          top: _deviceHeight! * 0.02,
+                          right: _deviceWidth! * 0.01,
+                        ),
+                        padding: EdgeInsets.only(
+                            top: _widthXheight! * 0.7,
+                            left: _widthXheight! * 0.1),
                         decoration: BoxDecoration(
                           color: cardBackgroundColor,
                           borderRadius: BorderRadius.circular(15),
@@ -77,20 +221,29 @@ class _ReportState extends State<Report> {
                               flex: 1,
                               child: Column(
                                 children: [
-                                  const Text("Time period"),
-                                  _timePeriodDropdown(),
+                                  _richTextWidget!.simpleText(
+                                      "Job Providers Report",
+                                      20,
+                                      Colors.black,
+                                      FontWeight.w600),
+                                  const Divider(),
+                                  _richTextWidget!.simpleText("Select Month",
+                                      15, Colors.black, FontWeight.w600),
+                                  _providerMonthList(),
                                 ],
                               ),
                             ),
-                            Expanded(
-                              flex: 2,
-                              child: SizedBox(),
+                            const Expanded(
+                              flex: 3,
+                              child: SizedBox(
+                                width: 5,
+                              ),
                             ),
                             Expanded(
                               flex: 1,
                               child: Column(
                                 children: [
-                                  _generateButton(),
+                                  _providerGenerateButton(),
                                 ],
                               ),
                             ),
@@ -99,7 +252,15 @@ class _ReportState extends State<Report> {
                       ),
                       SizedBox(height: _deviceHeight! * 0.02),
                       Container(
-                        padding: const EdgeInsets.all(8.0),
+                        margin: EdgeInsets.only(
+                          left: _deviceWidth! * 0.01,
+                          bottom: _deviceHeight! * 0.02,
+                          top: _deviceHeight! * 0.02,
+                          right: _deviceWidth! * 0.01,
+                        ),
+                        padding: EdgeInsets.only(
+                            top: _widthXheight! * 0.7,
+                            left: _widthXheight! * 0.1),
                         decoration: BoxDecoration(
                           color: cardBackgroundColor,
                           borderRadius: BorderRadius.circular(15),
@@ -111,32 +272,91 @@ class _ReportState extends State<Report> {
                             ),
                           ],
                         ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
+                        child: Row(
                           children: [
-                            Container(
-                              child: Row(
+                            Expanded(
+                              flex: 1,
+                              child: Column(
                                 children: [
-                                  _richTextWidget!.simpleText("Vacancies", 20,
-                                      Colors.black, FontWeight.w600),
+                                  _richTextWidget!.simpleText(
+                                      "Job Seekers Report",
+                                      20,
+                                      Colors.black,
+                                      FontWeight.w600),
                                   const Divider(),
+                                  _richTextWidget!.simpleText("Select Month",
+                                      15, Colors.black, FontWeight.w600),
+                                  _seekerMonthList(),
                                 ],
                               ),
                             ),
-                            Container(
-                              child: Row(
+                            const Expanded(
+                              flex: 3,
+                              child: SizedBox(
+                                width: 5,
+                              ),
+                            ),
+                            Expanded(
+                              flex: 1,
+                              child: Column(
                                 children: [
-                                  _richTextWidget!.simpleText("Vacancies", 20,
-                                      Colors.black, FontWeight.w600),
-                                  const Divider(),
+                                  _seekerGenerateButton(),
                                 ],
                               ),
                             ),
                           ],
                         ),
                       ),
+                      // Container(
+                      //   margin: EdgeInsets.only(
+                      //     left: _deviceWidth! * 0.01,
+                      //     bottom: _deviceHeight! * 0.02,
+                      //     top: _deviceHeight! * 0.001,
+                      //     right: _deviceWidth! * 0.01,
+                      //   ),
+                      //   padding: const EdgeInsets.all(8.0),
+                      //   decoration: BoxDecoration(
+                      //     color: cardBackgroundColor,
+                      //     borderRadius: BorderRadius.circular(15),
+                      //     boxShadow: const [
+                      //       BoxShadow(
+                      //         color: Colors.black12,
+                      //         blurRadius: 5,
+                      //         offset: Offset(0, 0),
+                      //       ),
+                      //     ],
+                      //   ),
+                      //   child: Column(
+                      //     mainAxisAlignment: MainAxisAlignment.start,
+                      //     crossAxisAlignment: CrossAxisAlignment.start,
+                      //     mainAxisSize: MainAxisSize.min,
+                      //     children: [
+                      //       Container(
+                      //         child: Row(
+                      //           children: [
+                      //             Visibility(
+                      //               visible: vacancies != null,
+                      //               child: Scrollbar(
+                      //                 controller: _scrollControllerLeft,
+                      //                 thumbVisibility: true,
+                      //                 child: ListView.builder(
+                      //                   controller: _scrollControllerLeft,
+                      //                   shrinkWrap: true,
+                      //                   itemCount: vacancies?.length ?? 0,
+                      //                   scrollDirection: Axis.vertical,
+                      //                   itemBuilder: (context, index) {
+                      //                     return VacancyListViewBuilderWidget(
+                      //                         vacancies![index]);
+                      //                   },
+                      //                 ),
+                      //               ),
+                      //             ),
+                      //           ],
+                      //         ),
+                      //       ),
+                      //     ],
+                      //   ),
+                      // ),
                     ],
                   ),
                 ),
@@ -148,8 +368,8 @@ class _ReportState extends State<Report> {
     );
   }
 
-  Widget _timePeriodDropdown() {
-    List<DropdownMenuItem<String>> _items = _timePeriodList
+  Widget _providerMonthList() {
+    List<DropdownMenuItem<String>> _items = _monthList
         .map(
           (e) => DropdownMenuItem(
             value: e,
@@ -167,11 +387,11 @@ class _ReportState extends State<Report> {
 
     return Center(
       child: DropdownButton(
-        value: _timePeriod,
+        value: _providerMonth,
         items: _items,
         onChanged: (_value) {
           setState(() {
-            _timePeriod = _value;
+            _providerMonth = _value!;
           });
           //_getDataFromDB();
         },
@@ -187,7 +407,7 @@ class _ReportState extends State<Report> {
     );
   }
 
-  Widget _generateButton() {
+  Widget _providerGenerateButton() {
     return Stack(
       children: [
         Padding(
@@ -198,11 +418,11 @@ class _ReportState extends State<Report> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
             ),
-            onPressed: _isLoading ? null : _loadVacancies,
+            onPressed: _isLoading ? null : _generateProviderPdf,
             child: const Row(
               children: [
                 Text(
-                  "Genarate",
+                  "Genarate PDF",
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 SizedBox(
@@ -210,187 +430,167 @@ class _ReportState extends State<Report> {
                 ),
                 Icon(Icons.send),
               ],
-            ), // Disable button when loading
-          ),
-        ),
-        Positioned.fill(
-          child: Align(
-            alignment: Alignment.center,
-            child: _isSending
-                ? const CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.orange),
-                  )
-                : const SizedBox(), // Empty SizedBox when not loading
+            ),
           ),
         ),
       ],
     );
   }
 
-  void _loadVacancies() async {
-    DateTime currentDate = DateTime.now();
-    DateTime startDate = currentDate;
-    DateTime endDate = currentDate;
-    if (_timePeriod == "This month") {
-      startDate = DateTime(currentDate.year, currentDate.month);
-    } else if (_timePeriod == "Last month") {
-      startDate =
-          DateTime(currentDate.year, currentDate.month - 1, currentDate.day);
-    } else if (_timePeriod == "Last two month") {
-      startDate =
-          DateTime(currentDate.year, currentDate.month - 2, currentDate.day);
-    } else if (_timePeriod == "Last tree month") {
-      startDate =
-          DateTime(currentDate.year, currentDate.month - 3, currentDate.day);
-    } else if (_timePeriod == "Last six month") {
-      startDate =
-          DateTime(currentDate.year, currentDate.month - 6, currentDate.day);
-    } else {
-      startDate =
-          DateTime(currentDate.year - 1, currentDate.month, currentDate.day);
-    }
+  void _generateProviderPdf() async {
+    final pdf = pw.Document();
+    int providerCount = await _firebaseService!.getMonthlyProviderCount();
+    final data_ = {
+      'MONTH': _providerMonth,
+      'TOTAL COMPANY REGISTRATION': providerCount.toString(),
+    };
 
-    // print(startDate);
-
-    List<Map<String, dynamic>>? data =
-        await _firebaseService!.getVacancyData(startDate, endDate);
-    // print(data);
-    setState(() {
-      vacancies = data;
-    });
-  }
-
-  Widget VacancyListWidget() {
-    return Container(
-      margin: EdgeInsets.only(
-        left: _deviceWidth! * 0.01,
-        bottom: _deviceHeight! * 0.02,
-        top: _deviceHeight! * 0.02,
-      ),
-      padding: EdgeInsets.symmetric(horizontal: _deviceWidth! * 0.01),
-      decoration: BoxDecoration(
-        color: cardBackgroundColorLayer2,
-        borderRadius: BorderRadius.circular(_widthXheight! * 1),
-        boxShadow: const [
-          BoxShadow(color: Colors.black12, blurRadius: 5, offset: Offset(0, 0)),
-        ],
-      ),
-      child: Column(
-        children: [
-          Expanded(
-            child: Stack(
-              children: [
-                Visibility(
-                  visible: vacancies == null,
-                  child: Center(
-                    child: Stack(
-                      children: [
-                        Visibility(
-                          // visible: _showLoader,
-                          replacement: const Center(
-                            child: Text("Vacancies"),
-                          ),
-                          child: const CircularProgressIndicator(
-                            color: selectionColor,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+    //get provider list from DB
+    List<Map<String, String>>? data;
+    List<Map<String, dynamic>>? _data =
+        await _firebaseService!.getJobProviderReport();
+    data = convertToListOfStringMaps(_data);
+    pdf.addPage(
+      pw.Page(
+        build: (pw.Context context) {
+          return pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.center,
+            children: [
+              // Title at the top
+              pw.Text(
+                "Provider List",
+                style: pw.TextStyle(
+                  fontSize: 18,
+                  fontWeight: pw.FontWeight.bold,
                 ),
-                Visibility(
-                  visible: vacancies != null,
-                  child: Scrollbar(
-                    controller: _scrollControllerLeft,
-                    thumbVisibility: true,
-                    child: ListView.builder(
-                      controller: _scrollControllerLeft,
-                      shrinkWrap: true,
-                      itemCount: vacancies?.length ?? 0,
-                      scrollDirection: Axis.vertical,
-                      itemBuilder: (context, index) {
-                        return VacancyListViewBuilderWidget(vacancies![index]);
-                      },
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+              ),
+              // Spacer to create some space between the title and the content
+              pw.SizedBox(height: 20),
+              _createProviderSummaryTable(data_),
+              pw.SizedBox(height: 20),
+              _createProviderTable(data!),
+            ],
+          );
+        },
       ),
+    );
+
+    await Printing.sharePdf(
+      bytes: await pdf.save(),
+      filename: 'Provider.pdf',
     );
   }
 
-  Widget VacancyListViewBuilderWidget(Map<String, dynamic> vacancies) {
-    return Padding(
-      padding: EdgeInsets.only(
-        right: _deviceWidth! * 0.0125,
-        top: _deviceHeight! * 0.01,
-      ),
-      child: GestureDetector(
-        child: AnimatedContainer(
-          duration: const Duration(microseconds: 300),
-          height: _deviceHeight! * 0.08,
-          width: _deviceWidth! * 0.175,
-          decoration: BoxDecoration(
-            color: cardBackgroundColor,
-            borderRadius: BorderRadius.circular(_widthXheight! * 0.66),
-            boxShadow: const [
-              BoxShadow(
-                color: Colors.black12,
-                blurRadius: 5,
-                offset: Offset(0, 0),
-              ),
-            ],
-          ),
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-                horizontal: _deviceWidth! * 0.001,
-                vertical: _deviceHeight! * 0.015),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              mainAxisSize: MainAxisSize.max,
-              crossAxisAlignment: CrossAxisAlignment.center,
+  List<Map<String, String>>? convertToListOfStringMaps(
+      List<Map<String, dynamic>>? dynamicList) {
+    if (dynamicList == null) {
+      return null; // Handle the null case if the input list is nullable
+    }
+
+    return dynamicList.map((dynamicMap) {
+      Map<String, String> stringMap = {};
+
+      dynamicMap.forEach((key, value) {
+        stringMap[key] = value?.toString() ??
+            'null'; // Convert value to string, handle nulls
+      });
+
+      return stringMap;
+    }).toList();
+  }
+
+  Widget _seekerGenerateButton() {
+    return Stack(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: MaterialButton(
+            elevation: 0, // Set elevation to 0 to hide the button background
+            color: const Color.fromARGB(255, 150, 255, 124),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            onPressed: _isLoading ? null : _generateSeekerPdf,
+            child: const Row(
               children: [
-                Row(
-                  children: [
-                    SizedBox(
-                      width: _deviceWidth! * 0.01,
-                    ),
-                    Icon(
-                      Icons.developer_mode,
-                      size: _widthXheight! * 1,
-                    ),
-                    SizedBox(
-                      width: _deviceWidth! * 0.01,
-                    ),
-                    if (vacancies['job_position'] != null) ...{
-                      Text(vacancies['job_position']),
-                    },
-                  ],
+                Text(
+                  "Genarate PDF",
+                  style: TextStyle(fontWeight: FontWeight.bold),
                 ),
-                Row(
-                  children: [
-                    SizedBox(
-                      width: _deviceWidth! * 0.01,
-                    ),
-                    Icon(
-                      Icons.developer_mode,
-                      size: _widthXheight! * 1,
-                    ),
-                    SizedBox(
-                      width: _deviceWidth! * 0.01,
-                    ),
-                    if (vacancies['company_name'] != null) ...{
-                      Text(vacancies['company_name']),
-                    },
-                  ],
+                SizedBox(
+                  width: 5,
                 ),
+                Icon(Icons.send),
               ],
             ),
           ),
         ),
+      ],
+    );
+  }
+
+  void _generateSeekerPdf() async {
+    final pdf = pw.Document();
+    //get provider list from DB
+    List<Map<String, String>>? data;
+
+    //data = (await _firebaseService!.getJobProviderReport())!.cast<String>();
+
+    List<Map<String, dynamic>>? _data =
+        await _firebaseService!.getSeekerReport();
+
+    data = convertToListOfStringMaps(_data);
+    pdf.addPage(
+      pw.Page(
+        build: (pw.Context context) {
+          return pw.Center(
+            child: _createSeekerTable(data!),
+          );
+        },
+      ),
+    );
+
+    await Printing.sharePdf(
+      bytes: await pdf.save(),
+      filename: 'seeker.pdf',
+    );
+  }
+
+  Widget _seekerMonthList() {
+    List<DropdownMenuItem<String>> _items = _monthList
+        .map(
+          (e) => DropdownMenuItem(
+            value: e,
+            child: Text(
+              e,
+              style: const TextStyle(
+                color: Colors.black,
+                //fontSize: _widthXheight! * 0.7,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        )
+        .toList();
+
+    return Center(
+      child: DropdownButton(
+        value: _seekerMonth,
+        items: _items,
+        onChanged: (_value) {
+          setState(() {
+            _seekerMonth = _value!;
+          });
+          //_getDataFromDB();
+        },
+        dropdownColor: backgroundColor3,
+        borderRadius: BorderRadius.circular(10),
+        iconSize: 20,
+        icon: const Icon(
+          Icons.arrow_drop_down_sharp,
+          color: Colors.black,
+        ),
+        underline: Container(),
       ),
     );
   }

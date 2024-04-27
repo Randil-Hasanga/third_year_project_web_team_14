@@ -61,10 +61,9 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         scrollbarTheme: ScrollbarThemeData(
-          thumbColor:
-              MaterialStateProperty.all(Color.fromARGB(255, 90, 89, 88)), // Change thumb color
-          trackColor:
-              MaterialStateProperty.all(Colors.blue),
+          thumbColor: MaterialStateProperty.all(
+              Color.fromARGB(255, 90, 89, 88)), // Change thumb color
+          trackColor: MaterialStateProperty.all(Colors.blue),
           thumbVisibility: const MaterialStatePropertyAll(true),
           thickness: MaterialStatePropertyAll(17), // Change track color
         ),
@@ -97,7 +96,7 @@ class MyApp extends StatelessWidget {
       },
 
       // ******************* auth guard file eke isAuthenticated = true karala inna weda krnna kalin *******************
-      initialRoute: '/logn',
+      initialRoute: '/login',
       onGenerateRoute: (RouteSettings settings) {
         switch (settings.name) {
           case '/':
