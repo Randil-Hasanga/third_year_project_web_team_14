@@ -483,13 +483,53 @@ class FirebaseService {
     }
   }
 
-//get provider detailes in company , use this details in provider report
-  Future<List<Map<String, dynamic>>?> getJobProviderReport() async {
+// **********REPORT GENERATION PART*******************************
+  // Create month list
+  List<DateTime> _generateMonthList() {
+    DateTime currentDate = DateTime.now();
+    List<DateTime> monthList = [];
+    for (int i = 0; i < 12; i++) {
+      // Get a DateTime object for the past 12 months
+      DateTime pastDate = DateTime(
+        currentDate.year,
+        currentDate.month - i,
+      );
+      // Adjust year and month if it goes out of bounds
+      while (pastDate.month < 1) {
+        pastDate = DateTime(pastDate.year - 1, 12 + pastDate.month);
+      }
+      DateTime element = DateTime(pastDate.year, pastDate.month);
+      monthList.add(element);
+    }
+    return monthList;
+  }
+
+// create month end date
+  DateTime _getMonthEndDate(DateTime currentDate) {
+    // Determine the first day of the next month
+    var firstDayOfNextMonth = (currentDate.month < 12)
+        ? DateTime(currentDate.year, currentDate.month + 1, 1)
+        : DateTime(currentDate.year + 1, 1, 1);
+
+    // The last day of the current month is one day before the first day of the next month
+    var lastDayOfCurrentMonth = firstDayOfNextMonth.subtract(Duration(days: 1));
+
+    return lastDayOfCurrentMonth;
+  }
+
+  // provider report
+  //get provider detailes in company , use this details in provider report
+  Future<List<Map<String, dynamic>>?> getJobProviderReport(int index) async {
+    // Map String date type to Date time type
+    List<DateTime> monthList = _generateMonthList();
+    DateTime startDate = monthList[index];
+    DateTime endDate = _getMonthEndDate(startDate);
+
     try {
       QuerySnapshot<Map<String, dynamic>>? querySnapshot = await _db
           .collection(PROVIDER_COLLECTION)
-          // .where('issue_date', isGreaterThanOrEqualTo: startDate)
-          // .where('issue_date', isLessThanOrEqualTo: endDate)
+          .where('created_date', isGreaterThanOrEqualTo: startDate)
+          .where('created_date', isLessThanOrEqualTo: endDate)
           .get();
 
       List<Map<String, dynamic>> providerList = [];
@@ -527,6 +567,7 @@ class FirebaseService {
     }
   }
 
+  // Get avalable provider count in this month
   Future<int> getMonthlyProviderCount() async {
     try {
       QuerySnapshot<Map<String, dynamic>>? _querySnapshot = await _db
@@ -543,6 +584,7 @@ class FirebaseService {
     }
   }
 
+  // seeker report
   //get Seeker detailes in DB , use this details in seeker report
   Future<List<Map<String, dynamic>>?> getSeekerReport() async {
     try {
@@ -582,7 +624,123 @@ class FirebaseService {
         return null;
       }
     } catch (e) {
-      print("Error getting provider data : $e");
+      print("Error getting seeker data : $e");
+      return null;
+    }
+  }
+
+  //count the seeker in this month
+  Future<int> getMonthlySeekerCount() async {
+    try {
+      QuerySnapshot<Map<String, dynamic>>? _querySnapshot = await _db
+          .collection(USER_COLLECTION)
+          .where('type', isEqualTo: 'seeker')
+          .where('pending', isEqualTo: false)
+          .where('disabled', isEqualTo: false)
+          .get();
+
+      return _querySnapshot.docs.length;
+    } catch (e) {
+      print("Error getting provider count : $e");
+      return 0;
+    }
+  }
+
+// **************NOTIFICATION SYSTEM****************************************
+  //generate notification - job provider side
+  Future<List<Map<String, dynamic>>?> getLastHoursJobProvider() async {
+    DateTime currentTime = DateTime.now();
+    DateTime perviousTime = currentTime.add(Duration(hours: -1));
+    try {
+      QuerySnapshot<Map<String, dynamic>>? querySnapshot = await _db
+          .collection(USER_COLLECTION)
+          // .where('registered_date', isGreaterThanOrEqualTo: perviousTime)
+          // .where('registered_date', isLessThanOrEqualTo: currentTime)
+          .where('type', isEqualTo: 'provider')
+          .where('pending', isEqualTo: true)
+          .get();
+
+      List<Map<String, dynamic>> providerList = [];
+
+      for (QueryDocumentSnapshot<Map<String, dynamic>> doc
+          in querySnapshot.docs) {
+        // Fetch basic data
+        Map<String, dynamic> providerData = doc.data();
+
+        // Check if additional data exists
+        DocumentSnapshot additionalDataSnapshot =
+            await _db.collection(USER_COLLECTION).doc(doc.id).get();
+
+        if (additionalDataSnapshot.exists) {
+          // Cast the data to Map<String, dynamic>
+          Map<String, dynamic> additionalData =
+              additionalDataSnapshot.data() as Map<String, dynamic>;
+          // Merge additional data with basic data
+          additionalData['title'] = "New Provider";
+          providerData.addAll(additionalData);
+        }
+
+        providerList.add(providerData);
+      }
+
+      if (providerList.isNotEmpty) {
+        print(providerList);
+        return providerList;
+      } else {
+        print("Empty");
+        return null;
+      }
+    } catch (e) {
+      print("Error getting provider notification : $e");
+      return null;
+    }
+  }
+
+  //generate notification - job seeker side
+  Future<List<Map<String, dynamic>>?> getLastHoursJobSeeker() async {
+    DateTime currentTime = DateTime.now();
+    DateTime perviousTime = currentTime.add(Duration(hours: -1));
+    try {
+      QuerySnapshot<Map<String, dynamic>>? querySnapshot = await _db
+          .collection(USER_COLLECTION)
+          // .where('registered_date', isGreaterThanOrEqualTo: perviousTime)
+          // .where('registered_date', isLessThanOrEqualTo: currentTime)
+          .where('type', isEqualTo: 'seeker')
+          // .where('pending', isEqualTo: true)
+          .get();
+
+      List<Map<String, dynamic>> seekerList = [];
+
+      for (QueryDocumentSnapshot<Map<String, dynamic>> doc
+          in querySnapshot.docs) {
+        // Fetch basic data
+        Map<String, dynamic> seekerData = doc.data();
+
+        // Check if additional data exists
+        DocumentSnapshot additionalDataSnapshot =
+            await _db.collection(USER_COLLECTION).doc(doc.id).get();
+
+        if (additionalDataSnapshot.exists) {
+          // Cast the data to Map<String, dynamic>
+          Map<String, dynamic> additionalData =
+              additionalDataSnapshot.data() as Map<String, dynamic>;
+          additionalData['title'] = "New Seeker";
+          // Merge additional data with basic data
+          seekerData.addAll(additionalData);
+        }
+
+        seekerList.add(seekerData);
+      }
+
+      if (seekerList.isNotEmpty) {
+        print(seekerList);
+        return seekerList;
+      } else {
+        print("Empty");
+        return null;
+      }
+    } catch (e) {
+      print("Error getting seeker notification : $e");
       return null;
     }
   }
