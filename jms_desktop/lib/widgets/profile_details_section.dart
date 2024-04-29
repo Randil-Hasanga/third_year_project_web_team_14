@@ -1,3 +1,5 @@
+import 'dart:html';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -16,6 +18,27 @@ class _ProfileDetailsSectionState extends State<ProfileDetailsSection> {
   FirebaseService? _firebaseService;
   String? _fname, _lname, _regNo, _post;
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  //  late final List<String> notifications;
+  Future<List<Map<String, dynamic>>> _getNotifications() async {
+    try {
+      List<Map<String, dynamic>>? providerList =
+          await _firebaseService!.getLastHoursJobProvider();
+      List<Map<String, dynamic>>? seekerList =
+          await _firebaseService!.getLastHoursJobSeeker();
+
+      List<Map<String, dynamic>>? list = [...?providerList, ...?seekerList];
+      if (list == null) {
+        return []; // Return an empty list if the result is null
+      }
+      // print(list);
+      return list;
+    } catch (e) {
+      // Handle errors gracefully
+      print('Error fetching notifications: $e');
+      return []; // Return an empty list in case of error
+    }
+  }
 
   @override
   void initState() {
@@ -37,28 +60,43 @@ class _ProfileDetailsSectionState extends State<ProfileDetailsSection> {
       backgroundColor: backgroundColor3,
       key: _scaffoldKey,
       endDrawer: Drawer(
-        width: _deviceWidth! * 0.22,
-        child: ListView(
-          children: [
-            DrawerHeader(
-              child: Text('Notifications'),
-              decoration: BoxDecoration(
-                color: Colors.blue,
-              ),
-            ),
-            ListTile(
-              title: Text('Notification 1'),
-              onTap: () {
-                // Handle notification tap
-              },
-            ),
-            ListTile(
-              title: Text('Notification 2'),
-              onTap: () {
-                // Handle notification tap
-              },
-            ),
-          ],
+        child: FutureBuilder<List<Map<String, dynamic>>>(
+          future: _getNotifications(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                  child: CircularProgressIndicator()); // Loading state
+            }
+
+            if (snapshot.hasError) {
+              return Center(child: Text('Error loading notifications'));
+            }
+
+            var notifications = snapshot.data ?? [];
+            if (notifications.isEmpty) {
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(
+                    'No notifications available.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              );
+            }
+            return ListView(
+              children: [
+                DrawerHeader(
+                  child: Text('Notifications'),
+                  decoration: BoxDecoration(
+                    color: Colors.blue,
+                  ),
+                ),
+                ..._buildNotificationTiles(notifications),
+              ],
+            );
+          },
         ),
       ),
       body: Container(
@@ -183,5 +221,38 @@ class _ProfileDetailsSectionState extends State<ProfileDetailsSection> {
         ),
       ),
     );
+  }
+
+  // Function to create ListTile widgets from the list of notifications
+  List<Widget> _buildNotificationTiles(
+      List<Map<String, dynamic>> notifications) {
+    return notifications.map((notification) {
+      return ListTile(
+        title: Text(notification['title']),
+        subtitle: Text(notification['username']),
+        // onTap: () {
+        //   // Handle notification tap (e.g., navigate to a different screen, mark as read, etc.)
+        //   print('${notification['title']} tapped');
+        // },
+      );
+    }).toList();
+  }
+
+  List<Map<String, String>>? convertToListOfStringMaps(
+      List<Map<String, dynamic>>? dynamicList) {
+    if (dynamicList == null) {
+      return null; // Handle the null case if the input list is nullable
+    }
+
+    return dynamicList.map((dynamicMap) {
+      Map<String, String> stringMap = {};
+
+      dynamicMap.forEach((key, value) {
+        stringMap[key] = value?.toString() ??
+            'null'; // Convert value to string, handle nulls
+      });
+
+      return stringMap;
+    }).toList();
   }
 }

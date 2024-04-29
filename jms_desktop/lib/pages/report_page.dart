@@ -148,6 +148,25 @@ class _ReportState extends State<Report> {
     );
   }
 
+  pw.Widget _createSeekerSummaryTable(Map<String, String> data) {
+    return pw.Column(
+      crossAxisAlignment:
+          pw.CrossAxisAlignment.start, // Aligns text to the start (left)
+      children: data.entries.map((entry) {
+        return pw.Row(
+          children: [
+            pw.Text(
+              '${entry.key}:', // Key (field name)
+              style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+            ),
+            pw.SizedBox(width: 10), // Space between key and value
+            pw.Text(entry.value), // Value (field data)
+          ],
+        );
+      }).toList(),
+    );
+  }
+
   //feach the seeker data and map the details
   pw.Widget _createSeekerTable(List<Map<String, String>> data) {
     // ignore: deprecated_member_use
@@ -307,56 +326,6 @@ class _ReportState extends State<Report> {
                           ],
                         ),
                       ),
-                      // Container(
-                      //   margin: EdgeInsets.only(
-                      //     left: _deviceWidth! * 0.01,
-                      //     bottom: _deviceHeight! * 0.02,
-                      //     top: _deviceHeight! * 0.001,
-                      //     right: _deviceWidth! * 0.01,
-                      //   ),
-                      //   padding: const EdgeInsets.all(8.0),
-                      //   decoration: BoxDecoration(
-                      //     color: cardBackgroundColor,
-                      //     borderRadius: BorderRadius.circular(15),
-                      //     boxShadow: const [
-                      //       BoxShadow(
-                      //         color: Colors.black12,
-                      //         blurRadius: 5,
-                      //         offset: Offset(0, 0),
-                      //       ),
-                      //     ],
-                      //   ),
-                      //   child: Column(
-                      //     mainAxisAlignment: MainAxisAlignment.start,
-                      //     crossAxisAlignment: CrossAxisAlignment.start,
-                      //     mainAxisSize: MainAxisSize.min,
-                      //     children: [
-                      //       Container(
-                      //         child: Row(
-                      //           children: [
-                      //             Visibility(
-                      //               visible: vacancies != null,
-                      //               child: Scrollbar(
-                      //                 controller: _scrollControllerLeft,
-                      //                 thumbVisibility: true,
-                      //                 child: ListView.builder(
-                      //                   controller: _scrollControllerLeft,
-                      //                   shrinkWrap: true,
-                      //                   itemCount: vacancies?.length ?? 0,
-                      //                   scrollDirection: Axis.vertical,
-                      //                   itemBuilder: (context, index) {
-                      //                     return VacancyListViewBuilderWidget(
-                      //                         vacancies![index]);
-                      //                   },
-                      //                 ),
-                      //               ),
-                      //             ),
-                      //           ],
-                      //         ),
-                      //       ),
-                      //     ],
-                      //   ),
-                      // ),
                     ],
                   ),
                 ),
@@ -446,9 +415,11 @@ class _ReportState extends State<Report> {
     };
 
     //get provider list from DB
+    // get String month list index,
+    int index = _monthList.indexOf(_providerMonth);
     List<Map<String, String>>? data;
     List<Map<String, dynamic>>? _data =
-        await _firebaseService!.getJobProviderReport();
+        await _firebaseService!.getJobProviderReport(index);
     data = convertToListOfStringMaps(_data);
     pdf.addPage(
       pw.Page(
@@ -466,9 +437,23 @@ class _ReportState extends State<Report> {
               ),
               // Spacer to create some space between the title and the content
               pw.SizedBox(height: 20),
-              _createProviderSummaryTable(data_),
-              pw.SizedBox(height: 20),
-              _createProviderTable(data!),
+              if (data == null ||
+                  data.isEmpty) // Check if data is empty or null
+                pw.Text(
+                  "No data available.",
+                  style: pw.TextStyle(
+                    fontSize: 16,
+                    fontWeight: pw.FontWeight.normal,
+                  ),
+                )
+              else ...[
+                // If data is not empty, render the data tables
+                _createProviderSummaryTable(
+                    data_), // Your function to create summary
+                pw.SizedBox(height: 20),
+                _createProviderTable(
+                    data), // Your function to create the detailed table
+              ],
             ],
           );
         },
@@ -477,7 +462,7 @@ class _ReportState extends State<Report> {
 
     await Printing.sharePdf(
       bytes: await pdf.save(),
-      filename: 'Provider.pdf',
+      filename: 'Provider_$_providerMonth.pdf',
     );
   }
 
