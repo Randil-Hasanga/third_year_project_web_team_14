@@ -1,10 +1,11 @@
-// ignore_for_file: avoid_print
-
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jms_desktop/const/constants.dart';
 import 'package:jms_desktop/services/email_services.dart';
 import 'package:jms_desktop/services/firebase_services.dart';
+import 'package:jms_desktop/widgets/buttons.dart';
 
 class BulkMailPage extends StatefulWidget {
   @override
@@ -56,10 +57,14 @@ class _BulkMailPageState extends State<BulkMailPage> {
 
   static const List<String> _education = [
     "Any",
-    "NVQ4",
-    "NVQ3",
-    "Degree",
+    'Below O/L',
+    'Passed O/L',
+    'Passed A/L',
+    'undergraduate',
+    'Graduate',
+    'Post Graduate Diploma'
   ];
+
   static const List<String> _location = [
     "Any",
     'Ampara',
@@ -96,12 +101,14 @@ class _BulkMailPageState extends State<BulkMailPage> {
 
   FirebaseService? _firebaseService;
   EmailService? _emailService;
+  ButtonWidgets? _buttonWidgets;
 
   @override
   void initState() {
     super.initState();
     _firebaseService = GetIt.instance.get<FirebaseService>();
     _emailService = GetIt.instance.get<EmailService>();
+    _buttonWidgets = GetIt.instance.get<ButtonWidgets>();
   }
 
   @override
@@ -120,8 +127,8 @@ class _BulkMailPageState extends State<BulkMailPage> {
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.max,
-            crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.max,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Container(
                     width: _deviceWidth! * 0.6,
@@ -151,7 +158,8 @@ class _BulkMailPageState extends State<BulkMailPage> {
                             children: [
                               _mailForm(),
                               Container(
-                                margin: const EdgeInsets.only(left: 16, right: 16,bottom: 16),
+                                margin: const EdgeInsets.only(
+                                    left: 16, right: 16, bottom: 16),
                                 decoration: BoxDecoration(
                                   border: Border.all(color: Colors.black),
                                   borderRadius: BorderRadius.circular(10),
@@ -165,10 +173,34 @@ class _BulkMailPageState extends State<BulkMailPage> {
                                   children: [
                                     const Text("To : "),
                                     _emailChips(),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      mainAxisSize: MainAxisSize.max,
+                                      children: [
+                                        _buttonWidgets!
+                                            .simpleElevatedButtonWidget(
+                                          onPressed: () {
+                                            setState(() {
+                                              emailList = {};
+                                            });
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Color.fromARGB(
+                                                255, 134, 145, 135),
+                                          ),
+                                          buttonText: "Clear",
+                                        ),
+                                        SizedBox(
+                                          width: 20,
+                                        ),
+                                      ],
+                                    ),
                                     const Divider(),
                                     Column(
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       mainAxisSize: MainAxisSize.max,
                                       children: [
                                         SizedBox(
@@ -197,25 +229,27 @@ class _BulkMailPageState extends State<BulkMailPage> {
                                                       MainAxisAlignment.start,
                                                   crossAxisAlignment:
                                                       CrossAxisAlignment.center,
-                                                  mainAxisSize: MainAxisSize.max,
+                                                  mainAxisSize:
+                                                      MainAxisSize.max,
                                                   children: [
                                                     Visibility(
                                                       visible: isSeekerSelected,
                                                       child: Material(
                                                         borderRadius:
-                                                            BorderRadius.circular(
-                                                                5),
+                                                            BorderRadius
+                                                                .circular(5),
                                                         elevation: 2,
                                                         child: Container(
                                                           padding:
-                                                              const EdgeInsets.all(
-                                                                  8),
+                                                              const EdgeInsets
+                                                                  .all(8),
                                                           decoration: BoxDecoration(
                                                               color:
                                                                   backgroundColor,
                                                               borderRadius:
                                                                   BorderRadius
-                                                                      .circular(5)),
+                                                                      .circular(
+                                                                          5)),
                                                           child: Column(
                                                             mainAxisAlignment:
                                                                 MainAxisAlignment
@@ -224,10 +258,11 @@ class _BulkMailPageState extends State<BulkMailPage> {
                                                                 CrossAxisAlignment
                                                                     .start,
                                                             mainAxisSize:
-                                                                MainAxisSize.min,
+                                                                MainAxisSize
+                                                                    .min,
                                                             children: [
                                                               const Text(
-                                                                  "Education"),
+                                                                  "Highest Education"),
                                                               _educationDropdown(),
                                                             ],
                                                           ),
@@ -235,25 +270,27 @@ class _BulkMailPageState extends State<BulkMailPage> {
                                                       ),
                                                     ),
                                                     SizedBox(
-                                                      width: _deviceWidth! * 0.02,
+                                                      width:
+                                                          _deviceWidth! * 0.02,
                                                     ),
                                                     Visibility(
                                                       visible: isSeekerSelected,
                                                       child: Material(
                                                         borderRadius:
-                                                            BorderRadius.circular(
-                                                                5),
+                                                            BorderRadius
+                                                                .circular(5),
                                                         elevation: 2,
                                                         child: Container(
                                                           padding:
-                                                              const EdgeInsets.all(
-                                                                  8),
+                                                              const EdgeInsets
+                                                                  .all(8),
                                                           decoration: BoxDecoration(
                                                               color:
                                                                   backgroundColor,
                                                               borderRadius:
                                                                   BorderRadius
-                                                                      .circular(5)),
+                                                                      .circular(
+                                                                          5)),
                                                           child: Column(
                                                             mainAxisAlignment:
                                                                 MainAxisAlignment
@@ -262,10 +299,11 @@ class _BulkMailPageState extends State<BulkMailPage> {
                                                                 CrossAxisAlignment
                                                                     .start,
                                                             mainAxisSize:
-                                                                MainAxisSize.min,
+                                                                MainAxisSize
+                                                                    .min,
                                                             children: [
                                                               const Text(
-                                                                  "Location"),
+                                                                  "District"),
                                                               _locationDropdown(),
                                                             ],
                                                           ),
@@ -273,25 +311,28 @@ class _BulkMailPageState extends State<BulkMailPage> {
                                                       ),
                                                     ),
                                                     SizedBox(
-                                                      width: _deviceWidth! * 0.01,
+                                                      width:
+                                                          _deviceWidth! * 0.01,
                                                     ),
                                                     Visibility(
-                                                      visible: isProviderSelected,
+                                                      visible:
+                                                          isProviderSelected,
                                                       child: Material(
                                                         borderRadius:
-                                                            BorderRadius.circular(
-                                                                5),
+                                                            BorderRadius
+                                                                .circular(5),
                                                         elevation: 2,
                                                         child: Container(
                                                           padding:
-                                                              const EdgeInsets.all(
-                                                                  8),
+                                                              const EdgeInsets
+                                                                  .all(8),
                                                           decoration: BoxDecoration(
                                                               color:
                                                                   backgroundColor,
                                                               borderRadius:
                                                                   BorderRadius
-                                                                      .circular(5)),
+                                                                      .circular(
+                                                                          5)),
                                                           child: Column(
                                                             mainAxisAlignment:
                                                                 MainAxisAlignment
@@ -300,10 +341,11 @@ class _BulkMailPageState extends State<BulkMailPage> {
                                                                 CrossAxisAlignment
                                                                     .start,
                                                             mainAxisSize:
-                                                                MainAxisSize.min,
+                                                                MainAxisSize
+                                                                    .min,
                                                             children: [
                                                               const Text(
-                                                                  "Location"),
+                                                                  "District"),
                                                               _locationDropdown(),
                                                             ],
                                                           ),
@@ -311,25 +353,27 @@ class _BulkMailPageState extends State<BulkMailPage> {
                                                       ),
                                                     ),
                                                     SizedBox(
-                                                      width: _deviceWidth! * 0.01,
+                                                      width:
+                                                          _deviceWidth! * 0.01,
                                                     ),
                                                     Visibility(
                                                       visible: isSeekerSelected,
                                                       child: Material(
                                                         borderRadius:
-                                                            BorderRadius.circular(
-                                                                5),
+                                                            BorderRadius
+                                                                .circular(5),
                                                         elevation: 2,
                                                         child: Container(
                                                           padding:
-                                                              const EdgeInsets.all(
-                                                                  8),
+                                                              const EdgeInsets
+                                                                  .all(8),
                                                           decoration: BoxDecoration(
                                                               color:
                                                                   backgroundColor,
                                                               borderRadius:
                                                                   BorderRadius
-                                                                      .circular(5)),
+                                                                      .circular(
+                                                                          5)),
                                                           child: Column(
                                                             mainAxisAlignment:
                                                                 MainAxisAlignment
@@ -338,10 +382,11 @@ class _BulkMailPageState extends State<BulkMailPage> {
                                                                 CrossAxisAlignment
                                                                     .start,
                                                             mainAxisSize:
-                                                                MainAxisSize.min,
+                                                                MainAxisSize
+                                                                    .min,
                                                             children: [
                                                               const Text(
-                                                                  "Industry"),
+                                                                  "Prefered Industry"),
                                                               _categoryDropdown(),
                                                             ],
                                                           ),
@@ -349,25 +394,28 @@ class _BulkMailPageState extends State<BulkMailPage> {
                                                       ),
                                                     ),
                                                     SizedBox(
-                                                      width: _deviceWidth! * 0.01,
+                                                      width:
+                                                          _deviceWidth! * 0.01,
                                                     ),
                                                     Visibility(
-                                                      visible: isProviderSelected,
+                                                      visible:
+                                                          isProviderSelected,
                                                       child: Material(
                                                         borderRadius:
-                                                            BorderRadius.circular(
-                                                                5),
+                                                            BorderRadius
+                                                                .circular(5),
                                                         elevation: 2,
                                                         child: Container(
                                                           padding:
-                                                              const EdgeInsets.all(
-                                                                  8),
+                                                              const EdgeInsets
+                                                                  .all(8),
                                                           decoration: BoxDecoration(
                                                               color:
                                                                   backgroundColor,
                                                               borderRadius:
                                                                   BorderRadius
-                                                                      .circular(5)),
+                                                                      .circular(
+                                                                          5)),
                                                           child: Column(
                                                             mainAxisAlignment:
                                                                 MainAxisAlignment
@@ -376,7 +424,8 @@ class _BulkMailPageState extends State<BulkMailPage> {
                                                                 CrossAxisAlignment
                                                                     .start,
                                                             mainAxisSize:
-                                                                MainAxisSize.min,
+                                                                MainAxisSize
+                                                                    .min,
                                                             children: [
                                                               const Text(
                                                                   "Industry"),
@@ -393,7 +442,8 @@ class _BulkMailPageState extends State<BulkMailPage> {
                                           ],
                                         ),
                                         Row(
-                                          mainAxisAlignment: MainAxisAlignment.end,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
                                           children: [
                                             Visibility(
                                               visible: isProviderSelected,
@@ -482,13 +532,11 @@ class _BulkMailPageState extends State<BulkMailPage> {
           _isSending = true;
         });
 
-        List<String> _emailList = emailList!
-            .toList(); // Convert _IdentityHashSet<String> to List<String>
+        List<String> _emailList = emailList!.toList();
         await _emailService!.sendEmail(_emailList, _subject!, _body!);
         print('All emails sent successfully.');
       } catch (error) {
         print('Error sending emails: $error');
-        // You can add additional error handling logic here, such as logging or notifying the user.
       } finally {
         setState(() {
           _isSending = false;
@@ -525,7 +573,10 @@ class _BulkMailPageState extends State<BulkMailPage> {
 
   Widget _mailForm() {
     return Padding(
-      padding: const EdgeInsets.only(left: 8, right: 8,),
+      padding: const EdgeInsets.only(
+        left: 8,
+        right: 8,
+      ),
       child: Form(
         key: _mailFormKey,
         child: Column(
@@ -599,21 +650,24 @@ class _BulkMailPageState extends State<BulkMailPage> {
     setState(() {
       _isLoading = true;
     });
-    // Fetch new emails from the service
+    // Fetch new emails from the db
     List<String>? newEmailList = await _firebaseService!.getEmails(
       _recipientTypeDropDownValue!,
       _locationDropdownValueFull!,
       _IndustryDropdownValue!,
+      _EducationDropdownValue,
     );
 
     // Ensure emailList is initialized
     emailList ??= {};
 
     // Add new emails to the emailList set if they are not null
-    for (String email in newEmailList) {
-      emailList!.add(email);
+    if (newEmailList != null) {
+      for (String email in newEmailList) {
+        emailList!.add(email);
+      }
     }
-  
+
     List<String> emailListAsList = emailList!.toList();
     print(emailListAsList);
     setState(() {
@@ -646,7 +700,6 @@ class _BulkMailPageState extends State<BulkMailPage> {
             if (value == null) {
               return "Subject is Required";
             }
-            return null;
           },
         ),
       ),
@@ -674,7 +727,6 @@ class _BulkMailPageState extends State<BulkMailPage> {
             if (value == null) {
               return "Message body is Required";
             }
-            return null;
           },
         ),
       ),
@@ -704,6 +756,8 @@ class _BulkMailPageState extends State<BulkMailPage> {
         onChanged: (_value) {
           setState(() {
             _recipientTypeDropDownValue = _value;
+            emailList = {};
+
             shouldDropdownBeVisible();
           });
         },
