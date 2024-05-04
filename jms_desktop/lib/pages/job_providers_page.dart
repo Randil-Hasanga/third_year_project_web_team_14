@@ -141,11 +141,13 @@ class _JobProvidersState extends State<JobProviders> {
                 children: [
                   Icon(
                     Icons.handshake,
-                    size: _deviceWidth! * 0.02,
+                    size: 35,
                   ),
                   SizedBox(width: _deviceWidth! * 0.005),
-                  _richTextWidget!.simpleText("Current Providers",
-                      _deviceWidth! * 0.015, Colors.black, FontWeight.w600),
+                  Expanded(
+                    child: _richTextWidget!.simpleText(
+                        "Current Providers", 25, Colors.black, FontWeight.w600),
+                  )
                 ],
               ),
             ),
@@ -218,11 +220,11 @@ class _JobProvidersState extends State<JobProviders> {
         },
         child: AnimatedContainer(
           duration: const Duration(microseconds: 300),
-          height: _deviceHeight! * 0.08,
+          height: 80,
           width: _deviceWidth! * 0.175,
           decoration: BoxDecoration(
             color: cardBackgroundColor,
-            borderRadius: BorderRadius.circular(_widthXheight! * 0.66),
+            borderRadius: BorderRadius.circular(20),
             boxShadow: const [
               BoxShadow(
                 color: Colors.black12,
@@ -236,47 +238,39 @@ class _JobProvidersState extends State<JobProviders> {
                 horizontal: _deviceWidth! * 0.001,
                 vertical: _deviceHeight! * 0.015),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               mainAxisSize: MainAxisSize.max,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Row(
-                  children: [
-                    SizedBox(
-                      width: _deviceWidth! * 0.01,
-                    ),
-                    Icon(
-                      Icons.developer_mode,
-                      size: _widthXheight! * 1,
-                    ),
-                    SizedBox(
-                      width: _deviceWidth! * 0.01,
-                    ),
-                    if (provider['company_name'] != null) ...{
-                      _richTextWidget!.simpleText(
-                          provider['company_name'], null, Colors.black, null),
-                    } else ...{
-                      _richTextWidget!.simpleText(
-                          provider['username'], null, Colors.black, null),
+                const Icon(
+                  Icons.developer_mode,
+                  size: 35,
+                ),
+                if (provider['company_name'] != null) ...{
+                  Expanded(
+                    child: _richTextWidget!.simpleText(
+                        provider['company_name'], null, Colors.black, null),
+                  ),
+                } else ...{
+                  Expanded(
+                    child: _richTextWidget!.simpleText(
+                        provider['username'], null, Colors.black, null),
+                  ),
+                },
+                if (_deviceWidth! > 800) ...{
+                  IconButton(
+                    onPressed: () async {
+                      String? uid = await _firebaseService!
+                          .getUidByEmail(provider['email']);
+                      print(uid);
+                      _showDeleteConfirmationDialog(context, uid!);
                     },
-                  ],
-                ),
-                Row(
-                  children: [
-                    IconButton(
-                      onPressed: () async {
-                        String? uid = await _firebaseService!
-                            .getUidByEmail(provider['email']);
-                        print(uid);
-                        _showDeleteConfirmationDialog(context, uid!);
-                      },
-                      icon: const Icon(Icons.delete),
-                    ),
-                    SizedBox(
-                      width: _deviceWidth! * 0.01,
-                    ),
-                  ],
-                ),
+                    icon: const Icon(Icons.delete),
+                  ),
+                  SizedBox(
+                    width: _deviceWidth! * 0.01,
+                  ),
+                }
               ],
             ),
           ),

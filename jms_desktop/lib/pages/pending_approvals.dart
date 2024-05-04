@@ -172,11 +172,13 @@ class _PendingApprovalsState extends State<PendingApprovals> {
                 children: [
                   Icon(
                     Icons.pending_actions,
-                    size: _deviceWidth! * 0.02,
+                    size: 35,
                   ),
                   SizedBox(width: _deviceWidth! * 0.005),
-                  _richTextWidget!.simpleText("Pending Approvals",
-                      _deviceWidth! * 0.015, Colors.black, FontWeight.w600),
+                  Expanded(
+                    child: _richTextWidget!.simpleText(
+                        "Pending Approvals", 25, Colors.black, FontWeight.w600),
+                  )
                 ],
               ),
             ),
@@ -247,11 +249,11 @@ class _PendingApprovalsState extends State<PendingApprovals> {
         },
         child: AnimatedContainer(
           duration: Duration(microseconds: 300),
-          height: _deviceHeight! * 0.08,
+          height: 80,
           width: _deviceWidth! * 0.175,
           decoration: BoxDecoration(
             color: cardBackgroundColor,
-            borderRadius: BorderRadius.circular(_widthXheight! * 0.66),
+            borderRadius: BorderRadius.circular(20),
             boxShadow: const [
               BoxShadow(
                 color: Colors.black12,
@@ -275,10 +277,13 @@ class _PendingApprovalsState extends State<PendingApprovals> {
                 ),
                 Icon(
                   Icons.developer_mode,
-                  size: _widthXheight! * 1,
+                  size: 35,
                 ),
                 if (provider['username'] != null) ...{
-                  Text(provider['username']),
+                  Expanded(
+                    child: _richTextWidget!.simpleText(
+                        provider['username'], null, Colors.black, null),
+                  ),
                 }
               ],
             ),

@@ -7,6 +7,7 @@ const String POSTS_COLLECTION = 'posts';
 const String PROVIDER_COLLECTION = 'provider_details';
 const String VACANCY_COLLECTION = 'vacancy';
 const String SEEKER_COLLECTION = 'profileJobSeeker';
+const String CV_COLLECTION = 'CVDetails';
 
 class FirebaseService {
   FirebaseService();
@@ -324,6 +325,7 @@ class FirebaseService {
     String reciType,
     String location,
     String industry,
+    String? education,
   ) async {
     List<String> providerEmails = [];
     bool foundProvider = false;
@@ -367,6 +369,45 @@ class FirebaseService {
             }
             foundProvider = true;
             print('Provider data: $providerData');
+            print('User data: $userData');
+          }
+        }
+
+        if (!foundProvider) {
+          print('No providers found with the chosen parameters.');
+        }
+      } else if (reciType == "Job Seekers") {
+        QuerySnapshot seekerSnapshot =
+            await FirebaseFirestore.instance.collection(CV_COLLECTION).get();
+
+        // Process the provider data
+        Map<String, Map<String, dynamic>> seekerDataMap = {};
+
+        for (var seeker in seekerSnapshot.docs) {
+          seekerDataMap[seeker.id] = seeker.data() as Map<String, dynamic>;
+        }
+
+        for (var entry in seekerDataMap.entries) {
+          String userId = entry.key;
+          var seekerData = entry.value;
+          var userData = userDataMap[userId];
+
+          if (seekerData != null &&
+              (location == "Any" || seekerData['district'] == location) &&
+              (education == "Any" ||
+                  seekerData['EduQalification'] == education) &&
+              (industry == "Any" ||
+                  seekerData['prefered_industries'].contains(industry)) &&
+              userData != null &&
+              !(userData['disabled'] ?? false)) {
+            var seeker_email = seekerData['cv_email'];
+            if (seeker_email != null &&
+                seeker_email is String &&
+                seeker_email.isNotEmpty) {
+              providerEmails.add(seeker_email);
+            }
+            foundProvider = true;
+            print('Seeker data: $seekerData');
             print('User data: $userData');
           }
         }

@@ -8,6 +8,8 @@ class RichTextWidget {
   Widget simpleText(
       String text, double? fontSize, Color color, FontWeight? fontweight) {
     return RichText(
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
       softWrap: true,
       text: TextSpan(
         text: text,
