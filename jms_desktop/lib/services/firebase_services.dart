@@ -428,18 +428,6 @@ class FirebaseService {
         // Fetch basic data
         Map<String, dynamic> providerData = doc.data();
 
-        // Check if additional data exists
-        DocumentSnapshot additionalDataSnapshot =
-            await _db.collection(VACANCY_COLLECTION).doc(doc.id).get();
-
-        if (additionalDataSnapshot.exists) {
-          // Cast the data to Map<String, dynamic>
-          Map<String, dynamic> additionalData =
-              additionalDataSnapshot.data() as Map<String, dynamic>;
-          // Merge additional data with basic data
-          providerData.addAll(additionalData);
-        }
-
         vacancyList.add(providerData);
       }
 
@@ -539,18 +527,6 @@ class FirebaseService {
         // Fetch basic data
         Map<String, dynamic> providerData = doc.data();
 
-        // Check if additional data exists
-        DocumentSnapshot additionalDataSnapshot =
-            await _db.collection(PROVIDER_COLLECTION).doc(doc.id).get();
-
-        if (additionalDataSnapshot.exists) {
-          // Cast the data to Map<String, dynamic>
-          Map<String, dynamic> additionalData =
-              additionalDataSnapshot.data() as Map<String, dynamic>;
-          // Merge additional data with basic data
-          providerData.addAll(additionalData);
-        }
-
         providerList.add(providerData);
       }
 
@@ -608,18 +584,6 @@ class FirebaseService {
           in querySnapshot.docs) {
         // Fetch basic data
         Map<String, dynamic> seekerData = doc.data();
-
-        // Check if additional data exists
-        DocumentSnapshot additionalDataSnapshot =
-            await _db.collection(USER_COLLECTION).doc(doc.id).get();
-
-        if (additionalDataSnapshot.exists) {
-          // Cast the data to Map<String, dynamic>
-          Map<String, dynamic> additionalData =
-              additionalDataSnapshot.data() as Map<String, dynamic>;
-          // Merge additional data with basic data
-          seekerData.addAll(additionalData);
-        }
 
         seekerList.add(seekerData);
       }
