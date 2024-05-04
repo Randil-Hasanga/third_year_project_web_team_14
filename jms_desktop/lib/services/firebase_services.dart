@@ -568,13 +568,15 @@ class FirebaseService {
   }
 
   // Get avalable provider count in this month
-  Future<int> getMonthlyProviderCount() async {
+  Future<int> getMonthlyProviderCount(int index) async {
+    List<DateTime> monthList = _generateMonthList();
+    DateTime startDate = monthList[index];
+    DateTime endDate = _getMonthEndDate(startDate);
     try {
       QuerySnapshot<Map<String, dynamic>>? _querySnapshot = await _db
-          .collection(USER_COLLECTION)
-          .where('type', isEqualTo: 'provider')
-          .where('pending', isEqualTo: false)
-          .where('disabled', isEqualTo: false)
+          .collection(PROVIDER_COLLECTION)
+          .where('created_date', isGreaterThanOrEqualTo: startDate)
+          .where('created_date', isLessThanOrEqualTo: endDate)
           .get();
 
       return _querySnapshot.docs.length;
@@ -584,14 +586,20 @@ class FirebaseService {
     }
   }
 
-  // seeker report
+  // Seeker report
   //get Seeker detailes in DB , use this details in seeker report
-  Future<List<Map<String, dynamic>>?> getSeekerReport() async {
+  Future<List<Map<String, dynamic>>?> getSeekerReport(int index) async {
+    List<DateTime> monthList = _generateMonthList();
+    DateTime startDate = monthList[index];
+    DateTime endDate = _getMonthEndDate(startDate);
     try {
       QuerySnapshot<Map<String, dynamic>>? querySnapshot = await _db
-          .collection(SEEKER_COLLECTION)
-          // .where('issue_date', isGreaterThanOrEqualTo: startDate)
-          // .where('issue_date', isLessThanOrEqualTo: endDate)
+          .collection(USER_COLLECTION)
+          .where('type', isEqualTo: 'seeker')
+          .where('registered_date', isGreaterThanOrEqualTo: startDate)
+          .where('registered_date', isLessThanOrEqualTo: endDate)
+          // .where('pending', isEqualTo: false)
+          // .where('disabled', isEqualTo: false)
           .get();
 
       List<Map<String, dynamic>> seekerList = [];
@@ -603,7 +611,7 @@ class FirebaseService {
 
         // Check if additional data exists
         DocumentSnapshot additionalDataSnapshot =
-            await _db.collection(SEEKER_COLLECTION).doc(doc.id).get();
+            await _db.collection(USER_COLLECTION).doc(doc.id).get();
 
         if (additionalDataSnapshot.exists) {
           // Cast the data to Map<String, dynamic>
@@ -617,7 +625,7 @@ class FirebaseService {
       }
 
       if (seekerList.isNotEmpty) {
-        // print(providerList);
+        // print(seekerList);
         return seekerList;
       } else {
         print("Empty");
@@ -630,18 +638,24 @@ class FirebaseService {
   }
 
   //count the seeker in this month
-  Future<int> getMonthlySeekerCount() async {
+  Future<int> getMonthlySeekerCount(int index) async {
+    List<DateTime> monthList = _generateMonthList();
+    DateTime startDate = monthList[index];
+    DateTime endDate = _getMonthEndDate(startDate);
     try {
-      QuerySnapshot<Map<String, dynamic>>? _querySnapshot = await _db
+      QuerySnapshot<Map<String, dynamic>>? querySnapshot = await _db
           .collection(USER_COLLECTION)
           .where('type', isEqualTo: 'seeker')
-          .where('pending', isEqualTo: false)
-          .where('disabled', isEqualTo: false)
+          .where('registered_date', isGreaterThanOrEqualTo: startDate)
+          .where('registered_date', isLessThanOrEqualTo: endDate)
+          // .where('pending', isEqualTo: false)
+          // .where('disabled', isEqualTo: false)
           .get();
 
-      return _querySnapshot.docs.length;
+      // print(querySnapshot.docs.length);
+      return querySnapshot.docs.length;
     } catch (e) {
-      print("Error getting provider count : $e");
+      print("Error getting seeker count : $e");
       return 0;
     }
   }

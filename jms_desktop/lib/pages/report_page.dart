@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -7,7 +5,6 @@ import 'package:get_it/get_it.dart';
 import 'package:jms_desktop/const/constants.dart';
 import 'package:jms_desktop/services/firebase_services.dart';
 import 'package:jms_desktop/widgets/richText.dart';
-import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
@@ -25,7 +22,7 @@ class Report extends StatefulWidget {
 class _ReportState extends State<Report> {
   bool _isLoading = false;
   bool _isSending = false;
-  List<Map<String, dynamic>>? vacancies;
+  // List<Map<String, dynamic>>? vacancies;
   late final List<String> _monthList = _generateMonthList();
 
   late String _providerMonth = _genarateFirstMonth();
@@ -41,6 +38,7 @@ class _ReportState extends State<Report> {
     return firstMonth;
   }
 
+  //generate month list
   List<String> _generateMonthList() {
     DateTime currentDate = DateTime.now();
     List<String> monthList = [];
@@ -62,10 +60,11 @@ class _ReportState extends State<Report> {
     ];
 
     for (int i = 0; i < 12; i++) {
-      // Get a DateTime object for the past 12 months
+      // Get a Year and Month for the past 12 months
       DateTime pastDate = DateTime(
         currentDate.year,
-        currentDate.month - i,
+        currentDate.month -
+            i, //one month will be deducted from the relevent month
       );
 
       // Adjust year and month if it goes out of bounds
@@ -148,6 +147,7 @@ class _ReportState extends State<Report> {
     );
   }
 
+  //
   pw.Widget _createSeekerSummaryTable(Map<String, String> data) {
     return pw.Column(
       crossAxisAlignment:
@@ -346,7 +346,6 @@ class _ReportState extends State<Report> {
               e,
               style: const TextStyle(
                 color: Colors.black,
-                //fontSize: _widthXheight! * 0.7,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -362,7 +361,6 @@ class _ReportState extends State<Report> {
           setState(() {
             _providerMonth = _value!;
           });
-          //_getDataFromDB();
         },
         dropdownColor: backgroundColor3,
         borderRadius: BorderRadius.circular(10),
@@ -408,15 +406,16 @@ class _ReportState extends State<Report> {
 
   void _generateProviderPdf() async {
     final pdf = pw.Document();
-    int providerCount = await _firebaseService!.getMonthlyProviderCount();
+    int index = _monthList.indexOf(_providerMonth);
+    int providerCount = await _firebaseService!.getMonthlyProviderCount(index);
     final data_ = {
-      'MONTH': _providerMonth,
+      'DISTRICT: MATARA'
+          'MONTH': _providerMonth,
       'TOTAL COMPANY REGISTRATION': providerCount.toString(),
     };
 
     //get provider list from DB
     // get String month list index,
-    int index = _monthList.indexOf(_providerMonth);
     List<Map<String, String>>? data;
     List<Map<String, dynamic>>? _data =
         await _firebaseService!.getJobProviderReport(index);
@@ -429,9 +428,16 @@ class _ReportState extends State<Report> {
             children: [
               // Title at the top
               pw.Text(
-                "Provider List",
+                "DISTRICT RAKIYA KENDRAYA - MONTHLY PROGRESS REPORT",
                 style: pw.TextStyle(
-                  fontSize: 18,
+                  fontSize: 15,
+                  fontWeight: pw.FontWeight.bold,
+                ),
+              ),
+              pw.Text(
+                "COMPANY DETAILS",
+                style: pw.TextStyle(
+                  fontSize: 15,
                   fontWeight: pw.FontWeight.bold,
                 ),
               ),
@@ -484,6 +490,46 @@ class _ReportState extends State<Report> {
     }).toList();
   }
 
+  // Seeker reprot*********************************
+
+  Widget _seekerMonthList() {
+    List<DropdownMenuItem<String>> _items = _monthList
+        .map(
+          (e) => DropdownMenuItem(
+            value: e,
+            child: Text(
+              e,
+              style: const TextStyle(
+                color: Colors.black,
+                //fontSize: _widthXheight! * 0.7,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        )
+        .toList();
+
+    return Center(
+      child: DropdownButton(
+        value: _seekerMonth,
+        items: _items,
+        onChanged: (_value) {
+          setState(() {
+            _seekerMonth = _value!;
+          });
+        },
+        dropdownColor: backgroundColor3,
+        borderRadius: BorderRadius.circular(10),
+        iconSize: 20,
+        icon: const Icon(
+          Icons.arrow_drop_down_sharp,
+          color: Colors.black,
+        ),
+        underline: Container(),
+      ),
+    );
+  }
+
   Widget _seekerGenerateButton() {
     return Stack(
       children: [
@@ -516,20 +562,59 @@ class _ReportState extends State<Report> {
 
   void _generateSeekerPdf() async {
     final pdf = pw.Document();
-    //get provider list from DB
+    int index = _monthList.indexOf(_seekerMonth);
+    int seekerCount = await _firebaseService!.getMonthlySeekerCount(index);
+    final data_ = {
+      'DISTRICT: MATARA'
+          'MONTH': _seekerMonth,
+      'TOTAL SEEKERS REGISTRATION': seekerCount.toString(), //modify this after
+    };
+
     List<Map<String, String>>? data;
-
-    //data = (await _firebaseService!.getJobProviderReport())!.cast<String>();
-
     List<Map<String, dynamic>>? _data =
-        await _firebaseService!.getSeekerReport();
-
+        await _firebaseService!.getSeekerReport(index);
     data = convertToListOfStringMaps(_data);
     pdf.addPage(
       pw.Page(
         build: (pw.Context context) {
-          return pw.Center(
-            child: _createSeekerTable(data!),
+          return pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.center,
+            children: [
+              // Title at the top
+              pw.Text(
+                "DISTRICT RAKIYA KENDRAYA - MONTHLY PROGRESS REPORT",
+                style: pw.TextStyle(
+                  fontSize: 15,
+                  fontWeight: pw.FontWeight.bold,
+                ),
+              ),
+              pw.Text(
+                "SEEKER DETAILS AND VACANCY DETAILS",
+                style: pw.TextStyle(
+                  fontSize: 15,
+                  fontWeight: pw.FontWeight.bold,
+                ),
+              ),
+              // Spacer to create some space between the title and the content
+              pw.SizedBox(height: 20),
+              if (data == null ||
+                  data.isEmpty) // Check if data is empty or null
+                pw.Text(
+                  "No data available.",
+                  style: pw.TextStyle(
+                    fontSize: 16,
+                    fontWeight: pw.FontWeight.normal,
+                  ),
+                )
+              else ...[
+                // If data is not empty, render the data tables
+                _createSeekerSummaryTable(
+                    data_), // Your function to create summary
+                pw.SizedBox(height: 20),
+                _createSeekerTable(
+                    data), // Your function to create the detailed table
+              ],
+            ],
           );
         },
       ),
@@ -537,46 +622,7 @@ class _ReportState extends State<Report> {
 
     await Printing.sharePdf(
       bytes: await pdf.save(),
-      filename: 'seeker.pdf',
-    );
-  }
-
-  Widget _seekerMonthList() {
-    List<DropdownMenuItem<String>> _items = _monthList
-        .map(
-          (e) => DropdownMenuItem(
-            value: e,
-            child: Text(
-              e,
-              style: const TextStyle(
-                color: Colors.black,
-                //fontSize: _widthXheight! * 0.7,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        )
-        .toList();
-
-    return Center(
-      child: DropdownButton(
-        value: _seekerMonth,
-        items: _items,
-        onChanged: (_value) {
-          setState(() {
-            _seekerMonth = _value!;
-          });
-          //_getDataFromDB();
-        },
-        dropdownColor: backgroundColor3,
-        borderRadius: BorderRadius.circular(10),
-        iconSize: 20,
-        icon: const Icon(
-          Icons.arrow_drop_down_sharp,
-          color: Colors.black,
-        ),
-        underline: Container(),
-      ),
+      filename: 'Seeker_$_seekerMonth.pdf',
     );
   }
 }
