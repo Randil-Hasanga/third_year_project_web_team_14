@@ -611,12 +611,9 @@ class FirebaseService {
     DateTime endDate = _getMonthEndDate(startDate);
     try {
       QuerySnapshot<Map<String, dynamic>>? querySnapshot = await _db
-          .collection(USER_COLLECTION)
-          .where('type', isEqualTo: 'seeker')
+          .collection(SEEKER_COLLECTION)
           .where('registered_date', isGreaterThanOrEqualTo: startDate)
           .where('registered_date', isLessThanOrEqualTo: endDate)
-          // .where('pending', isEqualTo: false)
-          // .where('disabled', isEqualTo: false)
           .get();
 
       List<Map<String, dynamic>> seekerList = [];
