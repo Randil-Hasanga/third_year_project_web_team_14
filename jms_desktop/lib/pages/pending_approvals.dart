@@ -5,12 +5,16 @@ import 'package:jms_desktop/const/constants.dart';
 import 'package:jms_desktop/services/firebase_services.dart';
 import 'package:jms_desktop/widgets/Search_bar_widget.dart';
 import 'package:jms_desktop/widgets/buttons.dart';
+import 'package:jms_desktop/widgets/downloadFile.dart';
 import 'package:jms_desktop/widgets/richText.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 double? _deviceWidth, _deviceHeight, _widthXheight;
 RichTextWidget? _richTextWidget;
 ButtonWidgets? _buttonWidgets;
 FirebaseService? _firebaseService;
+
+DownloadFile _downloadFile = DownloadFile();
 
 class PendingApprovals extends StatefulWidget {
   @override
@@ -462,10 +466,56 @@ class _SelectedApprovalDetailsWidgetState
                     if (widget.provider!['company_name'] != null) ...{
                       Expanded(
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             if (widget.provider!['logo'] != null) ...{
-                              _logo(),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  _logo(),
+                                ],
+                              )
                             },
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Container(
+                              padding: const EdgeInsets.all(16.0),
+                              decoration: BoxDecoration(
+                                color: cardBackgroundColor,
+                                borderRadius: BorderRadius.circular(15),
+                                boxShadow: const [
+                                  BoxShadow(
+                                    color: Colors.black12,
+                                    blurRadius: 5,
+                                    offset: Offset(0, 0),
+                                  ),
+                                ],
+                              ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  _richTextWidget!.simpleText(
+                                      "Business Registration Document",
+                                      18,
+                                      const Color.fromARGB(255, 255, 0, 0),
+                                      FontWeight.w600),
+                                  _buttonWidgets!.simpleElevatedButtonWidget(
+                                    onPressed: () {
+                                      // _downloadFile.launchPDF(
+                                      //     widget.provider!['businessRegDoc']);
+                                      // _launchPDF(
+                                      //     widget.provider!['businessRegDoc']);
+                                      _downloadFile.downloadFile(
+                                          widget.provider!['businessRegDoc']);
+                                    },
+                                    buttonText: "Show Document",
+                                    style: null,
+                                  )
+                                ],
+                              ),
+                            ),
                             SizedBox(height: _deviceHeight! * 0.02),
                             Container(
                               padding: const EdgeInsets.all(8.0),
