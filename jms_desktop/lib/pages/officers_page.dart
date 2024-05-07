@@ -116,13 +116,13 @@ class _OfficersPageStete extends State<OfficersPage> {
                 children: [
                   Icon(
                     Icons.work,
-                    size: _widthXheight! * 1,
+                    size: _widthXheight! * 1.5,
                   ),
                   Text(
-                    "Current Officer  ",
+                    "Current Officer    ",
                     style: TextStyle(
                       color: Colors.black,
-                      fontSize: _widthXheight! * 1.0,
+                      fontSize: _widthXheight! * 1.3,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -133,9 +133,10 @@ class _OfficersPageStete extends State<OfficersPage> {
                           builder: (context) => CreateOfficerPage()),
                     ),
                     child: const Text(
-                      "Add Officer",
+                      "Add",
                       style: TextStyle(
                         color: Color.fromARGB(255, 47, 146, 50),
+                        fontSize: 20.0,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -331,7 +332,8 @@ class SelectedOfficerDetailsWidget extends StatelessWidget {
     return Container(
       margin: EdgeInsets.symmetric(
           horizontal: _deviceWidth! * 0.01, vertical: _deviceHeight! * 0.02),
-      padding: EdgeInsets.symmetric(horizontal: _deviceWidth! * 0.01),
+      padding: EdgeInsets.symmetric(
+          horizontal: _deviceWidth! * 0.05, vertical: _deviceHeight! * 0.04),
       decoration: BoxDecoration(
         color: cardBackgroundColorLayer2,
         borderRadius: BorderRadius.circular(_widthXheight! * 1),
@@ -355,9 +357,80 @@ class SelectedOfficerDetailsWidget extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           if (officer != null) ...{
-            Text("Name: ${officer!['username']}"),
-            Text("Email: ${officer!['email']}"),
-            // Add more details as needed
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Expanded(
+                  child: Column(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8.0),
+                        decoration: BoxDecoration(
+                          color: cardBackgroundColor,
+                          borderRadius: BorderRadius.circular(15),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Colors.black12,
+                              blurRadius: 5,
+                              offset: Offset(0, 0),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            _richTextWidget!.simpleText("Basic details", 20,
+                                Colors.black, FontWeight.w600),
+                            const Divider(),
+                            _richTextWidget!.KeyValuePairrichText(
+                              "User Name:",
+                              "${officer!['username']}",
+                              18,
+                            ),
+                            const Divider(),
+                            _richTextWidget!.KeyValuePairrichText(
+                              "Registration No:",
+                              "${officer!['reg_no']}",
+                              18,
+                            ),
+                            const Divider(),
+                            _richTextWidget!.KeyValuePairrichText(
+                              "Gender:",
+                              "${officer!['gender']}",
+                              18,
+                            ),
+                            const Divider(),
+                            _richTextWidget!.KeyValuePairrichText(
+                              "Position:",
+                              "${officer!['position']}",
+                              18,
+                            ),
+                            const Divider(),
+                            _richTextWidget!.KeyValuePairrichText(
+                              "Contact No:",
+                              "${officer!['contact']}",
+                              18,
+                            ),
+                            const Divider(),
+                            _richTextWidget!.KeyValuePairrichText(
+                              "Email:",
+                              "${officer!['email']}",
+                              18,
+                            ),
+
+                            // Add more details as needed
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           }
         ],
       ),

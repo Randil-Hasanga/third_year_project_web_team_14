@@ -197,6 +197,7 @@ class FirebaseService {
     QuerySnapshot<Map<String, dynamic>>? _querySnapshot = await _db
         .collection(USER_COLLECTION)
         .where('type', isEqualTo: 'officer')
+        .where('disabled', isEqualTo: false)
         .get();
 
     List<Map<String, dynamic>> officer = [];

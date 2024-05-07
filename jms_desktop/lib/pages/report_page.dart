@@ -589,7 +589,7 @@ class _ReportState extends State<Report> {
                 ),
               ),
               pw.Text(
-                "SEEKER DETAILS AND VACANCY DETAILS",
+                "SEEKER DETAILS AND SELECTED COMPANY DETAILS",
                 style: pw.TextStyle(
                   fontSize: 15,
                   fontWeight: pw.FontWeight.bold,
