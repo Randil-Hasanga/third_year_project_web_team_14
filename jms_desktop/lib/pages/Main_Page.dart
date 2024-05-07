@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:jms_desktop/auth/auth_guard.dart';
 import 'package:jms_desktop/const/constants.dart';
 import 'package:jms_desktop/pages/BulkMailPages/bulk_mail.dart';
+import 'package:jms_desktop/pages/create_officer_page.dart';
 import 'package:jms_desktop/pages/dashboard.dart';
 import 'package:jms_desktop/pages/job_providers_page.dart';
 import 'package:jms_desktop/pages/login_screen.dart';
