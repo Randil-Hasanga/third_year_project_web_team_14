@@ -159,12 +159,12 @@ class _CreateOfficerPageState extends State<CreateOfficerPage> {
             key: _createOfficerFormKey,
             child: Column(
               children: [
-                SizedBox(
+                const SizedBox(
                   height: 12.0,
                 ),
                 _richTextWidget!.simpleText(
                     "Create New Officer", 20, Colors.black, FontWeight.w600),
-                SizedBox(
+                const SizedBox(
                   height: 16.0,
                 ),
                 // User name field
@@ -283,7 +283,7 @@ class _CreateOfficerPageState extends State<CreateOfficerPage> {
                   height: 16.0,
                 ),
                 //select gender field
-                Text("Select Gender:"),
+                const Text("Select Gender:"),
                 Row(
                   children: [
                     Radio<String>(
@@ -443,7 +443,7 @@ class _CreateOfficerPageState extends State<CreateOfficerPage> {
                         ),
                       ),
                     ),
-                    SizedBox(width: 16.0), // Add spacing between buttons
+                    const SizedBox(width: 16.0), // Add spacing between buttons
                     Expanded(
                       child: SizedBox(
                         height: 40,
@@ -459,7 +459,7 @@ class _CreateOfficerPageState extends State<CreateOfficerPage> {
                     ),
                   ],
                 ),
-                SizedBox(height: 18.0),
+                const SizedBox(height: 18.0),
               ],
             ),
           ),

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jms_desktop/const/constants.dart';
@@ -413,6 +414,11 @@ class _ReportState extends State<Report> {
           'MONTH': _providerMonth,
       'TOTAL COMPANY REGISTRATION': providerCount.toString(),
     };
+    // Load the logo image from assets
+    final logoBytes = await rootBundle.load('assets/images/logo.jpg');
+    final logoImage = pw.MemoryImage(
+      logoBytes.buffer.asUint8List(),
+    );
 
     //get provider list from DB
     // get String month list index,
@@ -426,6 +432,9 @@ class _ReportState extends State<Report> {
           return pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.center,
             children: [
+              // Add the logo at the top
+              pw.Image(logoImage, height: 50, width: 50),
+              pw.SizedBox(height: 15.0),
               // Title at the top
               pw.Text(
                 "DISTRICT RAKIYA KENDRAYA - MONTHLY PROGRESS REPORT",
@@ -570,6 +579,12 @@ class _ReportState extends State<Report> {
       'TOTAL SEEKERS REGISTRATION': seekerCount.toString(), //modify this after
     };
 
+    // Load the logo image from assets
+    final logoBytes = await rootBundle.load('assets/images/logo.jpg');
+    final logoImage = pw.MemoryImage(
+      logoBytes.buffer.asUint8List(),
+    );
+
     List<Map<String, String>>? data;
     List<Map<String, dynamic>>? _data =
         await _firebaseService!.getSeekerReport(index);
@@ -580,6 +595,9 @@ class _ReportState extends State<Report> {
           return pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.center,
             children: [
+              // Add the logo at the top
+              pw.Image(logoImage, height: 50, width: 50),
+              pw.SizedBox(height: 15.0),
               // Title at the top
               pw.Text(
                 "DISTRICT RAKIYA KENDRAYA - MONTHLY PROGRESS REPORT",
