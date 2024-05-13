@@ -173,28 +173,32 @@ class _BulkMailPageState extends State<BulkMailPage> {
                                   children: [
                                     const Text("To : "),
                                     _emailChips(),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      mainAxisSize: MainAxisSize.max,
-                                      children: [
-                                        _buttonWidgets!
-                                            .simpleElevatedButtonWidget(
-                                          onPressed: () {
-                                            setState(() {
-                                              emailList = {};
-                                            });
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: Color.fromARGB(
-                                                255, 134, 145, 135),
+                                    if (emailList != null &&
+                                        emailList!.isNotEmpty) ...{
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        mainAxisSize: MainAxisSize.max,
+                                        children: [
+                                          _buttonWidgets!
+                                              .simpleElevatedButtonWidget(
+                                            onPressed: () {
+                                              setState(() {
+                                                emailList = {};
+                                              });
+                                            },
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: Color.fromARGB(
+                                                  255, 134, 145, 135),
+                                            ),
+                                            buttonText: "Clear",
                                           ),
-                                          buttonText: "Clear",
-                                        ),
-                                        SizedBox(
-                                          width: 20,
-                                        ),
-                                      ],
-                                    ),
+                                          SizedBox(
+                                            width: 20,
+                                          ),
+                                        ],
+                                      ),
+                                    },
                                     const Divider(),
                                     Column(
                                       mainAxisAlignment:
@@ -461,6 +465,7 @@ class _BulkMailPageState extends State<BulkMailPage> {
                                 ),
                               ),
                               Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
                                   _sendButton(),
                                 ],
@@ -496,7 +501,7 @@ class _BulkMailPageState extends State<BulkMailPage> {
               children: [
                 Text(
                   "Send Email",
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                 ),
                 SizedBox(
                   width: 10,
