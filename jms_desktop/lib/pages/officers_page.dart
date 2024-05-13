@@ -116,13 +116,16 @@ class _OfficersPageStete extends State<OfficersPage> {
                 children: [
                   Icon(
                     Icons.work,
-                    size: _widthXheight! * 1.5,
+                    size: 35,
+                  ),
+                  SizedBox(
+                    width: 10,
                   ),
                   Text(
-                    "Current Officer    ",
+                    "Current Officer",
                     style: TextStyle(
                       color: Colors.black,
-                      fontSize: _widthXheight! * 1.3,
+                      fontSize: 25,
                       fontWeight: FontWeight.w600,
                     ),
                   ),

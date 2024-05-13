@@ -97,7 +97,7 @@ class MyApp extends StatelessWidget {
       },
 
       // ******************* auth guard file eke isAuthenticated = true karala inna weda krnna kalin *******************
-      initialRoute: '/provider',
+      initialRoute: '/login',
       onGenerateRoute: (RouteSettings settings) {
         switch (settings.name) {
           case '/':
