@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -191,6 +193,19 @@ class FirebaseService {
     await _db.collection(USER_COLLECTION).doc(uid).update({
       'disabled': true,
     });
+
+    QuerySnapshot querySnapshot = await _db
+        .collection(VACANCY_COLLECTION)
+        .where('uid', isEqualTo: uid)
+        .get();
+
+    for (DocumentSnapshot doc in querySnapshot.docs) {
+      // Update each document
+      await _db
+          .collection(VACANCY_COLLECTION)
+          .doc(doc.id)
+          .update({'disabled': true});
+    }
   }
 
   Future<List<Map<String, dynamic>>?> getOfficerData() async {
@@ -225,6 +240,7 @@ class FirebaseService {
 
   Future<List<Map<String, dynamic>>?> getDeletedUsersData(
       String? dropDownValue) async {
+    List<Map<String, dynamic>> jobProviders = [];
     QuerySnapshot<Map<String, dynamic>>? _querySnapshot;
     if (dropDownValue == 'Job Providers') {
       _querySnapshot = await _db
@@ -232,28 +248,81 @@ class FirebaseService {
           .where('type', isEqualTo: 'provider')
           .where('disabled', isEqualTo: true)
           .get();
+
+      for (QueryDocumentSnapshot<Map<String, dynamic>> doc
+          in _querySnapshot.docs) {
+        // Fetch basic data
+        Map<String, dynamic> providerData = doc.data();
+
+        // Check if additional data exists
+        DocumentSnapshot additionalDataSnapshot =
+            await _db.collection(PROVIDER_COLLECTION).doc(doc.id).get();
+
+        if (additionalDataSnapshot.exists) {
+          // Cast the data to Map<String, dynamic>
+          Map<String, dynamic> additionalData =
+              additionalDataSnapshot.data() as Map<String, dynamic>;
+          // Merge additional data with basic data
+          providerData.addAll(additionalData);
+        }
+
+        jobProviders.add(providerData);
+      }
     } else if (dropDownValue == 'Job Seekers') {
       _querySnapshot = await _db
           .collection(USER_COLLECTION)
           .where('type', isEqualTo: 'seeker')
           .where('disabled', isEqualTo: true)
           .get();
+
+      for (QueryDocumentSnapshot<Map<String, dynamic>> doc
+          in _querySnapshot.docs) {
+        // Fetch basic data
+        Map<String, dynamic> providerData = doc.data();
+
+        // Check if additional data exists
+        DocumentSnapshot additionalDataSnapshot =
+            await _db.collection(PROVIDER_COLLECTION).doc(doc.id).get();
+
+        if (additionalDataSnapshot.exists) {
+          // Cast the data to Map<String, dynamic>
+          Map<String, dynamic> additionalData =
+              additionalDataSnapshot.data() as Map<String, dynamic>;
+          // Merge additional data with basic data
+          providerData.addAll(additionalData);
+        }
+
+        jobProviders.add(providerData);
+      }
     } else if (dropDownValue == 'All') {
       _querySnapshot = await _db
           .collection(USER_COLLECTION)
           .where('disabled', isEqualTo: true)
           .get();
+
+      for (QueryDocumentSnapshot<Map<String, dynamic>> doc
+          in _querySnapshot.docs) {
+        // Fetch basic data
+        Map<String, dynamic> providerData = doc.data();
+
+        // Check if additional data exists
+        DocumentSnapshot additionalDataSnapshot =
+            await _db.collection(PROVIDER_COLLECTION).doc(doc.id).get();
+
+        if (additionalDataSnapshot.exists) {
+          // Cast the data to Map<String, dynamic>
+          Map<String, dynamic> additionalData =
+              additionalDataSnapshot.data() as Map<String, dynamic>;
+          // Merge additional data with basic data
+          providerData.addAll(additionalData);
+        }
+
+        jobProviders.add(providerData);
+      }
     }
 
-    List<Map<String, dynamic>> users = [];
-
-    for (QueryDocumentSnapshot<Map<String, dynamic>> doc
-        in _querySnapshot!.docs) {
-      users.add(doc.data());
-    }
-
-    if (users.isNotEmpty) {
-      return users;
+    if (jobProviders.isNotEmpty) {
+      return jobProviders;
     } else {
       return null;
     }
@@ -441,7 +510,7 @@ class FirebaseService {
     }
   }
 
-  Future<void> approveUser(String userId) async {
+  Future<void> approveProvider(String userId) async {
     try {
       await _db.collection('users').doc(userId).update({'pending': false});
       print('User approved successfully.');
@@ -759,6 +828,32 @@ class FirebaseService {
     } catch (e) {
       print("Error getting seeker notification : $e");
       return null;
+    }
+  }
+
+  Future<bool> restoreUser(String uid) async {
+    try {
+      await _db.collection(USER_COLLECTION).doc(uid).update({
+        'disabled': false,
+      });
+
+      QuerySnapshot querySnapshot = await _db
+          .collection(VACANCY_COLLECTION)
+          .where('uid', isEqualTo: uid)
+          .get();
+
+      for (DocumentSnapshot doc in querySnapshot.docs) {
+        // Update each document
+        await _db
+            .collection(VACANCY_COLLECTION)
+            .doc(doc.id)
+            .update({'disabled': false});
+      }
+
+      return true;
+    } catch (e) {
+      print("Error restoring user $e");
+      return false;
     }
   }
 }

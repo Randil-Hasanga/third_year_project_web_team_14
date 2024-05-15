@@ -50,9 +50,12 @@ class _OfficersPageStete extends State<OfficersPage> {
 
   void _loadOfficer() async {
     List<Map<String, dynamic>>? data = await _firebaseService!.getOfficerData();
-    setState(() {
-      officer = data;
-    });
+    if (mounted) {
+      setState(() {
+        officer = data;
+      });
+    }
+
     print(data);
   }
 
