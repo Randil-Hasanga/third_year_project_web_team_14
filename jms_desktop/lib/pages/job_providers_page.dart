@@ -289,49 +289,6 @@ class _JobProvidersState extends State<JobProviders> {
     );
   }
 
-  // void _showDeleteConfirmationDialog(BuildContext context, String uid) {
-  //   showDialog(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return AlertDialog(
-  //         title: Row(
-  //           children: [
-  //             const Icon(
-  //               Icons.warning,
-  //               color: Colors.red,
-  //             ),
-  //             const SizedBox(width: 8),
-  //             _richTextWidget!
-  //                 .simpleText("Delete Job Provider", null, Colors.red, null),
-  //           ],
-  //         ),
-  //         content: _richTextWidget!.simpleText(
-  //             "Are you sure you want to delete this job provider?",
-  //             null,
-  //             Colors.black87,
-  //             null),
-  //         actions: [
-  //           TextButton(
-  //             onPressed: () async {
-  //               await _firebaseService!.deleteUser(uid);
-  //               _loadJobProviders();
-  //               Navigator.pop(context);
-  //             },
-  //             child: _richTextWidget!.simpleText("Yes", null, Colors.red, null),
-  //           ),
-  //           TextButton(
-  //             onPressed: () {
-  //               Navigator.pop(context);
-  //             },
-  //             child:
-  //                 _richTextWidget!.simpleText("No", null, Colors.black, null),
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
-
   void _showDeleteConfirmationDialog(BuildContext context, String uid) {
     showDialog(
       barrierDismissible: false, // Prevent dismissing when clicking outside
