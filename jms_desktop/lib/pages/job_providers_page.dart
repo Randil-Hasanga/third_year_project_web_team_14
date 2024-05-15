@@ -246,9 +246,15 @@ class _JobProvidersState extends State<JobProviders> {
               mainAxisSize: MainAxisSize.max,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                SizedBox(
+                  width: 10,
+                ),
                 const Icon(
-                  Icons.developer_mode,
-                  size: 35,
+                  Icons.handshake,
+                  size: 25,
+                ),
+                SizedBox(
+                  width: 10,
                 ),
                 if (provider['company_name'] != null) ...{
                   Expanded(
@@ -283,44 +289,116 @@ class _JobProvidersState extends State<JobProviders> {
     );
   }
 
+  // void _showDeleteConfirmationDialog(BuildContext context, String uid) {
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return AlertDialog(
+  //         title: Row(
+  //           children: [
+  //             const Icon(
+  //               Icons.warning,
+  //               color: Colors.red,
+  //             ),
+  //             const SizedBox(width: 8),
+  //             _richTextWidget!
+  //                 .simpleText("Delete Job Provider", null, Colors.red, null),
+  //           ],
+  //         ),
+  //         content: _richTextWidget!.simpleText(
+  //             "Are you sure you want to delete this job provider?",
+  //             null,
+  //             Colors.black87,
+  //             null),
+  //         actions: [
+  //           TextButton(
+  //             onPressed: () async {
+  //               await _firebaseService!.deleteUser(uid);
+  //               _loadJobProviders();
+  //               Navigator.pop(context);
+  //             },
+  //             child: _richTextWidget!.simpleText("Yes", null, Colors.red, null),
+  //           ),
+  //           TextButton(
+  //             onPressed: () {
+  //               Navigator.pop(context);
+  //             },
+  //             child:
+  //                 _richTextWidget!.simpleText("No", null, Colors.black, null),
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
+
   void _showDeleteConfirmationDialog(BuildContext context, String uid) {
     showDialog(
+      barrierDismissible: false, // Prevent dismissing when clicking outside
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Row(
-            children: [
-              const Icon(
-                Icons.warning,
-                color: Colors.red,
+        bool _deleting = false; // State variable to track deletion process
+
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              contentPadding: EdgeInsets.symmetric(
+                vertical: _deleting
+                    ? 10
+                    : 20, // Adjust content padding based on _deleting state
               ),
-              const SizedBox(width: 8),
-              _richTextWidget!
-                  .simpleText("Delete Job Provider", null, Colors.red, null),
-            ],
-          ),
-          content: _richTextWidget!.simpleText(
-              "Are you sure you want to delete this job provider?",
-              null,
-              Colors.black87,
-              null),
-          actions: [
-            TextButton(
-              onPressed: () async {
-                await _firebaseService!.deleteUser(uid);
-                _loadJobProviders();
-                Navigator.pop(context);
-              },
-              child: _richTextWidget!.simpleText("Yes", null, Colors.red, null),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child:
-                  _richTextWidget!.simpleText("No", null, Colors.black, null),
-            ),
-          ],
+              title: Row(
+                children: [
+                  const Icon(
+                    Icons.warning,
+                    color: Colors.red,
+                  ),
+                  const SizedBox(width: 8),
+                  _richTextWidget!.simpleText(
+                      "Delete Job Provider", null, Colors.red, null),
+                ],
+              ),
+              content: _deleting
+                  ? SizedBox(
+                      height: 50,
+                      child: Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    )
+                  : Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: _richTextWidget!.simpleText(
+                          "Are you sure you want to delete this job provider?",
+                          null,
+                          Colors.black87,
+                          null),
+                    ),
+              actions: _deleting
+                  ? []
+                  : [
+                      TextButton(
+                        onPressed: () async {
+                          setState(() {
+                            _deleting = true; // Start deletion process
+                          });
+                          await _firebaseService!.deleteUser(uid);
+
+                          _loadJobProviders();
+                          Navigator.pop(context);
+                        },
+                        child: _richTextWidget!
+                            .simpleText("Yes", null, Colors.red, null),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: _richTextWidget!
+                            .simpleText("No", null, Colors.black, null),
+                      ),
+                    ],
+            );
+          },
         );
       },
     );

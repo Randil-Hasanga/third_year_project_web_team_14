@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jms_desktop/const/constants.dart';
 import 'package:jms_desktop/services/firebase_services.dart';
+import 'package:jms_desktop/widgets/richText.dart';
 
 class RecycleBin extends StatefulWidget {
   @override
@@ -12,6 +13,7 @@ class RecycleBin extends StatefulWidget {
 }
 
 class _RecycleBinState extends State<RecycleBin> {
+  RichTextWidget _richTextWidget = RichTextWidget();
   double? _deviceWidth, _deviceHeight, _widthXheight;
   ScrollController _scrollControllerLeft = ScrollController();
   ScrollController _scrollController2 = ScrollController();
@@ -284,20 +286,25 @@ class _RecycleBinState extends State<RecycleBin> {
                 horizontal: _deviceWidth! * 0.001,
                 vertical: _deviceHeight! * 0.015),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               mainAxisSize: MainAxisSize.max,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                SizedBox(
-                  width: _deviceWidth! * 0.01,
-                ),
                 Icon(
                   Icons.developer_mode,
                   size: _widthXheight! * 1,
                 ),
-                if (provider['username'] != null) ...{
+                if (provider['company_name'] != null) ...{
+                  Text(provider['company_name']),
+                } else ...{
                   Text(provider['username']),
-                }
+                },
+                IconButton(
+                  onPressed: () {
+                    _showRestoreConfirmationDialog(context, provider['uid']);
+                  },
+                  icon: Icon(Icons.restore_page),
+                ),
               ],
             ),
           ),
@@ -444,6 +451,83 @@ class _RecycleBinState extends State<RecycleBin> {
           ),
         ),
       ),
+    );
+  }
+
+  // void _restoreUser(String uid) async {
+  //   await _firebaseService!.restoreUser(uid);
+  //   _getDataFromDB();
+  // }
+
+  void _showRestoreConfirmationDialog(BuildContext context, String uid) {
+    showDialog(
+      barrierDismissible: false, // Prevent dismissing when clicking outside
+      context: context,
+      builder: (BuildContext context) {
+        bool _deleting = false; // State variable to track deletion process
+
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              contentPadding: EdgeInsets.symmetric(
+                vertical: _deleting
+                    ? 10
+                    : 20, // Adjust content padding based on _deleting state
+              ),
+              title: Row(
+                children: [
+                  const Icon(
+                    Icons.warning,
+                    color: Colors.red,
+                  ),
+                  const SizedBox(width: 8),
+                  _richTextWidget!
+                      .simpleText("Restore User", null, Colors.red, null),
+                ],
+              ),
+              content: _deleting
+                  ? SizedBox(
+                      height: 50,
+                      child: Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    )
+                  : Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: _richTextWidget!.simpleText(
+                          "Are you sure you want to restore this user?",
+                          null,
+                          Colors.black87,
+                          null),
+                    ),
+              actions: _deleting
+                  ? []
+                  : [
+                      TextButton(
+                        onPressed: () async {
+                          setState(() {
+                            _deleting = true; // Start deletion process
+                          });
+                          await _firebaseService!.restoreUser(uid);
+
+                          _getDataFromDB();
+                          Navigator.pop(context);
+                        },
+                        child: _richTextWidget!
+                            .simpleText("Yes", null, Colors.red, null),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: _richTextWidget!
+                            .simpleText("No", null, Colors.black, null),
+                      ),
+                    ],
+            );
+          },
+        );
+      },
     );
   }
 }

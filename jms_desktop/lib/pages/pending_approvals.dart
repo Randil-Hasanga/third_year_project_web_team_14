@@ -277,11 +277,14 @@ class _PendingApprovalsState extends State<PendingApprovals> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 SizedBox(
-                  width: _deviceWidth! * 0.01,
+                  width: 10,
                 ),
-                Icon(
-                  Icons.developer_mode,
-                  size: 35,
+                const Icon(
+                  Icons.pending_actions,
+                  size: 25,
+                ),
+                SizedBox(
+                  width: 10,
                 ),
                 if (provider['username'] != null) ...{
                   Expanded(
@@ -709,7 +712,7 @@ class _SelectedApprovalDetailsWidgetState
                                       .deleteProvider(provider!['uid']);
                                 } else if (action == "Approve") {
                                   await _firebaseService!
-                                      .approveUser(provider!['uid']);
+                                      .approveProvider(provider!['uid']);
                                 }
                                 widget.onUpdateUI();
                               } catch (error) {
