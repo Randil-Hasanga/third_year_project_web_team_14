@@ -4,7 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:jms_desktop/auth/auth_guard.dart';
 import 'package:jms_desktop/const/constants.dart';
-import 'package:jms_desktop/pages/BulkMailPages/bulk_mail.dart';
+import 'package:jms_desktop/pages/bulk_mail.dart';
 import 'package:jms_desktop/pages/Main_Page.dart';
 import 'package:jms_desktop/pages/create_officer_page.dart';
 import 'package:jms_desktop/pages/job_providers_page.dart';
@@ -98,65 +98,65 @@ class MyApp extends StatelessWidget {
 
       // ******************* auth guard file eke isAuthenticated = true karala inna weda krnna kalin *******************
       initialRoute: '/login',
-      onGenerateRoute: (RouteSettings settings) {
-        switch (settings.name) {
-          case '/':
-            return AuthGuard.redirectUnauthorizedToLogin(
-              builder: (_) => LoginScreen(), // Redirect to login page
-              redirectPath: '/login',
-            )(settings);
-          case '/dashboard':
-            return AuthGuard.redirectUnauthorizedToLogin(
-              builder: (_) => Dashboard(),
-              redirectPath: '/login',
-            )(settings);
-          case '/profile':
-            return AuthGuard.redirectUnauthorizedToLogin(
-              builder: (_) => ProfilePage(),
-              redirectPath: '/login',
-            )(settings);
-          case '/officer':
-            return AuthGuard.redirectUnauthorizedToLogin(
-              builder: (_) => OfficersPage(),
-              redirectPath: '/login',
-            )(settings);
-          case '/MainPage':
-            return AuthGuard.redirectUnauthorizedToLogin(
-              builder: (_) => MainPage(),
-              redirectPath: '/login',
-            )(settings);
-          case '/provider':
-            return AuthGuard.redirectUnauthorizedToLogin(
-              builder: (_) => JobProviders(),
-              redirectPath: '/login',
-            )(settings);
-          case '/bin':
-            return AuthGuard.redirectUnauthorizedToLogin(
-              builder: (_) => RecycleBin(),
-              redirectPath: '/login',
-            )(settings);
-          case '/bulkMail':
-            return AuthGuard.redirectUnauthorizedToLogin(
-              builder: (_) => BulkMailPage(),
-              redirectPath: '/login',
-            )(settings);
-          case '/pendingApprovals':
-            return AuthGuard.redirectUnauthorizedToLogin(
-              builder: (_) => PendingApprovals(),
-              redirectPath: '/login',
-            )(settings);
-          case '/report':
-            return AuthGuard.redirectUnauthorizedToLogin(
-              builder: (_) => Report(),
-              redirectPath: '/login',
-            )(settings);
-          default:
-            return MaterialPageRoute(
-              builder: (_) => LoginScreen(), // Redirect to login page
-              settings: RouteSettings(name: '/login'),
-            );
-        }
-      },
+      // onGenerateRoute: (RouteSettings settings) {
+      //   switch (settings.name) {
+      //     case '/':
+      //       return AuthGuard.redirectUnauthorizedToLogin(
+      //         builder: (_) => LoginScreen(), // Redirect to login page
+      //         redirectPath: '/login',
+      //       )(settings);
+      //     case '/dashboard':
+      //       return AuthGuard.redirectUnauthorizedToLogin(
+      //         builder: (_) => Dashboard(),
+      //         redirectPath: '/login',
+      //       )(settings);
+      //     case '/profile':
+      //       return AuthGuard.redirectUnauthorizedToLogin(
+      //         builder: (_) => ProfilePage(),
+      //         redirectPath: '/login',
+      //       )(settings);
+      //     case '/officer':
+      //       return AuthGuard.redirectUnauthorizedToLogin(
+      //         builder: (_) => OfficersPage(),
+      //         redirectPath: '/login',
+      //       )(settings);
+      //     case '/MainPage':
+      //       return AuthGuard.redirectUnauthorizedToLogin(
+      //         builder: (_) => MainPage(),
+      //         redirectPath: '/login',
+      //       )(settings);
+      //     case '/provider':
+      //       return AuthGuard.redirectUnauthorizedToLogin(
+      //         builder: (_) => JobProviders(),
+      //         redirectPath: '/login',
+      //       )(settings);
+      //     case '/bin':
+      //       return AuthGuard.redirectUnauthorizedToLogin(
+      //         builder: (_) => RecycleBin(),
+      //         redirectPath: '/login',
+      //       )(settings);
+      //     case '/bulkMail':
+      //       return AuthGuard.redirectUnauthorizedToLogin(
+      //         builder: (_) => BulkMailPage(),
+      //         redirectPath: '/login',
+      //       )(settings);
+      //     case '/pendingApprovals':
+      //       return AuthGuard.redirectUnauthorizedToLogin(
+      //         builder: (_) => PendingApprovals(),
+      //         redirectPath: '/login',
+      //       )(settings);
+      //     case '/report':
+      //       return AuthGuard.redirectUnauthorizedToLogin(
+      //         builder: (_) => Report(),
+      //         redirectPath: '/login',
+      //       )(settings);
+      //     default:
+      //       return MaterialPageRoute(
+      //         builder: (_) => LoginScreen(), // Redirect to login page
+      //         settings: RouteSettings(name: '/login'),
+      //       );
+      //   }
+      // },
     );
   }
 }
