@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -32,6 +34,10 @@ void main() async {
       appId: "1:352414474958:web:9aaf2f85d78b4e4a71669f",
     ),
   );
+
+  if (kIsWeb) {
+    FirebaseAuth.instance.setPersistence(Persistence.LOCAL);
+  }
   GetIt.instance.registerSingleton<FirebaseService>(
     FirebaseService(),
   );

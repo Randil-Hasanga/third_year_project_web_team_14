@@ -198,12 +198,12 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
           );
-          setState(
-            () {
-              _isLoading = false; // Set to false when login ends
-            },
-          );
         }
+        setState(
+          () {
+            _isLoading = false; // Set to false when login ends
+          },
+        );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -213,11 +213,6 @@ class _LoginScreenState extends State<LoginScreen> {
               selectionColor: Color.fromARGB(255, 230, 255, 2),
             ),
           ),
-        );
-        setState(
-          () {
-            _isLoading = false; // Set to false when login ends
-          },
         );
       }
     } else {

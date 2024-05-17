@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 const String USER_COLLECTION = 'users';
 const String POSTS_COLLECTION = 'posts';
@@ -16,18 +17,21 @@ class FirebaseService {
 
   Map? currentUser;
 
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseAuth auth = FirebaseAuth.instance;
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   final FirebaseStorage _storage = FirebaseStorage.instance;
 
   Future<bool> loginUser(
       {required String email, required String password}) async {
     try {
-      UserCredential _userCredentials = await _auth.signInWithEmailAndPassword(
+      UserCredential _userCredentials = await auth.signInWithEmailAndPassword(
           email: email, password: password);
 
       if (_userCredentials != null) {
         currentUser = await _getUserData(uid: _userCredentials.user!.uid);
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setString('email', email);
+        prefs.setString('password', password);
         return true;
       } else {
         return false;
@@ -39,12 +43,17 @@ class FirebaseService {
   }
 
   Future<Map?> _getUserData({required String uid}) async {
-    DocumentSnapshot _doc =
-        await _db.collection(USER_COLLECTION).doc(uid).get();
+    try {
+      DocumentSnapshot _doc =
+          await _db.collection(USER_COLLECTION).doc(uid).get();
 
-    if (_doc.exists) {
-      return _doc.data() as Map;
-    } else {
+      if (_doc.exists) {
+        return _doc.data() as Map;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print("error in get user data : $e");
       return null;
     }
   }
@@ -494,7 +503,7 @@ class FirebaseService {
 
   Future<void> logout() async {
     try {
-      await _auth.signOut();
+      await auth.signOut();
       print("Logged out successfully");
     } catch (e) {
       print("Logging out failed : $e");
