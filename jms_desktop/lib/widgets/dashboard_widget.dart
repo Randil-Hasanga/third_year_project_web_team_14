@@ -106,7 +106,7 @@ class _DashboardState extends State<DashboardWidget> {
   Widget ApprovalListWidget() {
     return Container(
       margin: EdgeInsets.only(
-        left: _deviceWidth! * 0.01,
+        left: _deviceWidth! * 0.005,
         bottom: _deviceHeight! * 0.02,
         right: _deviceWidth! * 0.01,
         //top: _deviceHeight! * 0.02,
@@ -578,7 +578,7 @@ class _DashboardState extends State<DashboardWidget> {
       margin: EdgeInsets.only(
         left: _deviceWidth! * 0.01,
         bottom: _deviceHeight! * 0.02,
-        right: _deviceWidth! * 0.01,
+        right: _deviceWidth! * 0.005,
         //top: _deviceHeight! * 0.02,
       ),
       padding: EdgeInsets.symmetric(horizontal: _deviceWidth! * 0.01),
