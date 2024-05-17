@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:jms_desktop/auth/auth_guard.dart';
+
 import 'package:jms_desktop/const/constants.dart';
 import 'package:jms_desktop/pages/bulk_mail.dart';
 import 'package:jms_desktop/pages/dashboard.dart';
@@ -48,9 +48,7 @@ class _MainPageState extends State<MainPage> {
       _password = prefs.getString('password');
     });
 
-    if (_email != null &&
-        _password != null &&
-        AuthGuard.isAuthenticated == true) {
+    if (_email != null && _password != null) {
       loginUser2(_email!, _password!);
     }
   }
@@ -61,7 +59,6 @@ class _MainPageState extends State<MainPage> {
 
     if (_result) {
       if (_firebaseService!.currentUser!['type'] == 'officer') {
-        AuthGuard.isAuthenticated = true;
         Navigator.popAndPushNamed(context, '/MainPage');
       }
     }
@@ -81,132 +78,131 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     _deviceHeight = MediaQuery.of(context).size.height;
-    return AuthGuard.isAuthenticated
-        ? Scaffold(
-            body: Row(
-              children: [
-                NavigationRail(
-                  extended: true,
-                  labelType: NavigationRailLabelType.none,
-                  leading: SizedBox(
-                    height: _deviceHeight! * 0.1,
-                  ),
-                  minWidth: 100,
-                  onDestinationSelected: (int index) {
-                    if (index == (_pages.length)) {
-                      _logout();
-                    } else {
-                      setState(() {
-                        _currentPage = index;
-                      });
-                      _pageController.jumpToPage(index);
-                    }
-                  },
-                  indicatorColor: selectionColor,
-                  destinations: const [
-                    NavigationRailDestination(
-                      padding: EdgeInsets.symmetric(vertical: 7),
-                      icon: Icon(Icons.dashboard),
-                      label: Text(
-                        'Dashboard',
-                        style: TextStyle(color: Colors.white, fontSize: 18),
-                      ),
-                    ),
-                    NavigationRailDestination(
-                      padding: EdgeInsets.symmetric(vertical: 7),
-                      icon: Icon(Icons.account_box),
-                      label: Text(
-                        'Profile',
-                        style: TextStyle(color: Colors.white, fontSize: 18),
-                      ),
-                    ),
-                    NavigationRailDestination(
-                      padding: EdgeInsets.symmetric(vertical: 7),
-                      icon: Icon(Icons.work),
-                      label: Text(
-                        'Officers',
-                        style: TextStyle(color: Colors.white, fontSize: 18),
-                      ),
-                    ),
-                    NavigationRailDestination(
-                      padding: EdgeInsets.symmetric(vertical: 7),
-                      icon: Icon(Icons.handshake),
-                      label: Text(
-                        'Current\nJob Providers',
-                        style: TextStyle(color: Colors.white, fontSize: 18),
-                      ),
-                    ),
-                    NavigationRailDestination(
-                      padding: EdgeInsets.symmetric(vertical: 7),
-                      icon: Icon(Icons.lock_clock),
-                      label: Text(
-                        'Pending\nJob Providers',
-                        style: TextStyle(color: Colors.white, fontSize: 18),
-                      ),
-                    ),
-                    NavigationRailDestination(
-                      padding: EdgeInsets.symmetric(vertical: 7),
-                      icon: Icon(Icons.email),
-                      label: Text(
-                        'Bulk Mail',
-                        style: TextStyle(color: Colors.white, fontSize: 18),
-                      ),
-                    ),
-                    NavigationRailDestination(
-                      padding: EdgeInsets.symmetric(vertical: 7),
-                      icon: Icon(Icons.recycling_rounded),
-                      label: Text(
-                        'Recycle Bin',
-                        style: TextStyle(color: Colors.white, fontSize: 18),
-                      ),
-                    ),
-                    NavigationRailDestination(
-                      padding: EdgeInsets.symmetric(vertical: 7),
-                      icon: Icon(Icons.report),
-                      label: Text(
-                        'Report',
-                        style: TextStyle(color: Colors.white, fontSize: 18),
-                      ),
-                    ),
-                    NavigationRailDestination(
-                      padding: EdgeInsets.symmetric(vertical: 7),
-                      icon: Icon(Icons.logout),
-                      label: Text(
-                        'Log Out',
-                        style: TextStyle(color: Colors.white, fontSize: 18),
-                      ),
-                    ),
-                  ],
-                  selectedIndex: _currentPage,
-                ),
-                Expanded(
-                  child: Navigator(
-                    key: GlobalKey<NavigatorState>(),
-                    onGenerateRoute: (RouteSettings settings) {
-                      WidgetBuilder builder;
-                      switch (settings.name) {
-                        case '/':
-                          builder =
-                              (BuildContext context) => _pages[_currentPage];
-                          break;
-                        default:
-                          throw Exception('Invalid route: ${settings.name}');
-                      }
-                      return MaterialPageRoute(
-                          builder: builder, settings: settings);
-                    },
-                  ),
-                ),
-              ],
+    return Scaffold(
+      body: Row(
+        children: [
+          NavigationRail(
+            extended: true,
+            labelType: NavigationRailLabelType.none,
+            leading: SizedBox(
+              height: _deviceHeight! * 0.1,
             ),
-          )
-        : const LoginScreen();
+            minWidth: 100,
+            onDestinationSelected: (int index) {
+              if (index == (_pages.length)) {
+                _logout();
+              } else {
+                setState(() {
+                  _currentPage = index;
+                });
+                _pageController.jumpToPage(index);
+              }
+            },
+            indicatorColor: selectionColor,
+            destinations: const [
+              NavigationRailDestination(
+                padding: EdgeInsets.symmetric(vertical: 7),
+                icon: Icon(Icons.dashboard),
+                label: Text(
+                  'Dashboard',
+                  style: TextStyle(color: Colors.white, fontSize: 18),
+                ),
+              ),
+              NavigationRailDestination(
+                padding: EdgeInsets.symmetric(vertical: 7),
+                icon: Icon(Icons.account_box),
+                label: Text(
+                  'Profile',
+                  style: TextStyle(color: Colors.white, fontSize: 18),
+                ),
+              ),
+              NavigationRailDestination(
+                padding: EdgeInsets.symmetric(vertical: 7),
+                icon: Icon(Icons.work),
+                label: Text(
+                  'Officers',
+                  style: TextStyle(color: Colors.white, fontSize: 18),
+                ),
+              ),
+              NavigationRailDestination(
+                padding: EdgeInsets.symmetric(vertical: 7),
+                icon: Icon(Icons.handshake),
+                label: Text(
+                  'Current\nJob Providers',
+                  style: TextStyle(color: Colors.white, fontSize: 18),
+                ),
+              ),
+              NavigationRailDestination(
+                padding: EdgeInsets.symmetric(vertical: 7),
+                icon: Icon(Icons.lock_clock),
+                label: Text(
+                  'Pending\nJob Providers',
+                  style: TextStyle(color: Colors.white, fontSize: 18),
+                ),
+              ),
+              NavigationRailDestination(
+                padding: EdgeInsets.symmetric(vertical: 7),
+                icon: Icon(Icons.email),
+                label: Text(
+                  'Bulk Mail',
+                  style: TextStyle(color: Colors.white, fontSize: 18),
+                ),
+              ),
+              NavigationRailDestination(
+                padding: EdgeInsets.symmetric(vertical: 7),
+                icon: Icon(Icons.recycling_rounded),
+                label: Text(
+                  'Recycle Bin',
+                  style: TextStyle(color: Colors.white, fontSize: 18),
+                ),
+              ),
+              NavigationRailDestination(
+                padding: EdgeInsets.symmetric(vertical: 7),
+                icon: Icon(Icons.report),
+                label: Text(
+                  'Report',
+                  style: TextStyle(color: Colors.white, fontSize: 18),
+                ),
+              ),
+              NavigationRailDestination(
+                padding: EdgeInsets.symmetric(vertical: 7),
+                icon: Icon(Icons.logout),
+                label: Text(
+                  'Log Out',
+                  style: TextStyle(color: Colors.white, fontSize: 18),
+                ),
+              ),
+            ],
+            selectedIndex: _currentPage,
+          ),
+          Expanded(
+            child: Navigator(
+              key: GlobalKey<NavigatorState>(),
+              onGenerateRoute: (RouteSettings settings) {
+                WidgetBuilder builder;
+                switch (settings.name) {
+                  case '/':
+                    builder = (BuildContext context) => _pages[_currentPage];
+                    break;
+                  default:
+                    throw Exception('Invalid route: ${settings.name}');
+                }
+                return MaterialPageRoute(builder: builder, settings: settings);
+              },
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _logout() async {
     try {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.remove('email');
+      await prefs.remove('password');
       _firebaseService!.logout();
-      AuthGuard.isAuthenticated = false;
+
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => LoginScreen()),
