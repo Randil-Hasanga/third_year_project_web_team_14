@@ -16,8 +16,8 @@ class _DashboardState extends State<DashboardWidget> {
   List<Map<String, dynamic>>? pendingApprovals;
   Map<String, dynamic>? _selectedProvider;
   int? _JobProvidersCount, _PendingApprovalsCount, _jobSeekerCount;
-  bool _showLoaderCurrent = true;
-  bool _showLoaderApprovals = true;
+  bool _showLoaderCurrent = false;
+  bool _showLoaderApprovals = false;
 
   @override
   void initState() {
@@ -48,6 +48,11 @@ class _DashboardState extends State<DashboardWidget> {
 
   void _getDataFromDB() async {
     try {
+      setState(() {
+        _showLoaderCurrent = true;
+        _showLoaderApprovals = true;
+      });
+
       // Fetch data asynchronously from multiple sources
       List<List<Map<String, dynamic>>?> results = await Future.wait([
         _firebaseService!.getJobProviderData(),

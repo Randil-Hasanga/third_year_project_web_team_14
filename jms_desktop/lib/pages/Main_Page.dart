@@ -12,6 +12,7 @@ import 'package:jms_desktop/pages/profile_page.dart';
 import 'package:jms_desktop/pages/recycle_bin.dart';
 import 'package:jms_desktop/pages/report_page.dart';
 import 'package:jms_desktop/services/firebase_services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -27,11 +28,43 @@ class _MainPageState extends State<MainPage> {
   double? _deviceHeight;
   FirebaseService? _firebaseService;
   final PageController _pageController = PageController();
+  String? _email, _password;
 
   @override
   void initState() {
     super.initState();
     _firebaseService = GetIt.instance.get<FirebaseService>();
+    if (_firebaseService!.currentUser == null) {
+      initSharedPrefs();
+    }
+  }
+
+  Future<void> initSharedPrefs() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await _firebaseService!.auth.signOut();
+
+    setState(() {
+      _email = prefs.getString('email');
+      _password = prefs.getString('password');
+    });
+
+    if (_email != null &&
+        _password != null &&
+        AuthGuard.isAuthenticated == true) {
+      loginUser2(_email!, _password!);
+    }
+  }
+
+  void loginUser2(String email, String password) async {
+    bool _result =
+        await _firebaseService!.loginUser(email: email, password: password);
+
+    if (_result) {
+      if (_firebaseService!.currentUser!['type'] == 'officer') {
+        AuthGuard.isAuthenticated = true;
+        Navigator.popAndPushNamed(context, '/MainPage');
+      }
+    }
   }
 
   final List<Widget> _pages = [
