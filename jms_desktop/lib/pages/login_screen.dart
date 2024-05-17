@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:jms_desktop/auth/auth_guard.dart';
+
 import 'package:jms_desktop/services/firebase_services.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -187,7 +187,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (_result) {
         if (_firebaseService!.currentUser!['type'] == 'officer') {
-          AuthGuard.isAuthenticated = true;
           Navigator.popAndPushNamed(context, '/MainPage');
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
