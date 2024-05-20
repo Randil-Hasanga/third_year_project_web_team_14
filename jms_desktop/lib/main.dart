@@ -8,6 +8,7 @@ import 'package:jms_desktop/const/constants.dart';
 import 'package:jms_desktop/pages/bulk_mail.dart';
 import 'package:jms_desktop/pages/Main_Page.dart';
 import 'package:jms_desktop/pages/create_officer_page.dart';
+import 'package:jms_desktop/pages/edit_profile.dart';
 import 'package:jms_desktop/pages/job_providers_page.dart';
 import 'package:jms_desktop/pages/login_screen.dart';
 import 'package:jms_desktop/pages/dashboard.dart';
@@ -99,10 +100,11 @@ class MyApp extends StatelessWidget {
         '/bulkMail': (context) => BulkMailPage(),
         '/pendingApprovals': (context) => PendingApprovals(),
         '/report': (context) => Report(),
+        '/edit_profile': (context) => EditProfile()
       },
 
       // ******************* auth guard file eke isAuthenticated = true karala inna weda krnna kalin *******************
-      initialRoute: '/login',
+      initialRoute: '/edit_profile',
       // onGenerateRoute: (RouteSettings settings) {
       //   switch (settings.name) {
       //     case '/':
