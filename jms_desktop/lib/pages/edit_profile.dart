@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
@@ -62,14 +63,47 @@ class _EditProfileState extends State<EditProfile> {
       margin: EdgeInsets.only(top: 20, bottom: 20, right: 20),
       child: Column(
         children: [
-          ElevatedButton(
-            child: Text("Pick Image"),
-            onPressed: () async {
-              await pickImage();
-            },
-          ),
           if (imageFile != null) ...{
-            Image.memory(imageFile), // Display the picked image
+            GestureDetector(
+              onTap: () async {
+                await pickImage();
+              },
+              child: Stack(
+                children: [
+                  Container(
+                    height: 200,
+                    width: 200,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(100),
+                      child: Image.memory(imageFile),
+                    ),
+                  ),
+                  const Icon(Icons.add_a_photo),
+                ],
+              ),
+            ),
+
+            // Display the picked image
+          } else ...{
+            GestureDetector(
+              onTap: () async {
+                await pickImage();
+              },
+              child: Stack(
+                children: [
+                  Container(
+                    width: 200,
+                    height: 200,
+                    child: CircleAvatar(
+                      radius: 100,
+                      backgroundImage: NetworkImage(
+                          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRpmMLA8odEi8CaMK39yvrOg-EGJP6127PmCjqURn_ssg&s'),
+                    ),
+                  ),
+                  const Icon(Icons.add_a_photo),
+                ],
+              ),
+            ),
           }
         ],
       ),
