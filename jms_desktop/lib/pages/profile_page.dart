@@ -1,12 +1,15 @@
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jms_desktop/const/constants.dart';
 import 'package:jms_desktop/pages/edit_profile.dart';
 import 'package:jms_desktop/services/firebase_services.dart';
 import 'package:jms_desktop/widgets/richText.dart';
+import 'package:path_provider/path_provider.dart';
 
 class ProfilePage extends StatefulWidget {
   @override
