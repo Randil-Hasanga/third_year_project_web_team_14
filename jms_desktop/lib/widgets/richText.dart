@@ -30,7 +30,9 @@ class RichTextWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Icon(icon),
+        Icon(
+          icon,
+        ),
         SizedBox(
           width: 10,
         ),

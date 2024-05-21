@@ -1,9 +1,12 @@
 import 'dart:collection';
+import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:path/path.dart' as p;
 
 const String USER_COLLECTION = 'users';
 const String POSTS_COLLECTION = 'posts';
@@ -14,6 +17,7 @@ const String CV_COLLECTION = 'CVDetails';
 
 class FirebaseService {
   FirebaseService();
+  String? uid;
 
   Map? currentUser;
 
@@ -28,7 +32,8 @@ class FirebaseService {
           email: email, password: password);
 
       if (_userCredentials != null) {
-        currentUser = await _getUserData(uid: _userCredentials.user!.uid);
+        currentUser = await getUserData(uid: _userCredentials.user!.uid);
+        uid = auth.currentUser?.uid;
         final SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setString('email', email);
         prefs.setString('password', password);
@@ -42,7 +47,7 @@ class FirebaseService {
     }
   }
 
-  Future<Map?> _getUserData({required String uid}) async {
+  Future<Map?> getUserData({required String uid}) async {
     try {
       DocumentSnapshot _doc =
           await _db.collection(USER_COLLECTION).doc(uid).get();
@@ -54,6 +59,17 @@ class FirebaseService {
       }
     } catch (e) {
       print("error in get user data : $e");
+      return null;
+    }
+  }
+
+  Future<Map<String, dynamic>?> getCurrentOfficerData() async {
+    DocumentSnapshot<Map<String, dynamic>?> _doc =
+        await _db.collection(USER_COLLECTION).doc(uid).get();
+
+    if (_doc.exists) {
+      return _doc.data();
+    } else {
       return null;
     }
   }
@@ -863,6 +879,53 @@ class FirebaseService {
     } catch (e) {
       print("Error restoring user $e");
       return false;
+    }
+  }
+
+  Future<void> updateOfficerProfile(
+      String? fname,
+      String? lname,
+      String? contact,
+      String? email,
+      String? position,
+      String? regNo,
+      Uint8List? imageFile,
+      String? imageName,
+      String? imageLink) async {
+    try {
+      if (imageFile != null) {
+        UploadTask _task =
+            _storage.ref('officerProfile/$uid/$imageName').putData(imageFile);
+
+        return _task.then((_snapshot) async {
+          String _downloadURL = await _snapshot.ref.getDownloadURL();
+
+          return _db.collection(USER_COLLECTION).doc(uid).set({
+            'fname': fname,
+            'lname': lname,
+            'contact': contact,
+            'email': email,
+            'position': position,
+            'reg_no': regNo,
+            'profile_image': _downloadURL
+          }, SetOptions(merge: true));
+        });
+      } else {
+        if (imageLink != null) {
+          return _db.collection(USER_COLLECTION).doc(uid).set({
+            'fname': fname,
+            'lname': lname,
+            'contact': contact,
+            'email': email,
+            'position': position,
+            'reg_no': regNo,
+            'profile_image': imageLink
+          }, SetOptions(merge: true));
+        }
+      }
+      currentUser = await getUserData(uid: uid!);
+    } catch (e) {
+      print("Error updating officer : $e");
     }
   }
 }
