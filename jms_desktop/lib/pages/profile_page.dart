@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:get_it/get_it.dart';
@@ -22,13 +21,37 @@ class _ProfilePageState extends State<ProfilePage> {
   double? _deviceWidth, _deviceHeight, _widthXheight;
   FirebaseService? _firebaseService;
   RichTextWidget? _richTextWidget;
-  String? _fname, _lname, _regNo, _post, _email, _contactNo;
+  String? _fname, _lname, _regNo, _post, _email, _contactNo, _imageLink;
+  Map<String, dynamic>? officer;
 
   @override
   void initState() {
     super.initState();
     _firebaseService = GetIt.instance.get<FirebaseService>();
     _richTextWidget = GetIt.instance.get<RichTextWidget>();
+    getDataFromDB();
+  }
+
+  Future<void> getDataFromDB() async {
+    officer = await _firebaseService!.getCurrentOfficerData();
+
+    if (officer != null) {
+      if (mounted) {
+        setState(() {
+          _imageLink = officer!['profile_image'];
+          _fname = officer!['fname'];
+          _lname = officer!['lname'];
+          _email = officer!['email'];
+          _contactNo = officer!['contact'];
+          _regNo = officer!['reg_no'];
+          _post = officer!['position'];
+        });
+      }
+    } else {
+      print("officer is null");
+    }
+
+    print(officer);
   }
 
   @override
@@ -36,13 +59,6 @@ class _ProfilePageState extends State<ProfilePage> {
     _deviceHeight = MediaQuery.of(context).size.height;
     _deviceWidth = MediaQuery.of(context).size.width;
     _widthXheight = _deviceHeight! * _deviceWidth! / 50000;
-
-    _fname = _firebaseService!.currentUser!['fname'];
-    _lname = _firebaseService!.currentUser!['lname'];
-    _regNo = _firebaseService!.currentUser!['reg_no'];
-    _post = _firebaseService!.currentUser!['position'];
-    _email = _firebaseService!.currentUser!['email'];
-    _contactNo = _firebaseService!.currentUser!['contact'];
 
     return Scaffold(
       body: SafeArea(
@@ -64,41 +80,47 @@ class _ProfilePageState extends State<ProfilePage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _profileDetails(),
-                  SizedBox(
-                    height: _deviceHeight! * 0.02,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(right: _deviceHeight! * 0.04),
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: backgroundColor2,
-                            padding: EdgeInsets.symmetric(
-                                horizontal: _deviceWidth! * 0.02,
-                                vertical: _deviceHeight! * 0.01),
-                          ),
-                          onPressed: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => EditProfile(),
+                  if (_fname != null) ...{
+                    _profileDetails(),
+                    SizedBox(
+                      height: _deviceHeight! * 0.02,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Container(
+                          margin: EdgeInsets.only(right: _deviceHeight! * 0.04),
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: backgroundColor2,
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: _deviceWidth! * 0.02,
+                                  vertical: _deviceHeight! * 0.01),
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => EditProfile(),
+                                ),
+                              );
+                            },
+                            child: Text(
+                              "Edit Profile",
+                              style: TextStyle(
+                                fontSize: _deviceWidth! * 0.014,
+                                color: selectionColor,
+                                fontWeight: FontWeight.w600,
                               ),
-                            );
-                          },
-                          child: Text(
-                            "Edit Profile",
-                            style: TextStyle(
-                              fontSize: _deviceWidth! * 0.014,
-                              color: selectionColor,
-                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
+                  } else ...{
+                    Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  }
                 ],
               ),
             ),
