@@ -74,6 +74,8 @@ class FirebaseService {
     }
   }
 
+  // get provider data from db
+
   Future<List<Map<String, dynamic>>?> getJobProviderData() async {
     try {
       QuerySnapshot<Map<String, dynamic>>? querySnapshot = await _db
@@ -116,6 +118,7 @@ class FirebaseService {
     }
   }
 
+  // get current provider count
   Future<int> getProviderCount() async {
     try {
       QuerySnapshot<Map<String, dynamic>>? _querySnapshot = await _db
@@ -132,6 +135,7 @@ class FirebaseService {
     }
   }
 
+  // get pending approvals data
   Future<List<Map<String, dynamic>>?> getApprovalsData() async {
     try {
       QuerySnapshot<Map<String, dynamic>>? querySnapshot = await _db
@@ -174,6 +178,7 @@ class FirebaseService {
     }
   }
 
+  // get pending approvals data
   Future<int> getApprovalsCount() async {
     try {
       QuerySnapshot<Map<String, dynamic>>? _querySnapshot = await _db
@@ -189,6 +194,7 @@ class FirebaseService {
     }
   }
 
+  // get seeker count
   Future<int> getJobSeekerCount() async {
     QuerySnapshot<Map<String, dynamic>>? _querySnapshot = await _db
         .collection(USER_COLLECTION)
@@ -198,6 +204,7 @@ class FirebaseService {
     return _querySnapshot.docs.length;
   }
 
+  // getting uid when have email
   Future<String?> getUidByEmail(String email) async {
     try {
       QuerySnapshot<Map<String, dynamic>> querySnapshot =
@@ -213,6 +220,8 @@ class FirebaseService {
       return null;
     }
   }
+
+  // delete user function
 
   Future<void> deleteUser(String uid) async {
     await _db.collection(USER_COLLECTION).doc(uid).update({
@@ -263,6 +272,7 @@ class FirebaseService {
     return _querySnapshot.docs.length;
   }
 
+  // get details about deleted users
   Future<List<Map<String, dynamic>>?> getDeletedUsersData(
       String? dropDownValue) async {
     List<Map<String, dynamic>> jobProviders = [];
@@ -352,6 +362,8 @@ class FirebaseService {
       return null;
     }
   }
+
+  // fetch user data for bulk mail
 
   Future<List<String>> fetchDataforEmails(
     String reciType,
@@ -517,6 +529,7 @@ class FirebaseService {
     return providerEmails;
   }
 
+  // logout functiom
   Future<void> logout() async {
     try {
       await auth.signOut();
@@ -526,6 +539,7 @@ class FirebaseService {
     }
   }
 
+  // delete provider function
   Future<void> deleteProvider(String providerId) async {
     try {
       await _db.collection('provider_details').doc(providerId).delete();
@@ -535,6 +549,7 @@ class FirebaseService {
     }
   }
 
+  // approve provider function
   Future<void> approveProvider(String userId) async {
     try {
       await _db.collection('users').doc(userId).update({'pending': false});
@@ -856,6 +871,7 @@ class FirebaseService {
     }
   }
 
+  // function for restore deleted user
   Future<bool> restoreUser(String uid) async {
     try {
       await _db.collection(USER_COLLECTION).doc(uid).update({

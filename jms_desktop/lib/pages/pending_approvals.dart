@@ -63,11 +63,10 @@ class _PendingApprovalsState extends State<PendingApprovals> {
       }
     } catch (error) {
       print('Error fetching data: $error');
-
-      throw error;
     }
   }
 
+  //filter for search function
   void _filterJobProviders() {
     String query = _searchController.text.toLowerCase();
     setState(() {
@@ -116,11 +115,13 @@ class _PendingApprovalsState extends State<PendingApprovals> {
       body: SafeArea(
         child: Row(
           children: [
+            //first part of the row : pending providers list
             Expanded(
               flex: 1,
-              child: PendingApprovalsListWidget(),
+              child: pendingApprovalsListWidget(),
             ),
             Expanded(
+              // second part of row : detais of selected provider (Using another class)
               flex: 2,
               child: _isDetailsVisible
                   ? SelectedApprovalDetailsWidget(
@@ -144,7 +145,9 @@ class _PendingApprovalsState extends State<PendingApprovals> {
     );
   }
 
-  Widget PendingApprovalsListWidget() {
+  //pending providers list
+
+  Widget pendingApprovalsListWidget() {
     return Container(
       margin: EdgeInsets.only(
         left: _deviceWidth! * 0.01,
@@ -174,7 +177,7 @@ class _PendingApprovalsState extends State<PendingApprovals> {
               ),
               child: Row(
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.pending_actions,
                     size: 35,
                   ),
@@ -187,6 +190,7 @@ class _PendingApprovalsState extends State<PendingApprovals> {
               ),
             ),
           ),
+          //search widget
           _searchBarWidget!.searchBar(_searchController, "Search Provider..."),
           Expanded(
             child: Stack(
@@ -208,7 +212,7 @@ class _PendingApprovalsState extends State<PendingApprovals> {
                 ),
                 Visibility(
                   visible: _showNoApprovalsFound,
-                  child: Center(
+                  child: const Center(
                     child: Text("No pending approvals found."),
                   ),
                 ),
@@ -224,7 +228,7 @@ class _PendingApprovalsState extends State<PendingApprovals> {
                       itemCount: filteredJobProviders?.length ?? 0,
                       scrollDirection: Axis.vertical,
                       itemBuilder: (context, index) {
-                        return PendingListViewBuilderWidget(
+                        return pendingListViewBuilderWidget(
                             filteredJobProviders![index]);
                       },
                     ),
@@ -238,7 +242,7 @@ class _PendingApprovalsState extends State<PendingApprovals> {
     );
   }
 
-  Widget PendingListViewBuilderWidget(Map<String, dynamic> provider) {
+  Widget pendingListViewBuilderWidget(Map<String, dynamic> provider) {
     return Padding(
       padding: EdgeInsets.only(
         right: _deviceWidth! * 0.0125,
@@ -248,11 +252,11 @@ class _PendingApprovalsState extends State<PendingApprovals> {
         onTap: () {
           setState(() {
             _isDetailsVisible = true;
-            _selectedApproval = provider;
+            _selectedApproval = provider; // save selected provider
           });
         },
         child: AnimatedContainer(
-          duration: Duration(microseconds: 300),
+          duration: const Duration(microseconds: 300),
           height: 80,
           width: _deviceWidth! * 0.175,
           decoration: BoxDecoration(
@@ -276,14 +280,14 @@ class _PendingApprovalsState extends State<PendingApprovals> {
               mainAxisSize: MainAxisSize.max,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                SizedBox(
+                const SizedBox(
                   width: 10,
                 ),
                 const Icon(
                   Icons.pending_actions,
                   size: 25,
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 10,
                 ),
                 if (provider['username'] != null) ...{
@@ -300,6 +304,7 @@ class _PendingApprovalsState extends State<PendingApprovals> {
     );
   }
 }
+// selected provider details are shown using this class
 
 class SelectedApprovalDetailsWidget extends StatefulWidget {
   final Map<String, dynamic>? provider;
@@ -339,6 +344,8 @@ class _SelectedApprovalDetailsWidgetState
           ),
         ],
       ),
+
+      //selected provider details
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         mainAxisSize: MainAxisSize.max,
@@ -376,6 +383,8 @@ class _SelectedApprovalDetailsWidgetState
                                 ),
                               ],
                             ),
+
+                            // show basic data of provider
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -416,6 +425,8 @@ class _SelectedApprovalDetailsWidgetState
                                   ),
                                 ],
                               ),
+                              // if company details are filled by provider,
+                              // show contact person details
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -475,11 +486,11 @@ class _SelectedApprovalDetailsWidgetState
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  _logo(),
+                                  _logo(), // show logo
                                 ],
                               )
                             },
-                            SizedBox(
+                            const SizedBox(
                               height: 10,
                             ),
                             Container(
@@ -499,6 +510,7 @@ class _SelectedApprovalDetailsWidgetState
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
+                                  //show business registration document
                                   _richTextWidget!.simpleText(
                                       "Business Registration Document",
                                       18,
@@ -537,6 +549,8 @@ class _SelectedApprovalDetailsWidgetState
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisSize: MainAxisSize.min,
+
+                                // show company details
                                 children: [
                                   const Text(
                                     "Company details",
@@ -601,13 +615,14 @@ class _SelectedApprovalDetailsWidgetState
                           ),
                         ],
                       ),
+                      // show give approval card for approve or decline
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.max,
                         children: [
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
+                          const Padding(
+                            padding: EdgeInsets.all(8.0),
                             child: Text(
                               "Give Approval ?",
                               style: TextStyle(
@@ -648,8 +663,8 @@ class _SelectedApprovalDetailsWidgetState
                                         "Reject", widget.provider);
                                   },
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor:
-                                        Color.fromARGB(255, 255, 120, 120),
+                                    backgroundColor: const Color.fromARGB(
+                                        255, 255, 120, 120),
                                   ),
                                   buttonText: "Reject"),
                               SizedBox(
@@ -673,6 +688,7 @@ class _SelectedApprovalDetailsWidgetState
     );
   }
 
+  // approve or decline confirmation dialog
   void _showConfirmationDialog(String action, Map<String, dynamic>? provider) {
     showDialog(
       context: context,
@@ -686,16 +702,16 @@ class _SelectedApprovalDetailsWidgetState
               child: SizedBox(
                 height: 200, // Set a fixed height for the AlertDialog
                 child: AlertDialog(
-                  title: Text("Confirmation"),
+                  title: const Text("Confirmation"),
                   content: _loading
-                      ? Center(child: CircularProgressIndicator())
+                      ? const Center(child: CircularProgressIndicator())
                       : Text("Are you sure you want to $action?"),
                   actions: <Widget>[
                     TextButton(
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
-                      child: Text("Cancel"),
+                      child: const Text("Cancel"),
                     ),
                     TextButton(
                       onPressed: _loading
@@ -717,7 +733,6 @@ class _SelectedApprovalDetailsWidgetState
                                 widget.onUpdateUI();
                               } catch (error) {
                                 print('Error performing action: $error');
-                                // Handle error if needed
                               } finally {
                                 setState(() {
                                   _loading = false; // Hide loading indicator
@@ -737,6 +752,7 @@ class _SelectedApprovalDetailsWidgetState
     );
   }
 
+  // company logo widget
   Widget _logo() {
     return Container(
       height: _deviceHeight! * 0.15,

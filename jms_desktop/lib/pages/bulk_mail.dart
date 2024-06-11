@@ -27,7 +27,6 @@ class _BulkMailPageState extends State<BulkMailPage> {
   String? _subject, _body;
 
   // Define dropdown menus for each recipient type
-
   static const List<String> _recipientType = [
     "Job Providers",
     "Job Seekers",
@@ -188,12 +187,13 @@ class _BulkMailPageState extends State<BulkMailPage> {
                                               });
                                             },
                                             style: ElevatedButton.styleFrom(
-                                              backgroundColor: Color.fromARGB(
-                                                  255, 134, 145, 135),
+                                              backgroundColor:
+                                                  const Color.fromARGB(
+                                                      255, 134, 145, 135),
                                             ),
                                             buttonText: "Clear",
                                           ),
-                                          SizedBox(
+                                          const SizedBox(
                                             width: 20,
                                           ),
                                         ],
@@ -485,97 +485,7 @@ class _BulkMailPageState extends State<BulkMailPage> {
     );
   }
 
-  Widget _sendButton() {
-    return Stack(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: MaterialButton(
-            elevation: 0, // Set elevation to 0 to hide the button background
-            color: const Color.fromARGB(255, 150, 255, 124),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            onPressed: _isLoading ? null : _sendMails,
-            child: const Row(
-              children: [
-                Text(
-                  "Send Email",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                ),
-                SizedBox(
-                  width: 10,
-                ),
-                Icon(Icons.send),
-              ],
-            ), // Disable button when loading
-          ),
-        ),
-        Positioned.fill(
-          child: Align(
-            alignment: Alignment.center,
-            child: _isSending
-                ? const CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.orange),
-                  )
-                : const SizedBox(), // Empty SizedBox when not loading
-          ),
-        ),
-      ],
-    );
-  }
-
-  Future<void> _sendMails() async {
-    _mailFormKey.currentState!.save();
-
-    if (emailList == null) {
-      print('Error: emailList is null.');
-      return;
-    } else {
-      try {
-        setState(() {
-          _isSending = true;
-        });
-
-        List<String> _emailList = emailList!.toList();
-        await _emailService!.sendEmail(_emailList, _subject!, _body!);
-        print('All emails sent successfully.');
-      } catch (error) {
-        print('Error sending emails: $error');
-      } finally {
-        setState(() {
-          _isSending = false;
-        });
-      }
-    }
-  }
-
-  Widget _emailChips() {
-    if (emailList != null && emailList!.isNotEmpty) {
-      return Container(
-        padding: const EdgeInsets.all(16.0),
-        child: Wrap(
-          spacing: 10.0, // Horizontal spacing between chips
-          runSpacing: 8.0, // Vertical spacing between chip rows
-          alignment:
-              WrapAlignment.start, // Align chips to the start of the container
-          children: emailList!.map((email) {
-            return Chip(
-              label: Text(email),
-              onDeleted: () {
-                setState(() {
-                  emailList!.remove(email);
-                });
-              },
-            );
-          }).toList(),
-        ),
-      );
-    } else {
-      return const SizedBox();
-    }
-  }
-
+  // form for send email
   Widget _mailForm() {
     return Padding(
       padding: const EdgeInsets.only(
@@ -619,6 +529,160 @@ class _BulkMailPageState extends State<BulkMailPage> {
     );
   }
 
+  // subject text field widget
+  Widget _subjectTextField() {
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Colors.white,
+        ),
+        child: TextFormField(
+          decoration: const InputDecoration(
+            hintText: "Subject",
+            border: OutlineInputBorder(),
+          ),
+          onSaved: (newValue) {
+            setState(() {
+              _subject = newValue;
+            });
+          },
+          validator: (value) {
+            if (value == null) {
+              return "Subject is Required";
+            }
+          },
+        ),
+      ),
+    );
+  }
+
+  // message body textfield widget
+  Widget _messageBody() {
+    return Padding(
+      padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
+      child: Container(
+        color: Colors.white,
+        child: TextFormField(
+          maxLines: 15,
+          minLines: 5,
+          decoration: const InputDecoration(
+            hintText: "Body",
+            border: OutlineInputBorder(),
+          ),
+          onSaved: (newValue) {
+            setState(() {
+              _body = newValue;
+            });
+          },
+          validator: (value) {
+            if (value == null) {
+              return "Message body is Required";
+            }
+          },
+        ),
+      ),
+    );
+  }
+
+  //send button widget
+  Widget _sendButton() {
+    return Stack(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: MaterialButton(
+            elevation: 0, // Set elevation to 0 to hide the button background
+            color: const Color.fromARGB(255, 150, 255, 124),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            onPressed: _isLoading ? null : _sendMails,
+            child: const Row(
+              children: [
+                Text(
+                  "Send Email",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                ),
+                SizedBox(
+                  width: 10,
+                ),
+                Icon(Icons.send),
+              ],
+            ), // Disable button when loading
+          ),
+        ),
+        Positioned.fill(
+          child: Align(
+            alignment: Alignment.center,
+            child: _isSending
+                ? const CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.orange),
+                  )
+                : const SizedBox(), // Empty SizedBox when not loading
+          ),
+        ),
+      ],
+    );
+  }
+
+  // function for send mails
+  Future<void> _sendMails() async {
+    _mailFormKey.currentState!.save();
+
+    if (emailList == null) {
+      print('Error: emailList is null.');
+      return;
+    } else {
+      try {
+        setState(() {
+          _isSending = true;
+        });
+
+        List<String> _emailList = emailList!.toList();
+        await _emailService!.sendEmail(_emailList, _subject!, _body!);
+        print('All emails sent successfully.');
+      } catch (error) {
+        print('Error sending emails: $error');
+      } finally {
+        setState(() {
+          _isSending = false;
+        });
+      }
+    }
+  }
+
+//show email list using flutter chip widget
+
+  Widget _emailChips() {
+    if (emailList != null && emailList!.isNotEmpty) {
+      return Container(
+        padding: const EdgeInsets.all(16.0),
+        child: Wrap(
+          spacing: 10.0, // Horizontal spacing between chips
+          runSpacing: 8.0, // Vertical spacing between chip rows
+          alignment:
+              WrapAlignment.start, // Align chips to the start of the container
+          children: emailList!.map((email) {
+            return Chip(
+              label: Text(email),
+              onDeleted: () {
+                setState(() {
+                  emailList!.remove(email);
+                });
+              },
+            );
+          }).toList(),
+        ),
+      );
+    } else {
+      return const SizedBox();
+    }
+  }
+
+  // button for confirm required recipients
+
   Widget _selectReciepientsButton() {
     return Stack(
       children: [
@@ -651,6 +715,7 @@ class _BulkMailPageState extends State<BulkMailPage> {
     );
   }
 
+  // retrieving email addresses according to drop down values
   Future<void> _getEmails() async {
     setState(() {
       _isLoading = true;
@@ -683,61 +748,7 @@ class _BulkMailPageState extends State<BulkMailPage> {
     setState(() {});
   }
 
-  Widget _subjectTextField() {
-    return Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: Colors.white,
-        ),
-        child: TextFormField(
-          decoration: const InputDecoration(
-            hintText: "Subject",
-            border: OutlineInputBorder(),
-          ),
-          onSaved: (newValue) {
-            setState(() {
-              _subject = newValue;
-            });
-          },
-          validator: (value) {
-            if (value == null) {
-              return "Subject is Required";
-            }
-          },
-        ),
-      ),
-    );
-  }
-
-  Widget _messageBody() {
-    return Padding(
-      padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
-      child: Container(
-        color: Colors.white,
-        child: TextFormField(
-          maxLines: 15,
-          minLines: 5,
-          decoration: const InputDecoration(
-            hintText: "Body",
-            border: OutlineInputBorder(),
-          ),
-          onSaved: (newValue) {
-            setState(() {
-              _body = newValue;
-            });
-          },
-          validator: (value) {
-            if (value == null) {
-              return "Message body is Required";
-            }
-          },
-        ),
-      ),
-    );
-  }
-
+  // drop down for select reciepient type
   Widget _selectedRecepientTypeDropdown() {
     List<DropdownMenuItem<String>> _items = _recipientType
         .map(
@@ -778,6 +789,7 @@ class _BulkMailPageState extends State<BulkMailPage> {
     );
   }
 
+  // mechanism for show or hide dropdowns when change reciepient type
   void shouldDropdownBeVisible() {
     if (_recipientTypeDropDownValue == "Job Seekers") {
       setState(() {
