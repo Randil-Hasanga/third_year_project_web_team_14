@@ -144,7 +144,7 @@ class _RecycleBinState extends State<RecycleBin> {
                 children: [
                   Expanded(
                     flex: 1,
-                    child: _DeletedUsersListWidget(),
+                    child: _deletedUsersListWidget(),
                   ),
                   // Expanded(
                   //   flex: 1,
@@ -165,7 +165,7 @@ class _RecycleBinState extends State<RecycleBin> {
     );
   }
 
-  Widget _DeletedUsersListWidget() {
+  Widget _deletedUsersListWidget() {
     return Container(
       margin: EdgeInsets.only(
         left: _deviceWidth! * 0.01,
@@ -218,11 +218,11 @@ class _RecycleBinState extends State<RecycleBin> {
                       children: [
                         Visibility(
                           visible: _showLoader,
-                          child: const CircularProgressIndicator(
-                            color: selectionColor,
-                          ),
                           replacement: const Center(
                             child: Text("No job providers found."),
+                          ),
+                          child: const CircularProgressIndicator(
+                            color: selectionColor,
                           ),
                         ),
                       ],
@@ -240,7 +240,7 @@ class _RecycleBinState extends State<RecycleBin> {
                       itemCount: _deletedJobProviders?.length ?? 0,
                       scrollDirection: Axis.vertical,
                       itemBuilder: (context, index) {
-                        return _DeletedProvidersListViewBuilder(
+                        return _deletedProvidersListViewBuilder(
                             _deletedJobProviders![index]);
                       },
                     ),
@@ -254,7 +254,7 @@ class _RecycleBinState extends State<RecycleBin> {
     );
   }
 
-  Widget _DeletedProvidersListViewBuilder(Map<String, dynamic> provider) {
+  Widget _deletedProvidersListViewBuilder(Map<String, dynamic> provider) {
     return Padding(
       padding: EdgeInsets.only(
         right: _deviceWidth! * 0.0125,
@@ -303,7 +303,7 @@ class _RecycleBinState extends State<RecycleBin> {
                   onPressed: () {
                     _showRestoreConfirmationDialog(context, provider['uid']);
                   },
-                  icon: Icon(Icons.restore_page),
+                  icon: const Icon(Icons.restore_page),
                 ),
               ],
             ),
@@ -364,11 +364,11 @@ class _RecycleBinState extends State<RecycleBin> {
                       children: [
                         Visibility(
                           visible: _showLoader,
-                          child: const CircularProgressIndicator(
-                            color: selectionColor,
-                          ),
                           replacement: const Center(
                             child: Text("No job providers found."),
+                          ),
+                          child: const CircularProgressIndicator(
+                            color: selectionColor,
                           ),
                         ),
                       ],
@@ -486,7 +486,7 @@ class _RecycleBinState extends State<RecycleBin> {
                 ],
               ),
               content: _deleting
-                  ? SizedBox(
+                  ? const SizedBox(
                       height: 50,
                       child: Center(
                         child: CircularProgressIndicator(),
