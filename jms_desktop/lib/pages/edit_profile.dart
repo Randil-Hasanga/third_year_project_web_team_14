@@ -299,8 +299,8 @@ class _EditProfileState extends State<EditProfile> {
             child: Stack(
               children: [
                 Container(
-                  height: 200,
-                  width: 200,
+                  height: 400,
+                  width: 400,
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(100),
                     child: Image.memory(imageFile),
@@ -320,10 +320,10 @@ class _EditProfileState extends State<EditProfile> {
             child: Stack(
               children: [
                 Container(
-                  width: 200,
-                  height: 200,
+                  width: 400,
+                  height: 400,
                   child: CircleAvatar(
-                    radius: 100,
+                    radius: 200,
                     backgroundImage: NetworkImage(_imageLink!),
                   ),
                 ),
@@ -339,10 +339,10 @@ class _EditProfileState extends State<EditProfile> {
             child: Stack(
               children: [
                 Container(
-                  width: 200,
-                  height: 200,
+                  width: 400,
+                  height: 400,
                   child: const CircleAvatar(
-                    radius: 100,
+                    radius: 200,
                     backgroundImage: NetworkImage(
                         'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRpmMLA8odEi8CaMK39yvrOg-EGJP6127PmCjqURn_ssg&s'),
                   ),
