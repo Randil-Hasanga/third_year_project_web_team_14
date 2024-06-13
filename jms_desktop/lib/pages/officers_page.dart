@@ -125,7 +125,7 @@ class _OfficersPageStete extends State<OfficersPage> {
                     width: 10,
                   ),
                   Text(
-                    "Current Officer",
+                    "Current Officer ",
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 25,
@@ -142,7 +142,7 @@ class _OfficersPageStete extends State<OfficersPage> {
                       "Add",
                       style: TextStyle(
                         color: Color.fromARGB(255, 47, 146, 50),
-                        fontSize: 20.0,
+                        fontSize: 18.0,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -395,40 +395,44 @@ class SelectedOfficerDetailsWidget extends StatelessWidget {
                             _richTextWidget!.KeyValuePairrichText(
                               "User Name:",
                               "${officer!['username']}",
-                              18,
+                              15,
                             ),
                             const Divider(),
                             _richTextWidget!.KeyValuePairrichText(
                               "Registration No:",
                               "${officer!['reg_no']}",
-                              18,
+                              15,
                             ),
                             const Divider(),
                             _richTextWidget!.KeyValuePairrichText(
                               "Gender:",
                               "${officer!['gender']}",
-                              18,
+                              15,
                             ),
                             const Divider(),
                             _richTextWidget!.KeyValuePairrichText(
                               "Position:",
                               "${officer!['position']}",
-                              18,
+                              15,
                             ),
                             const Divider(),
                             _richTextWidget!.KeyValuePairrichText(
                               "Contact No:",
                               "${officer!['contact']}",
-                              18,
+                              15,
+                            ),
+                            const Divider(),
+                            _richTextWidget!.KeyValuePairrichText(
+                              "NIC",
+                              "${officer!['nic']}",
+                              15,
                             ),
                             const Divider(),
                             _richTextWidget!.KeyValuePairrichText(
                               "Email:",
                               "${officer!['email']}",
-                              18,
+                              15,
                             ),
-
-                            // Add more details as needed
                           ],
                         ),
                       ),

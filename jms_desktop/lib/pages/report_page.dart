@@ -407,12 +407,14 @@ class _ReportState extends State<Report> {
 
   void _generateProviderPdf() async {
     final pdf = pw.Document();
+    String dis = "MATARA";
     int index = _monthList.indexOf(_providerMonth);
     int providerCount = await _firebaseService!.getMonthlyProviderCount(index);
+    String providerCountStr = providerCount.toString();
     final data_ = {
-      'DISTRICT: MATARA'
-          'MONTH': _providerMonth,
-      'TOTAL COMPANY REGISTRATION': providerCount.toString(),
+      'DISTRICT : $dis\n'
+          'TOTAL COMPANY REGISTRATION : \n'
+          'MONTH : $_providerMonth': '$providerCountStr',
     };
     // Load the logo image from assets
     final logoBytes = await rootBundle.load('assets/images/logo.jpg');
