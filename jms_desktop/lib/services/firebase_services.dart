@@ -25,12 +25,13 @@ class FirebaseService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   final FirebaseStorage _storage = FirebaseStorage.instance;
 
+// login the new user in the system
   Future<bool> loginUser(
       {required String email, required String password}) async {
     try {
       UserCredential _userCredentials = await auth.signInWithEmailAndPassword(
           email: email, password: password);
-
+      // check user creadential details
       if (_userCredentials != null) {
         currentUser = await getUserData(uid: _userCredentials.user!.uid);
         uid = auth.currentUser?.uid;
@@ -263,6 +264,7 @@ class FirebaseService {
     }
   }
 
+// Get the officer table count
   Future<int> getOfficerCount() async {
     QuerySnapshot<Map<String, dynamic>>? _querySnapshot = await _db
         .collection(USER_COLLECTION)
@@ -272,7 +274,9 @@ class FirebaseService {
     return _querySnapshot.docs.length;
   }
 
+
   // get details about deleted users
+
   Future<List<Map<String, dynamic>>?> getDeletedUsersData(
       String? dropDownValue) async {
     List<Map<String, dynamic>> jobProviders = [];
@@ -802,7 +806,7 @@ class FirebaseService {
           Map<String, dynamic> additionalData =
               additionalDataSnapshot.data() as Map<String, dynamic>;
           // Merge additional data with basic data
-          additionalData['title'] = "New Provider";
+          additionalData['title'] = "Registered New Provider";
           providerData.addAll(additionalData);
         }
 
@@ -850,11 +854,10 @@ class FirebaseService {
           // Cast the data to Map<String, dynamic>
           Map<String, dynamic> additionalData =
               additionalDataSnapshot.data() as Map<String, dynamic>;
-          additionalData['title'] = "New Seeker";
+          additionalData['title'] = "Registered New Job Seeker";
           // Merge additional data with basic data
           seekerData.addAll(additionalData);
         }
-
         seekerList.add(seekerData);
       }
 

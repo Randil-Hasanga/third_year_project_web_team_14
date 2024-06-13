@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -36,6 +34,7 @@ class _CreateOfficerPageState extends State<CreateOfficerPage> {
       _selectedGender,
       _contactNo,
       _email,
+      _nic,
       _password,
       _confirmPassword;
 
@@ -80,6 +79,7 @@ class _CreateOfficerPageState extends State<CreateOfficerPage> {
             'position': _possition,
             'gender': _selectedGender,
             'contact': _contactNo,
+            'nic': _nic,
             'email': _email,
             'registered_date': FieldValue.serverTimestamp(),
             'disabled': false,
@@ -113,6 +113,7 @@ class _CreateOfficerPageState extends State<CreateOfficerPage> {
       _possition = null;
       _contactNo = null;
       _email = null;
+      _nic = null;
       _password = null;
       _confirmPassword = null;
       _selectedGender = null;
@@ -132,16 +133,16 @@ class _CreateOfficerPageState extends State<CreateOfficerPage> {
     return Scaffold(
       body: Container(
         margin: EdgeInsets.only(
-          left: _deviceWidth! * 0.3,
+          left: _deviceWidth! * 0.11,
           bottom: _deviceHeight! * 0.03,
           top: _deviceHeight! * 0.03,
-          right: _deviceWidth! * 0.3,
+          right: _deviceWidth! * 0.11,
         ),
         padding: EdgeInsets.only(
-          top: _widthXheight! * 0.7,
-          left: _widthXheight! * 0.7,
+          top: _widthXheight! * 0.1,
+          left: _deviceWidth! * 0.05,
           bottom: _widthXheight! * 0.7,
-          right: _widthXheight! * 0.7,
+          right: _deviceWidth! * 0.05,
         ),
         decoration: BoxDecoration(
           color: cardBackgroundColor,
@@ -163,7 +164,8 @@ class _CreateOfficerPageState extends State<CreateOfficerPage> {
                   height: 12.0,
                 ),
                 _richTextWidget!.simpleText(
-                    "Create New Officer", 20, Colors.black, FontWeight.w600),
+                    "Create New Officer", 25, Colors.black, FontWeight.w600),
+                Divider(),
                 const SizedBox(
                   height: 16.0,
                 ),
@@ -182,6 +184,7 @@ class _CreateOfficerPageState extends State<CreateOfficerPage> {
                   },
                   decoration: InputDecoration(
                     labelText: 'User Name',
+                    icon: Icon(Icons.verified_user),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
@@ -205,6 +208,7 @@ class _CreateOfficerPageState extends State<CreateOfficerPage> {
                   },
                   decoration: InputDecoration(
                     labelText: 'First Name',
+                    icon: Icon(Icons.person),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
@@ -228,6 +232,7 @@ class _CreateOfficerPageState extends State<CreateOfficerPage> {
                   },
                   decoration: InputDecoration(
                     labelText: 'Last Name',
+                    icon: Icon(Icons.person),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
@@ -251,6 +256,7 @@ class _CreateOfficerPageState extends State<CreateOfficerPage> {
                   },
                   decoration: InputDecoration(
                     labelText: 'Registration No',
+                    icon: Icon(Icons.app_registration),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
@@ -260,6 +266,7 @@ class _CreateOfficerPageState extends State<CreateOfficerPage> {
                   height: 16.0,
                 ),
                 //position feild
+
                 TextFormField(
                   onSaved: (_value) {
                     setState(() {
@@ -274,6 +281,7 @@ class _CreateOfficerPageState extends State<CreateOfficerPage> {
                   },
                   decoration: InputDecoration(
                     labelText: 'Position',
+                    icon: Icon(Icons.manage_accounts),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
@@ -315,6 +323,30 @@ class _CreateOfficerPageState extends State<CreateOfficerPage> {
                 const SizedBox(
                   height: 16.0,
                 ),
+                //NIC field
+                TextFormField(
+                  onSaved: (_value) {
+                    setState(() {
+                      _nic = _value!;
+                    });
+                  },
+                  validator: (_value) {
+                    if (_value == null || _value.isEmpty) {
+                      return 'Please enter NIC card number';
+                    }
+                    return null;
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'NIC',
+                    icon: Icon(Icons.perm_identity),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 16.0,
+                ),
                 //Contact field
                 TextFormField(
                   onSaved: (_value) {
@@ -335,6 +367,7 @@ class _CreateOfficerPageState extends State<CreateOfficerPage> {
                   },
                   decoration: InputDecoration(
                     labelText: 'Contact No',
+                    icon: Icon(Icons.mobile_friendly),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
@@ -364,6 +397,7 @@ class _CreateOfficerPageState extends State<CreateOfficerPage> {
                   },
                   decoration: InputDecoration(
                     labelText: 'Email',
+                    icon: Icon(Icons.email),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
@@ -375,9 +409,10 @@ class _CreateOfficerPageState extends State<CreateOfficerPage> {
                 // Password field
                 TextFormField(
                   focusNode: _passwordFocusNode,
-                  // obscureText: true, // Hides the text for security
+                  //obscureText: true, // Hides the text for security
                   decoration: InputDecoration(
                     labelText: "Password",
+                    icon: Icon(Icons.password),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
@@ -402,9 +437,10 @@ class _CreateOfficerPageState extends State<CreateOfficerPage> {
                 // confirm password field
                 TextFormField(
                   focusNode: _confirmpasswordFocusNode,
-                  // obscureText: true, // Hides the text for security
+                  //obscureText: true, // Hides the text for security
                   decoration: InputDecoration(
                     labelText: "Confirm Password",
+                    icon: Icon(Icons.password_outlined),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
@@ -414,10 +450,6 @@ class _CreateOfficerPageState extends State<CreateOfficerPage> {
                     if (_value == null || _value.isEmpty) {
                       return 'Please confirm your password';
                     }
-                    // if (_value != _password) {
-                    //   return 'Passwords are  do not match';
-                    // }
-                    // return null;
                   },
                   onSaved: (_value) {
                     _confirmPassword = _value!;
@@ -427,10 +459,8 @@ class _CreateOfficerPageState extends State<CreateOfficerPage> {
                   height: 16.0,
                 ),
                 Row(
-                  // Using a Row to align buttons
                   children: [
                     Expanded(
-                      // Make each button take half the width
                       child: SizedBox(
                         height: 40,
                         child: ElevatedButton(
@@ -443,7 +473,7 @@ class _CreateOfficerPageState extends State<CreateOfficerPage> {
                         ),
                       ),
                     ),
-                    const SizedBox(width: 16.0), // Add spacing between buttons
+                    const SizedBox(width: 16.0),
                     Expanded(
                       child: SizedBox(
                         height: 40,
