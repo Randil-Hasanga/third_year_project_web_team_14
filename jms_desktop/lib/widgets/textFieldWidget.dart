@@ -108,4 +108,28 @@ class TextFieldWidgets {
       ),
     );
   }
+
+  Widget outlinedNormalTextField(
+    Function(String?) onSaved,
+    String hintText,
+    TextEditingController controller,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Colors.white,
+        ),
+        child: TextFormField(
+          controller: controller,
+          decoration: InputDecoration(
+            hintText: hintText,
+            border: OutlineInputBorder(),
+          ),
+          onSaved: onSaved,
+        ),
+      ),
+    );
+  }
 }

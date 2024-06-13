@@ -1,6 +1,8 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'dart:ui';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:get_it/get_it.dart';
@@ -23,6 +25,8 @@ class _ProfilePageState extends State<ProfilePage> {
   RichTextWidget? _richTextWidget;
   String? _fname, _lname, _regNo, _post, _email, _contactNo, _imageLink;
   Map<String, dynamic>? officer;
+  dynamic imageFile;
+  String? imageName;
 
   @override
   void initState() {
@@ -71,7 +75,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 mainAxisSize: MainAxisSize.max,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  _profileImage(),
+                  _selectImageWidget(),
                 ],
               ),
             ),
@@ -210,5 +214,93 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
       ),
     );
+  }
+
+  Widget _selectImageWidget() {
+    return Column(
+      children: [
+        if (imageFile != null) ...{
+          GestureDetector(
+            onTap: () async {
+              await pickImage();
+            },
+            child: Stack(
+              children: [
+                Container(
+                  height: 200,
+                  width: 200,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(100),
+                    child: Image.memory(imageFile),
+                  ),
+                ),
+                const Icon(Icons.add_a_photo),
+              ],
+            ),
+          ),
+
+          // Display the picked image
+        } else if (_imageLink != null) ...{
+          GestureDetector(
+            onTap: () async {
+              await pickImage();
+            },
+            child: Stack(
+              children: [
+                Container(
+                  width: 200,
+                  height: 200,
+                  child: CircleAvatar(
+                    radius: 100,
+                    backgroundImage: NetworkImage(_imageLink!),
+                  ),
+                ),
+                const Icon(Icons.add_a_photo),
+              ],
+            ),
+          ),
+        } else ...{
+          GestureDetector(
+            onTap: () async {
+              await pickImage();
+            },
+            child: Stack(
+              children: [
+                Container(
+                  width: 200,
+                  height: 200,
+                  child: const CircleAvatar(
+                    radius: 100,
+                    backgroundImage:
+                        NetworkImage("https://avatar.iran.liara.run/public/3"),
+                  ),
+                ),
+                const Icon(Icons.add_a_photo),
+              ],
+            ),
+          ),
+        }
+      ],
+    );
+  }
+
+  Future<void> pickImage() async {
+    FilePickerResult? resultFilePicker = await FilePicker.platform
+        .pickFiles(type: FileType.image, allowMultiple: false);
+
+    if (resultFilePicker != null && resultFilePicker.files.isNotEmpty) {
+      // Ensure that files is not empty
+      Uint8List? bytes = resultFilePicker.files.first.bytes;
+      if (bytes != null) {
+        setState(() {
+          imageFile = bytes;
+          imageName = resultFilePicker.files.first.name;
+        });
+      } else {
+        print("Error: Picked file doesn't contain image data.");
+      }
+    } else {
+      print("Error: No file picked.");
+    }
   }
 }

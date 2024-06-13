@@ -66,6 +66,7 @@ class _JobProvidersState extends State<JobProviders> {
     });
   }
 
+  // loading providers from db
   void _loadJobProviders() async {
     try {
       List<Map<String, dynamic>>? data =
@@ -91,10 +92,12 @@ class _JobProvidersState extends State<JobProviders> {
       body: SafeArea(
         child: Row(
           children: [
+            //first part of the row : current providers list
             Expanded(
               flex: 1,
-              child: CurrentProvidersListWidget(),
+              child: currentProvidersListWidget(),
             ),
+            // second part of row : detais of selected provider (Using another class)
             Expanded(
               flex: 3,
               child: _isDetailsVisible
@@ -113,7 +116,9 @@ class _JobProvidersState extends State<JobProviders> {
     );
   }
 
-  Widget CurrentProvidersListWidget() {
+  // show list of current providers
+
+  Widget currentProvidersListWidget() {
     return Container(
       margin: EdgeInsets.only(
         left: _deviceWidth! * 0.01,
@@ -143,7 +148,7 @@ class _JobProvidersState extends State<JobProviders> {
               ),
               child: Row(
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.handshake,
                     size: 35,
                   ),
@@ -156,7 +161,8 @@ class _JobProvidersState extends State<JobProviders> {
               ),
             ),
           ),
-          _searchBarWidget!.searchBar(_searchController, "Search Provider..."),
+          _searchBarWidget!.searchBar(
+              _searchController, "Search Provider..."), // searchbar widget
           Expanded(
             child: Stack(
               children: [
@@ -188,7 +194,7 @@ class _JobProvidersState extends State<JobProviders> {
                       itemCount: (filteredJobProviders ?? []).length,
                       scrollDirection: Axis.vertical,
                       itemBuilder: (context, index) {
-                        return CurrentListViewBuilderWidget(
+                        return currentListViewBuilderWidget(
                             (filteredJobProviders ?? [])[index]);
                       },
                     ),
@@ -209,7 +215,7 @@ class _JobProvidersState extends State<JobProviders> {
     );
   }
 
-  Widget CurrentListViewBuilderWidget(Map<String, dynamic> provider) {
+  Widget currentListViewBuilderWidget(Map<String, dynamic> provider) {
     return Padding(
       padding: EdgeInsets.only(
         right: _deviceWidth! * 0.0125,
@@ -246,14 +252,14 @@ class _JobProvidersState extends State<JobProviders> {
               mainAxisSize: MainAxisSize.max,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                SizedBox(
+                const SizedBox(
                   width: 10,
                 ),
                 const Icon(
                   Icons.handshake,
                   size: 25,
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 10,
                 ),
                 if (provider['company_name'] != null) ...{
@@ -289,6 +295,8 @@ class _JobProvidersState extends State<JobProviders> {
     );
   }
 
+  // delete confirmation dialog box widget
+
   void _showDeleteConfirmationDialog(BuildContext context, String uid) {
     showDialog(
       barrierDismissible: false, // Prevent dismissing when clicking outside
@@ -316,7 +324,7 @@ class _JobProvidersState extends State<JobProviders> {
                 ],
               ),
               content: _deleting
-                  ? SizedBox(
+                  ? const SizedBox(
                       height: 50,
                       child: Center(
                         child: CircularProgressIndicator(),
@@ -362,6 +370,8 @@ class _JobProvidersState extends State<JobProviders> {
   }
 }
 
+// class for show details of selected provider
+
 class SelectedProviderDetailsWidget extends StatefulWidget {
   final Map<String, dynamic>? provider;
 
@@ -382,6 +392,7 @@ class _SelectedProviderDetailsWidgetState
     _richTextWidget = GetIt.instance.get<RichTextWidget>();
   }
 
+  // loading wacancies if selected provider has vacancies
   void _loadVacancies() async {
     try {
       List<Map<String, dynamic>>? data =
@@ -457,6 +468,7 @@ class _SelectedProviderDetailsWidgetState
                                   ),
                                 ],
                               ),
+                              // show basic data of provider
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -493,6 +505,7 @@ class _SelectedProviderDetailsWidgetState
                                     ),
                                   ],
                                 ),
+                                // show contact person details if company details added
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -544,7 +557,7 @@ class _SelectedProviderDetailsWidgetState
                       SizedBox(
                           width: _deviceHeight! *
                               0.02), // Add space between the containers
-
+                      // show contact logo if company details added
                       if (widget.provider!['company_name'] != null) ...{
                         Expanded(
                           child: Column(
@@ -552,7 +565,7 @@ class _SelectedProviderDetailsWidgetState
                               if (widget.provider!['logo'] != null) ...{
                                 _logo(),
                               },
-                              SizedBox(
+                              const SizedBox(
                                 height: 10,
                               ),
                               Container(
@@ -568,6 +581,7 @@ class _SelectedProviderDetailsWidgetState
                                     ),
                                   ],
                                 ),
+                                // show contact business registration document if company details added
                                 child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
@@ -606,6 +620,7 @@ class _SelectedProviderDetailsWidgetState
                                     ),
                                   ],
                                 ),
+                                // show contact company details if company details added
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -655,6 +670,7 @@ class _SelectedProviderDetailsWidgetState
               ],
             ),
           ),
+          // show contact posted job vacancies if have any
           if (vacancies != null) ...{
             Container(
               //height: _deviceHeight! * 0.5,
@@ -744,6 +760,7 @@ class _SelectedProviderDetailsWidgetState
     );
   }
 
+  // show vacancies in a grid if have any
   Widget _vacanciesGridWidget() {
     return LayoutBuilder(
       builder: (context, constraints) {
