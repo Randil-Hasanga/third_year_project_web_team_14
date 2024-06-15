@@ -6,7 +6,7 @@ import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:jms_desktop/const/constants.dart';
 import 'package:jms_desktop/pages/bulk_mail.dart';
-import 'package:jms_desktop/pages/Main_Page.dart';
+import 'package:jms_desktop/pages/main_page.dart';
 import 'package:jms_desktop/pages/create_officer_page.dart';
 import 'package:jms_desktop/pages/edit_profile.dart';
 import 'package:jms_desktop/pages/job_providers_page.dart';
