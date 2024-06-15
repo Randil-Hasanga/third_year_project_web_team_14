@@ -19,70 +19,20 @@ class _RecycleBinState extends State<RecycleBin> {
   ScrollController _scrollController2 = ScrollController();
   List<Map<String, dynamic>>? _deletedJobProviders;
   List<Map<String, dynamic>>? _deletedJobSeekers;
+  List<Map<String, dynamic>>? _deletedUsers;
   bool _showLoader = true;
-  Map<String, dynamic>? _selectedProvider;
+  bool _showNoProvidersFound = false;
+  bool _showNoSeekersFound = false;
+  bool _showNoUsersFound = false;
+  Map<String, dynamic>? _selectedProvider, _selecteduser, _selectedSeeker;
   FirebaseService? _firebaseService;
   String? _dropDownValue = "All";
-
-  Widget _selectedUserDropdown() {
-    List<String> _userType = [
-      "All",
-      "Job Providers",
-      "Job Seekers",
-    ];
-    List<DropdownMenuItem<String>> _items = _userType
-        .map(
-          (e) => DropdownMenuItem(
-            value: e,
-            child: Text(
-              e,
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: _widthXheight! * 0.7,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        )
-        .toList();
-
-    return Center(
-      child: DropdownButton(
-        value: _dropDownValue,
-        items: _items,
-        onChanged: (_value) {
-          //print(_value);
-          print(_dropDownValue);
-          setState(() {
-            _dropDownValue = _value;
-          });
-          _getDataFromDB();
-        },
-        dropdownColor: backgroundColor3,
-        borderRadius: BorderRadius.circular(10),
-        iconSize: 20,
-        icon: const Icon(
-          Icons.arrow_drop_down_sharp,
-          color: Colors.white,
-        ),
-        underline: Container(),
-      ),
-    );
-  }
 
   @override
   void initState() {
     super.initState();
     _firebaseService = GetIt.instance.get<FirebaseService>();
     _getDataFromDB();
-
-    Future.delayed(const Duration(seconds: 3), () {
-      if (mounted) {
-        setState(() {
-          _showLoader = false;
-        });
-      }
-    });
   }
 
   void _getDataFromDB() async {
@@ -92,9 +42,24 @@ class _RecycleBinState extends State<RecycleBin> {
 
       if (mounted) {
         setState(() {
-          _deletedJobProviders = data;
+          if (_dropDownValue == "Job Providers") {
+            _deletedJobProviders = data;
+            _showNoProvidersFound =
+                _deletedJobProviders == null || _deletedJobProviders!.isEmpty;
+          } else if (_dropDownValue == "Job Seekers") {
+            _deletedJobSeekers = data;
+            _showNoSeekersFound =
+                _deletedJobSeekers == null || _deletedJobSeekers!.isEmpty;
+          } else if (_dropDownValue == "All") {
+            _deletedUsers = data;
+            _showNoUsersFound = _deletedUsers == null || _deletedUsers!.isEmpty;
+          }
         });
       }
+
+      setState(() {
+        _showLoader = false;
+      });
     } catch (error) {
       print('Error fetching data: $error');
     }
@@ -142,10 +107,23 @@ class _RecycleBinState extends State<RecycleBin> {
                 mainAxisSize: MainAxisSize.max,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    flex: 1,
-                    child: _deletedUsersListWidget(),
-                  ),
+                  if (_dropDownValue == "All") ...{
+                    Expanded(
+                      flex: 1,
+                      child: _deletedUsersListWidget(),
+                    ),
+                  } else if (_dropDownValue == "Job Providers") ...{
+                    Expanded(
+                      flex: 1,
+                      child: _deletedProvidersListWidget(),
+                    ),
+                  } else if (_dropDownValue == "Job Seekers") ...{
+                    Expanded(
+                      flex: 1,
+                      child: _deletedSeekersListWidget(),
+                    ),
+                  }
+
                   // Expanded(
                   //   flex: 1,
                   //   child: _DeletedSeekersListWidget(),
@@ -212,19 +190,177 @@ class _RecycleBinState extends State<RecycleBin> {
             child: Stack(
               children: [
                 Visibility(
-                  visible: _deletedJobProviders == null,
+                  visible: _showLoader,
                   child: Center(
-                    child: Stack(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Visibility(
-                          visible: _showLoader,
-                          replacement: const Center(
-                            child: Text("No job providers found."),
-                          ),
-                          child: const CircularProgressIndicator(
-                            color: selectionColor,
-                          ),
+                        const CircularProgressIndicator(
+                          color: selectionColor,
                         ),
+                        const SizedBox(height: 8),
+                        if (_deletedUsers == null ||
+                            _deletedUsers!.isEmpty) ...{
+                          _richTextWidget!.simpleText(
+                              "Loading...", null, Colors.black, null),
+                        } else ...{
+                          _richTextWidget!.simpleText(
+                              "Fetching database...", null, Colors.black, null),
+                        }
+                      ],
+                    ),
+                  ),
+                ),
+                Visibility(
+                  visible: _deletedUsers != null,
+                  child: Scrollbar(
+                    controller: _scrollControllerLeft,
+                    thumbVisibility: true,
+                    child: ListView.builder(
+                      controller: _scrollControllerLeft,
+                      shrinkWrap: true,
+                      itemCount: _deletedUsers?.length ?? 0,
+                      scrollDirection: Axis.vertical,
+                      itemBuilder: (context, index) {
+                        return _deletedUsersListViewBuilder(
+                            _deletedUsers![index]);
+                      },
+                    ),
+                  ),
+                ),
+                Visibility(
+                  visible: _showNoUsersFound,
+                  child: Center(
+                    child: _richTextWidget!.simpleText(
+                        "No users found.", null, Colors.black, null),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _deletedUsersListViewBuilder(Map<String, dynamic> user) {
+    return Padding(
+      padding: EdgeInsets.only(
+        right: _deviceWidth! * 0.0125,
+        top: _deviceHeight! * 0.01,
+      ),
+      child: GestureDetector(
+        onTap: () {
+          setState(() {
+            _selecteduser = user;
+          });
+        },
+        child: AnimatedContainer(
+          duration: const Duration(microseconds: 300),
+          height: _deviceHeight! * 0.08,
+          width: _deviceWidth! * 0.175,
+          decoration: BoxDecoration(
+            color: cardBackgroundColor,
+            borderRadius: BorderRadius.circular(_widthXheight! * 0.66),
+            boxShadow: const [
+              BoxShadow(
+                color: Colors.black12,
+                blurRadius: 5,
+                offset: Offset(0, 0),
+              ),
+            ],
+          ),
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+                horizontal: _deviceWidth! * 0.001,
+                vertical: _deviceHeight! * 0.015),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: _deviceWidth! * 0.01,
+                ),
+                Icon(
+                  Icons.developer_mode,
+                  size: _widthXheight! * 1,
+                ),
+                if (user['username'] != null) ...{
+                  Text(user['username']),
+                }
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _deletedProvidersListWidget() {
+    return Container(
+      margin: EdgeInsets.only(
+        left: _deviceWidth! * 0.01,
+        right: _deviceWidth! * 0.005,
+        bottom: _deviceHeight! * 0.02,
+        top: _deviceHeight! * 0.02,
+        // /top: _deviceHeight! * 0.02,
+      ),
+      padding: EdgeInsets.symmetric(horizontal: _deviceWidth! * 0.01),
+      decoration: BoxDecoration(
+        color: cardBackgroundColorLayer2,
+        borderRadius: BorderRadius.circular(_widthXheight! * 1),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 5,
+            offset: Offset(0, 0),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Align(
+              alignment: Alignment.topLeft,
+              child: Padding(
+                padding: EdgeInsets.only(
+                    top: _widthXheight! * 0.7, left: _widthXheight! * 0.1),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Job Providers",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: _widthXheight! * 0.7,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    _selectedUserDropdown(),
+                  ],
+                ),
+              )),
+          Expanded(
+            child: Stack(
+              children: [
+                Visibility(
+                  visible: _showLoader,
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const CircularProgressIndicator(
+                          color: selectionColor,
+                        ),
+                        const SizedBox(height: 8),
+                        if (_deletedJobProviders == null ||
+                            _deletedJobProviders!.isEmpty) ...{
+                          _richTextWidget!.simpleText(
+                              "Loading...", null, Colors.black, null),
+                        } else ...{
+                          _richTextWidget!.simpleText(
+                              "Fetching database...", null, Colors.black, null),
+                        }
                       ],
                     ),
                   ),
@@ -244,6 +380,13 @@ class _RecycleBinState extends State<RecycleBin> {
                             _deletedJobProviders![index]);
                       },
                     ),
+                  ),
+                ),
+                Visibility(
+                  visible: _showNoProvidersFound,
+                  child: Center(
+                    child: _richTextWidget!.simpleText(
+                        "No providers found.", null, Colors.black, null),
                   ),
                 ),
               ],
@@ -313,7 +456,7 @@ class _RecycleBinState extends State<RecycleBin> {
     );
   }
 
-  Widget _DeletedSeekersListWidget() {
+  Widget _deletedSeekersListWidget() {
     return Container(
       margin: EdgeInsets.only(
         left: _deviceWidth! * 0.005,
@@ -342,6 +485,7 @@ class _RecycleBinState extends State<RecycleBin> {
                 padding: EdgeInsets.only(
                     top: _widthXheight! * 0.7, left: _widthXheight! * 0.1),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
                       "Job Seekers",
@@ -351,6 +495,7 @@ class _RecycleBinState extends State<RecycleBin> {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
+                    _selectedUserDropdown(),
                   ],
                 ),
               )),
@@ -358,38 +503,50 @@ class _RecycleBinState extends State<RecycleBin> {
             child: Stack(
               children: [
                 Visibility(
-                  visible: _deletedJobSeekers == null,
+                  visible: _showLoader,
                   child: Center(
-                    child: Stack(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Visibility(
-                          visible: _showLoader,
-                          replacement: const Center(
-                            child: Text("No job providers found."),
-                          ),
-                          child: const CircularProgressIndicator(
-                            color: selectionColor,
-                          ),
+                        const CircularProgressIndicator(
+                          color: selectionColor,
                         ),
+                        const SizedBox(height: 8),
+                        if (_deletedJobSeekers == null ||
+                            _deletedJobSeekers!.isEmpty) ...{
+                          _richTextWidget!.simpleText(
+                              "Loading...", null, Colors.black, null),
+                        } else ...{
+                          _richTextWidget!.simpleText(
+                              "Fetching database...", null, Colors.black, null),
+                        }
                       ],
                     ),
                   ),
                 ),
                 Visibility(
-                  visible: _deletedJobSeekers != null,
+                  visible: _deletedJobSeekers != null &&
+                      _dropDownValue == 'Job Seekers',
                   child: Scrollbar(
-                    controller: _scrollController2,
+                    controller: _scrollControllerLeft,
                     thumbVisibility: true,
                     child: ListView.builder(
-                      controller: _scrollController2,
+                      controller: _scrollControllerLeft,
                       shrinkWrap: true,
-                      itemCount: _deletedJobSeekers?.length ?? 0,
+                      itemCount: _deletedJobProviders?.length ?? 0,
                       scrollDirection: Axis.vertical,
                       itemBuilder: (context, index) {
-                        return _DeletedSeekersListViewBuilder(
-                            _deletedJobSeekers![index]);
+                        return _deletedSeekersListViewBuilder(
+                            _deletedJobProviders![index]);
                       },
                     ),
+                  ),
+                ),
+                Visibility(
+                  visible: _showNoSeekersFound,
+                  child: Center(
+                    child: _richTextWidget!.simpleText(
+                        "No job seekers found.", null, Colors.black, null),
                   ),
                 ),
               ],
@@ -400,7 +557,7 @@ class _RecycleBinState extends State<RecycleBin> {
     );
   }
 
-  Widget _DeletedSeekersListViewBuilder(Map<String, dynamic> provider) {
+  Widget _deletedSeekersListViewBuilder(Map<String, dynamic> provider) {
     return Padding(
       padding: EdgeInsets.only(
         right: _deviceWidth! * 0.0125,
@@ -528,6 +685,53 @@ class _RecycleBinState extends State<RecycleBin> {
           },
         );
       },
+    );
+  }
+
+  Widget _selectedUserDropdown() {
+    List<String> _userType = [
+      "All",
+      "Job Providers",
+      "Job Seekers",
+    ];
+    List<DropdownMenuItem<String>> _items = _userType
+        .map(
+          (e) => DropdownMenuItem(
+            value: e,
+            child: Text(
+              e,
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: _widthXheight! * 0.7,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        )
+        .toList();
+
+    return Center(
+      child: DropdownButton(
+        value: _dropDownValue,
+        items: _items,
+        onChanged: (_value) {
+          //print(_value);
+          print(_dropDownValue);
+          setState(() {
+            _dropDownValue = _value;
+            _showLoader = true;
+          });
+          _getDataFromDB();
+        },
+        dropdownColor: backgroundColor3,
+        borderRadius: BorderRadius.circular(10),
+        iconSize: 20,
+        icon: const Icon(
+          Icons.arrow_drop_down_sharp,
+          color: Colors.white,
+        ),
+        underline: Container(),
+      ),
     );
   }
 }
