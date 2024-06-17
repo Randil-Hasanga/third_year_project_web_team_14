@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -33,7 +34,7 @@ class RichTextWidget {
         Icon(
           icon,
         ),
-        SizedBox(
+        const SizedBox(
           width: 10,
         ),
         RichText(
@@ -71,7 +72,7 @@ class RichTextWidget {
             ),
           ),
         ),
-        SizedBox(
+        const SizedBox(
           width: 6,
         ),
         Icon(icon),
@@ -123,7 +124,140 @@ class RichTextWidget {
             ),
           ],
         ),
-        Divider(),
+        const Divider(),
+      ],
+    );
+  }
+
+  Widget deletedProviderTableRow(
+    String email,
+    String companyName,
+    String repName,
+    String contactNo,
+    String deletedBy,
+    String deletedDate,
+    double fontSize,
+    Color color,
+  ) {
+    return Table(
+      defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+      border: TableBorder.symmetric(
+          inside: BorderSide(color: Colors.black, style: BorderStyle.solid)),
+      columnWidths: const {
+        0: FixedColumnWidth(300), // Adjust as necessary
+        1: FixedColumnWidth(300), // Adjust as necessary
+        2: FixedColumnWidth(250), // Adjust as necessary
+        3: FixedColumnWidth(150), // Adjust as necessary
+        4: FixedColumnWidth(250), // Adjust as necessary
+        5: FixedColumnWidth(250), // Adjust as necessary
+      },
+      children: [
+        TableRow(
+          children: [
+            TableCell(
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 5.0, horizontal: 5.0),
+                child: Center(
+                  child: Text(
+                    companyName,
+                    style: TextStyle(
+                      fontSize: fontSize,
+                      color: color,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: GoogleFonts.poppins().fontFamily,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            TableCell(
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 5.0, horizontal: 2.0),
+                child: Center(
+                  child: Text(
+                    email,
+                    style: TextStyle(
+                      fontSize: fontSize,
+                      color: color,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: GoogleFonts.poppins().fontFamily,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            TableCell(
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 5.0, horizontal: 2.0),
+                child: Center(
+                  child: Text(
+                    repName,
+                    style: TextStyle(
+                      fontSize: fontSize,
+                      color: color,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: GoogleFonts.poppins().fontFamily,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            TableCell(
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 5.0, horizontal: 2.0),
+                child: Center(
+                  child: Text(
+                    contactNo,
+                    style: TextStyle(
+                      fontSize: fontSize,
+                      color: color,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: GoogleFonts.poppins().fontFamily,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            TableCell(
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 5.0, horizontal: 2.0),
+                child: Center(
+                  child: Text(
+                    deletedBy,
+                    style: TextStyle(
+                      fontSize: fontSize,
+                      color: color,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: GoogleFonts.poppins().fontFamily,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            TableCell(
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 5.0, horizontal: 2.0),
+                child: Center(
+                  child: Text(
+                    deletedDate,
+                    style: TextStyle(
+                      fontSize: fontSize,
+                      color: color,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: GoogleFonts.poppins().fontFamily,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ],
     );
   }
