@@ -26,7 +26,7 @@ class _RecycleBinState extends State<RecycleBin> {
   bool _showNoUsersFound = false;
   Map<String, dynamic>? _selectedProvider, _selecteduser, _selectedSeeker;
   FirebaseService? _firebaseService;
-  String? _dropDownValue = "All";
+  String? _dropDownValue = "Job Providers";
 
   @override
   void initState() {
@@ -50,9 +50,6 @@ class _RecycleBinState extends State<RecycleBin> {
             _deletedJobSeekers = data;
             _showNoSeekersFound =
                 _deletedJobSeekers == null || _deletedJobSeekers!.isEmpty;
-          } else if (_dropDownValue == "All") {
-            _deletedUsers = data;
-            _showNoUsersFound = _deletedUsers == null || _deletedUsers!.isEmpty;
           }
         });
       }
@@ -107,12 +104,7 @@ class _RecycleBinState extends State<RecycleBin> {
                 mainAxisSize: MainAxisSize.max,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (_dropDownValue == "All") ...{
-                    Expanded(
-                      flex: 1,
-                      child: _deletedUsersListWidget(),
-                    ),
-                  } else if (_dropDownValue == "Job Providers") ...{
+                  if (_dropDownValue == "Job Providers") ...{
                     Expanded(
                       flex: 1,
                       child: _deletedProvidersListWidget(),
@@ -143,160 +135,6 @@ class _RecycleBinState extends State<RecycleBin> {
     );
   }
 
-  Widget _deletedUsersListWidget() {
-    return Container(
-      margin: EdgeInsets.only(
-        left: _deviceWidth! * 0.01,
-        right: _deviceWidth! * 0.005,
-        bottom: _deviceHeight! * 0.02,
-        top: _deviceHeight! * 0.02,
-        // /top: _deviceHeight! * 0.02,
-      ),
-      padding: EdgeInsets.symmetric(horizontal: _deviceWidth! * 0.01),
-      decoration: BoxDecoration(
-        color: cardBackgroundColorLayer2,
-        borderRadius: BorderRadius.circular(_widthXheight! * 1),
-        boxShadow: const [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 5,
-            offset: Offset(0, 0),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Align(
-              alignment: Alignment.topLeft,
-              child: Padding(
-                padding: EdgeInsets.only(
-                    top: _widthXheight! * 0.7, left: _widthXheight! * 0.1),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "Users",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: _widthXheight! * 0.7,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    _selectedUserDropdown(),
-                  ],
-                ),
-              )),
-          Expanded(
-            child: Stack(
-              children: [
-                Visibility(
-                  visible: _showLoader,
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const CircularProgressIndicator(
-                          color: selectionColor,
-                        ),
-                        const SizedBox(height: 8),
-                        if (_deletedUsers == null ||
-                            _deletedUsers!.isEmpty) ...{
-                          _richTextWidget!.simpleText(
-                              "Loading...", null, Colors.black, null),
-                        } else ...{
-                          _richTextWidget!.simpleText(
-                              "Fetching database...", null, Colors.black, null),
-                        }
-                      ],
-                    ),
-                  ),
-                ),
-                Visibility(
-                  visible: _deletedUsers != null,
-                  child: Scrollbar(
-                    controller: _scrollControllerLeft,
-                    thumbVisibility: true,
-                    child: ListView.builder(
-                      controller: _scrollControllerLeft,
-                      shrinkWrap: true,
-                      itemCount: _deletedUsers?.length ?? 0,
-                      scrollDirection: Axis.vertical,
-                      itemBuilder: (context, index) {
-                        return _deletedUsersListViewBuilder(
-                            _deletedUsers![index]);
-                      },
-                    ),
-                  ),
-                ),
-                Visibility(
-                  visible: _showNoUsersFound,
-                  child: Center(
-                    child: _richTextWidget!.simpleText(
-                        "No users found.", null, Colors.black, null),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _deletedUsersListViewBuilder(Map<String, dynamic> user) {
-    return Padding(
-      padding: EdgeInsets.only(
-        right: _deviceWidth! * 0.0125,
-        top: _deviceHeight! * 0.01,
-      ),
-      child: GestureDetector(
-        onTap: () {
-          setState(() {
-            _selecteduser = user;
-          });
-        },
-        child: AnimatedContainer(
-          duration: const Duration(microseconds: 300),
-          height: _deviceHeight! * 0.08,
-          width: _deviceWidth! * 0.175,
-          decoration: BoxDecoration(
-            color: cardBackgroundColor,
-            borderRadius: BorderRadius.circular(_widthXheight! * 0.66),
-            boxShadow: const [
-              BoxShadow(
-                color: Colors.black12,
-                blurRadius: 5,
-                offset: Offset(0, 0),
-              ),
-            ],
-          ),
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-                horizontal: _deviceWidth! * 0.001,
-                vertical: _deviceHeight! * 0.015),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              mainAxisSize: MainAxisSize.max,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SizedBox(
-                  width: _deviceWidth! * 0.01,
-                ),
-                Icon(
-                  Icons.developer_mode,
-                  size: _widthXheight! * 1,
-                ),
-                if (user['username'] != null) ...{
-                  Text(user['username']),
-                }
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _deletedProvidersListWidget() {
     return Container(
       margin: EdgeInsets.only(
@@ -319,27 +157,42 @@ class _RecycleBinState extends State<RecycleBin> {
         ],
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Align(
-              alignment: Alignment.topLeft,
-              child: Padding(
-                padding: EdgeInsets.only(
-                    top: _widthXheight! * 0.7, left: _widthXheight! * 0.1),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "Job Providers",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: _widthXheight! * 0.7,
-                        fontWeight: FontWeight.w600,
-                      ),
+            alignment: Alignment.topLeft,
+            child: Padding(
+              padding: EdgeInsets.only(
+                  top: _widthXheight! * 0.7, left: _widthXheight! * 0.1),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Job Providers",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: _widthXheight! * 0.7,
+                      fontWeight: FontWeight.w600,
                     ),
-                    _selectedUserDropdown(),
-                  ],
-                ),
-              )),
+                  ),
+                  _selectedUserDropdown(),
+                ],
+              ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.only(
+                top: _widthXheight! * 0.7, left: _widthXheight! * 0.1),
+            child: _richTextWidget.deletedProviderTableRow(
+                "Contact Email",
+                "Company Name",
+                "REP name",
+                "Contact No",
+                "Disabled by",
+                "Disabled date",
+                15,
+                const Color.fromARGB(255, 0, 52, 95)),
+          ),
           Expanded(
             child: Stack(
               children: [
@@ -429,25 +282,35 @@ class _RecycleBinState extends State<RecycleBin> {
                 horizontal: _deviceWidth! * 0.001,
                 vertical: _deviceHeight! * 0.015),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment: MainAxisAlignment.start,
               mainAxisSize: MainAxisSize.max,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Icon(
-                  Icons.developer_mode,
-                  size: _widthXheight! * 1,
-                ),
+                // Icon(
+                //   Icons.developer_mode,
+                //   size: _widthXheight! * 1,
+                // ),
                 if (provider['company_name'] != null) ...{
-                  Text(provider['company_name']),
+                  _richTextWidget.deletedProviderTableRow(
+                      provider['repEmail'],
+                      provider['company_name'],
+                      provider['repName'],
+                      provider['repTelephone'],
+                      provider['disabled_by'],
+                      provider['disabled_date'],
+                      15,
+                      Colors.black)
                 } else ...{
                   Text(provider['username']),
                 },
-                IconButton(
-                  onPressed: () {
-                    _showRestoreConfirmationDialog(context, provider['uid']);
-                  },
-                  icon: const Icon(Icons.restore_page),
-                ),
+                if (_deviceWidth! > 1800) ...{
+                  IconButton(
+                    onPressed: () {
+                      _showRestoreConfirmationDialog(context, provider['uid']);
+                    },
+                    icon: const Icon(Icons.restore_page),
+                  ),
+                }
               ],
             ),
           ),
@@ -690,7 +553,6 @@ class _RecycleBinState extends State<RecycleBin> {
 
   Widget _selectedUserDropdown() {
     List<String> _userType = [
-      "All",
       "Job Providers",
       "Job Seekers",
     ];

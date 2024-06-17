@@ -225,8 +225,13 @@ class FirebaseService {
   // delete user function
 
   Future<void> deleteUser(String uid) async {
+    String fname = "${currentUser?['fname']}";
+    String lname = "${currentUser?['lname']}";
+    String date = DateTime.now().toString();
     await _db.collection(USER_COLLECTION).doc(uid).update({
       'disabled': true,
+      'disabled_by': "$fname $lname",
+      'disabled_date': date,
     });
 
     QuerySnapshot querySnapshot = await _db
@@ -274,7 +279,6 @@ class FirebaseService {
     return _querySnapshot.docs.length;
   }
 
-
   // get details about deleted users
 
   Future<List<Map<String, dynamic>>?> getDeletedUsersData(
@@ -304,7 +308,7 @@ class FirebaseService {
           // Merge additional data with basic data
           providerData.addAll(additionalData);
         }
-
+        print(providerData);
         jobProviders.add(providerData);
       }
     } else if (dropDownValue == 'Job Seekers') {
