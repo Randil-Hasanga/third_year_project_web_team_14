@@ -144,7 +144,7 @@ class RichTextWidget {
       border: TableBorder.symmetric(
           inside: BorderSide(color: Colors.black, style: BorderStyle.solid)),
       columnWidths: const {
-        0: FixedColumnWidth(300), // Adjust as necessary
+        0: FixedColumnWidth(250), // Adjust as necessary
         1: FixedColumnWidth(300), // Adjust as necessary
         2: FixedColumnWidth(250), // Adjust as necessary
         3: FixedColumnWidth(150), // Adjust as necessary
