@@ -271,8 +271,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   height: 200,
                   child: const CircleAvatar(
                     radius: 100,
-                    backgroundImage:
-                        NetworkImage("https://avatar.iran.liara.run/public/3"),
+                    backgroundImage: NetworkImage(
+                        "https://firebasestorage.googleapis.com/v0/b/jobcenter-app-74ca3.appspot.com/o/images%2FJIwYENZjwIOSicyjGEaWK7mTCvB2%2Flogo.jpg?alt=media&token=12ae69bd-5832-4420-bf2f-814bafdc5563"),
                   ),
                 ),
                 const Icon(Icons.add_a_photo),

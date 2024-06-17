@@ -50,6 +50,8 @@ class _MainPageState extends State<MainPage> {
 
     if (_email != null && _password != null) {
       loginUser2(_email!, _password!);
+    } else {
+      Navigator.popAndPushNamed(context, '/login');
     }
   }
 

@@ -194,55 +194,57 @@ class _RecycleBinState extends State<RecycleBin> {
                 const Color.fromARGB(255, 0, 52, 95)),
           ),
           Expanded(
-            child: Stack(
-              children: [
-                Visibility(
-                  visible: _showLoader,
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const CircularProgressIndicator(
-                          color: selectionColor,
-                        ),
-                        const SizedBox(height: 8),
-                        if (_deletedJobProviders == null ||
-                            _deletedJobProviders!.isEmpty) ...{
-                          _richTextWidget!.simpleText(
-                              "Loading...", null, Colors.black, null),
-                        } else ...{
-                          _richTextWidget!.simpleText(
-                              "Fetching database...", null, Colors.black, null),
-                        }
-                      ],
+            child: SingleChildScrollView(
+              child: Stack(
+                children: [
+                  Visibility(
+                    visible: _showLoader,
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const CircularProgressIndicator(
+                            color: selectionColor,
+                          ),
+                          const SizedBox(height: 8),
+                          if (_deletedJobProviders == null ||
+                              _deletedJobProviders!.isEmpty) ...{
+                            _richTextWidget!.simpleText(
+                                "Loading...", null, Colors.black, null),
+                          } else ...{
+                            _richTextWidget!.simpleText("Fetching database...",
+                                null, Colors.black, null),
+                          }
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                Visibility(
-                  visible: _deletedJobProviders != null,
-                  child: Scrollbar(
-                    controller: _scrollControllerLeft,
-                    thumbVisibility: true,
-                    child: ListView.builder(
+                  Visibility(
+                    visible: _deletedJobProviders != null,
+                    child: Scrollbar(
                       controller: _scrollControllerLeft,
-                      shrinkWrap: true,
-                      itemCount: _deletedJobProviders?.length ?? 0,
-                      scrollDirection: Axis.vertical,
-                      itemBuilder: (context, index) {
-                        return _deletedProvidersListViewBuilder(
-                            _deletedJobProviders![index]);
-                      },
+                      thumbVisibility: true,
+                      child: ListView.builder(
+                        controller: _scrollControllerLeft,
+                        shrinkWrap: true,
+                        itemCount: _deletedJobProviders?.length ?? 0,
+                        scrollDirection: Axis.vertical,
+                        itemBuilder: (context, index) {
+                          return _deletedProvidersListViewBuilder(
+                              _deletedJobProviders![index]);
+                        },
+                      ),
                     ),
                   ),
-                ),
-                Visibility(
-                  visible: _showNoProvidersFound,
-                  child: Center(
-                    child: _richTextWidget!.simpleText(
-                        "No providers found.", null, Colors.black, null),
+                  Visibility(
+                    visible: _showNoProvidersFound,
+                    child: Center(
+                      child: _richTextWidget!.simpleText(
+                          "No providers found.", null, Colors.black, null),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],
