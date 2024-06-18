@@ -276,8 +276,7 @@ class _JobProvidersState extends State<JobProviders> {
                 if (_deviceWidth! > 800) ...{
                   IconButton(
                     onPressed: () async {
-                      String? uid = await _firebaseService!
-                          .getUidByEmail(provider['email']);
+                      String? uid = provider['uid'];
                       print(uid);
                       _showDeleteConfirmationDialog(context, uid!);
                     },

@@ -101,6 +101,7 @@ class _BulkMailPageState extends State<BulkMailPage> {
   FirebaseService? _firebaseService;
   EmailService? _emailService;
   ButtonWidgets? _buttonWidgets;
+  double? totalWidth, totalHeight;
 
   @override
   void initState() {
@@ -116,372 +117,406 @@ class _BulkMailPageState extends State<BulkMailPage> {
     _deviceWidth = MediaQuery.of(context).size.width;
     _widthXheight = _deviceHeight! * _deviceWidth! / 50000;
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.max,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Row(
+      body: SafeArea(child: LayoutBuilder(
+        builder: (context, constraints) {
+          totalWidth = constraints.maxWidth;
+          totalHeight = constraints.maxHeight;
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: SingleChildScrollView(
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.max,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Container(
-                    width: _deviceWidth! * 0.6,
-                    margin: const EdgeInsets.all(8.0),
-                    decoration: BoxDecoration(
-                      color: cardBackgroundColorLayer2,
-                      borderRadius: BorderRadius.circular(_widthXheight! * 1),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Colors.black12,
-                          blurRadius: 5,
-                          offset: Offset(0, 0),
+                  SizedBox(
+                    height: totalHeight! * 0.1,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.max,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: totalWidth! * 0.8,
+                        margin: const EdgeInsets.all(8.0),
+                        decoration: BoxDecoration(
+                          color: cardBackgroundColorLayer2,
+                          borderRadius:
+                              BorderRadius.circular(_widthXheight! * 1),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Colors.black12,
+                              blurRadius: 5,
+                              offset: Offset(0, 0),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.max,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          flex: 1,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              _mailForm(),
-                              Container(
-                                margin: const EdgeInsets.only(
-                                    left: 16, right: 16, bottom: 16),
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.black),
-                                  borderRadius: BorderRadius.circular(10),
-                                  color: Colors.white,
-                                ),
-                                padding: const EdgeInsets.all(8),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisSize: MainAxisSize.max,
-                                  children: [
-                                    const Text("To : "),
-                                    _emailChips(),
-                                    if (emailList != null &&
-                                        emailList!.isNotEmpty) ...{
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.end,
-                                        mainAxisSize: MainAxisSize.max,
-                                        children: [
-                                          _buttonWidgets!
-                                              .simpleElevatedButtonWidget(
-                                            onPressed: () {
-                                              setState(() {
-                                                emailList = {};
-                                              });
-                                            },
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor:
-                                                  const Color.fromARGB(
-                                                      255, 134, 145, 135),
-                                            ),
-                                            buttonText: "Clear",
-                                          ),
-                                          const SizedBox(
-                                            width: 20,
-                                          ),
-                                        ],
-                                      ),
-                                    },
-                                    const Divider(),
-                                    Column(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.max,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              flex: 1,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.max,
+                                children: [
+                                  _mailForm(),
+                                  Container(
+                                    margin: const EdgeInsets.only(
+                                        left: 16, right: 16, bottom: 16),
+                                    decoration: BoxDecoration(
+                                      border: Border.all(color: Colors.black),
+                                      borderRadius: BorderRadius.circular(10),
+                                      color: Colors.white,
+                                    ),
+                                    padding: const EdgeInsets.all(8),
+                                    child: Column(
                                       mainAxisAlignment:
                                           MainAxisAlignment.start,
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       mainAxisSize: MainAxisSize.max,
                                       children: [
-                                        SizedBox(
-                                          height: _deviceHeight! * 0.01,
-                                        ),
-                                        Row(
+                                        const Text("To : "),
+                                        _emailChips(),
+                                        if (emailList != null &&
+                                            emailList!.isNotEmpty) ...{
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.end,
+                                            mainAxisSize: MainAxisSize.max,
+                                            children: [
+                                              _buttonWidgets!
+                                                  .simpleElevatedButtonWidget(
+                                                onPressed: () {
+                                                  setState(() {
+                                                    emailList = {};
+                                                  });
+                                                },
+                                                style: ElevatedButton.styleFrom(
+                                                  backgroundColor:
+                                                      const Color.fromARGB(
+                                                          255, 134, 145, 135),
+                                                ),
+                                                buttonText: "Clear",
+                                              ),
+                                              const SizedBox(
+                                                width: 20,
+                                              ),
+                                            ],
+                                          ),
+                                        },
+                                        const Divider(),
+                                        Column(
                                           mainAxisAlignment:
                                               MainAxisAlignment.start,
-                                          mainAxisSize: MainAxisSize.max,
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
+                                          mainAxisSize: MainAxisSize.max,
                                           children: [
-                                            _selectedRecepientTypeDropdown(),
                                             SizedBox(
-                                              width: _deviceWidth! * 0.02,
+                                              height: _deviceHeight! * 0.01,
                                             ),
-                                            Column(
+                                            Row(
                                               mainAxisAlignment:
                                                   MainAxisAlignment.start,
                                               mainAxisSize: MainAxisSize.max,
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
                                               children: [
-                                                Row(
+                                                SizedBox(
+                                                  width: totalWidth! * 0.05,
+                                                ),
+                                                _selectedRecepientTypeDropdown(),
+                                                SizedBox(
+                                                  width: _deviceWidth! * 0.02,
+                                                ),
+                                                Column(
                                                   mainAxisAlignment:
                                                       MainAxisAlignment.start,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.center,
                                                   mainAxisSize:
                                                       MainAxisSize.max,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
                                                   children: [
-                                                    Visibility(
-                                                      visible: isSeekerSelected,
-                                                      child: Material(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(5),
-                                                        elevation: 2,
-                                                        child: Container(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .all(8),
-                                                          decoration: BoxDecoration(
-                                                              color:
-                                                                  backgroundColor,
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          5)),
-                                                          child: Column(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .start,
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .start,
-                                                            mainAxisSize:
-                                                                MainAxisSize
-                                                                    .min,
-                                                            children: [
-                                                              const Text(
-                                                                  "Highest Education"),
-                                                              _educationDropdown(),
-                                                            ],
+                                                    Column(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .start,
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      mainAxisSize:
+                                                          MainAxisSize.max,
+                                                      children: [
+                                                        Row(
+                                                          children: [
+                                                            Visibility(
+                                                              visible:
+                                                                  isSeekerSelected,
+                                                              child: Material(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            5),
+                                                                elevation: 2,
+                                                                child:
+                                                                    Container(
+                                                                  padding:
+                                                                      const EdgeInsets
+                                                                          .all(
+                                                                          8),
+                                                                  decoration: BoxDecoration(
+                                                                      color:
+                                                                          backgroundColor,
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              5)),
+                                                                  child: Column(
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .start,
+                                                                    crossAxisAlignment:
+                                                                        CrossAxisAlignment
+                                                                            .start,
+                                                                    mainAxisSize:
+                                                                        MainAxisSize
+                                                                            .min,
+                                                                    children: [
+                                                                      const Text(
+                                                                          "Highest Education"),
+                                                                      _educationDropdown(),
+                                                                    ],
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                            SizedBox(
+                                                              width:
+                                                                  _deviceWidth! *
+                                                                      0.02,
+                                                            ),
+                                                            Visibility(
+                                                              visible:
+                                                                  isSeekerSelected,
+                                                              child: Material(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            5),
+                                                                elevation: 2,
+                                                                child:
+                                                                    Container(
+                                                                  padding:
+                                                                      const EdgeInsets
+                                                                          .all(
+                                                                          8),
+                                                                  decoration: BoxDecoration(
+                                                                      color:
+                                                                          backgroundColor,
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              5)),
+                                                                  child: Column(
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .start,
+                                                                    crossAxisAlignment:
+                                                                        CrossAxisAlignment
+                                                                            .start,
+                                                                    mainAxisSize:
+                                                                        MainAxisSize
+                                                                            .min,
+                                                                    children: [
+                                                                      const Text(
+                                                                          "District"),
+                                                                      _locationDropdown(),
+                                                                    ],
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                            SizedBox(
+                                                              width:
+                                                                  _deviceWidth! *
+                                                                      0.02,
+                                                            ),
+                                                            Visibility(
+                                                              visible:
+                                                                  isProviderSelected,
+                                                              child: Material(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            5),
+                                                                elevation: 2,
+                                                                child:
+                                                                    Container(
+                                                                  padding:
+                                                                      const EdgeInsets
+                                                                          .all(
+                                                                          8),
+                                                                  decoration: BoxDecoration(
+                                                                      color:
+                                                                          backgroundColor,
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              5)),
+                                                                  child: Column(
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .start,
+                                                                    crossAxisAlignment:
+                                                                        CrossAxisAlignment
+                                                                            .start,
+                                                                    mainAxisSize:
+                                                                        MainAxisSize
+                                                                            .min,
+                                                                    children: [
+                                                                      const Text(
+                                                                          "District"),
+                                                                      _locationDropdown(),
+                                                                    ],
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        SizedBox(
+                                                          height:
+                                                              _deviceHeight! *
+                                                                  0.02,
+                                                        ),
+                                                        Visibility(
+                                                          visible:
+                                                              isSeekerSelected,
+                                                          child: Material(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        5),
+                                                            elevation: 2,
+                                                            child: Container(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(8),
+                                                              decoration: BoxDecoration(
+                                                                  color:
+                                                                      backgroundColor,
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              5)),
+                                                              child: Column(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .start,
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
+                                                                mainAxisSize:
+                                                                    MainAxisSize
+                                                                        .min,
+                                                                children: [
+                                                                  const Text(
+                                                                      "Prefered Industry"),
+                                                                  _categoryDropdown(),
+                                                                ],
+                                                              ),
+                                                            ),
                                                           ),
                                                         ),
-                                                      ),
-                                                    ),
-                                                    SizedBox(
-                                                      width:
-                                                          _deviceWidth! * 0.02,
-                                                    ),
-                                                    Visibility(
-                                                      visible: isSeekerSelected,
-                                                      child: Material(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(5),
-                                                        elevation: 2,
-                                                        child: Container(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .all(8),
-                                                          decoration: BoxDecoration(
-                                                              color:
-                                                                  backgroundColor,
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          5)),
-                                                          child: Column(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .start,
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .start,
-                                                            mainAxisSize:
-                                                                MainAxisSize
-                                                                    .min,
-                                                            children: [
-                                                              const Text(
-                                                                  "District"),
-                                                              _locationDropdown(),
-                                                            ],
+                                                        Visibility(
+                                                          visible:
+                                                              isProviderSelected,
+                                                          child: Material(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        5),
+                                                            elevation: 2,
+                                                            child: Container(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(8),
+                                                              decoration: BoxDecoration(
+                                                                  color:
+                                                                      backgroundColor,
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              5)),
+                                                              child: Column(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .start,
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
+                                                                mainAxisSize:
+                                                                    MainAxisSize
+                                                                        .min,
+                                                                children: [
+                                                                  const Text(
+                                                                      "Industry"),
+                                                                  _categoryDropdown(),
+                                                                ],
+                                                              ),
+                                                            ),
                                                           ),
                                                         ),
-                                                      ),
-                                                    ),
-                                                    SizedBox(
-                                                      width:
-                                                          _deviceWidth! * 0.01,
-                                                    ),
-                                                    Visibility(
-                                                      visible:
-                                                          isProviderSelected,
-                                                      child: Material(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(5),
-                                                        elevation: 2,
-                                                        child: Container(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .all(8),
-                                                          decoration: BoxDecoration(
-                                                              color:
-                                                                  backgroundColor,
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          5)),
-                                                          child: Column(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .start,
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .start,
-                                                            mainAxisSize:
-                                                                MainAxisSize
-                                                                    .min,
-                                                            children: [
-                                                              const Text(
-                                                                  "District"),
-                                                              _locationDropdown(),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    SizedBox(
-                                                      width:
-                                                          _deviceWidth! * 0.01,
-                                                    ),
-                                                    Visibility(
-                                                      visible: isSeekerSelected,
-                                                      child: Material(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(5),
-                                                        elevation: 2,
-                                                        child: Container(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .all(8),
-                                                          decoration: BoxDecoration(
-                                                              color:
-                                                                  backgroundColor,
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          5)),
-                                                          child: Column(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .start,
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .start,
-                                                            mainAxisSize:
-                                                                MainAxisSize
-                                                                    .min,
-                                                            children: [
-                                                              const Text(
-                                                                  "Prefered Industry"),
-                                                              _categoryDropdown(),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    SizedBox(
-                                                      width:
-                                                          _deviceWidth! * 0.01,
-                                                    ),
-                                                    Visibility(
-                                                      visible:
-                                                          isProviderSelected,
-                                                      child: Material(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(5),
-                                                        elevation: 2,
-                                                        child: Container(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .all(8),
-                                                          decoration: BoxDecoration(
-                                                              color:
-                                                                  backgroundColor,
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          5)),
-                                                          child: Column(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .start,
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .start,
-                                                            mainAxisSize:
-                                                                MainAxisSize
-                                                                    .min,
-                                                            children: [
-                                                              const Text(
-                                                                  "Industry"),
-                                                              _categoryDropdown(),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      ),
+                                                      ],
                                                     ),
                                                   ],
                                                 ),
                                               ],
                                             ),
-                                          ],
-                                        ),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.end,
-                                          children: [
-                                            Visibility(
-                                              visible: isProviderSelected,
-                                              child: _selectReciepientsButton(),
-                                            ),
-                                            Visibility(
-                                              visible: isSeekerSelected,
-                                              child: _selectReciepientsButton(),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.end,
+                                              children: [
+                                                Visibility(
+                                                  visible: isProviderSelected,
+                                                  child:
+                                                      _selectReciepientsButton(),
+                                                ),
+                                                Visibility(
+                                                  visible: isSeekerSelected,
+                                                  child:
+                                                      _selectReciepientsButton(),
+                                                ),
+                                              ],
                                             ),
                                           ],
                                         ),
                                       ],
                                     ),
-                                  ],
-                                ),
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  _sendButton(),
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      _sendButton(),
+                                    ],
+                                  ),
                                 ],
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ],
               ),
-            ],
-          ),
-        ),
-      ),
+            ),
+          );
+        },
+      )),
     );
   }
 
@@ -497,7 +532,7 @@ class _BulkMailPageState extends State<BulkMailPage> {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.only(top: 16, bottom: 20),
+              padding: const EdgeInsets.only(top: 16, bottom: 10),
               child: Row(
                 children: [
                   SizedBox(

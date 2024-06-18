@@ -85,9 +85,10 @@ class _MainPageState extends State<MainPage> {
         children: [
           NavigationRail(
             extended: true,
+            minExtendedWidth: 250,
             labelType: NavigationRailLabelType.none,
             leading: SizedBox(
-              height: _deviceHeight! * 0.1,
+              height: 35,
             ),
             minWidth: 100,
             onDestinationSelected: (int index) {

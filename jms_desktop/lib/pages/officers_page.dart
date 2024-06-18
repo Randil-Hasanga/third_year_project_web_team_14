@@ -255,8 +255,7 @@ class _OfficersPageStete extends State<OfficersPage> {
                   children: [
                     IconButton(
                       onPressed: () async {
-                        String? uid = await _firebaseService!
-                            .getUidByEmail(officer['email']);
+                        String? uid = officer['uid'];
                         print(uid);
                         _showDeleteConfirmationDialog(context, uid!);
                       },

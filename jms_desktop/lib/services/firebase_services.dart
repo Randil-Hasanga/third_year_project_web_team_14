@@ -206,21 +206,6 @@ class FirebaseService {
   }
 
   // getting uid when have email
-  Future<String?> getUidByEmail(String email) async {
-    try {
-      QuerySnapshot<Map<String, dynamic>> querySnapshot =
-          await _db.collection('users').where('email', isEqualTo: email).get();
-      if (querySnapshot.docs.isNotEmpty) {
-        return querySnapshot.docs.first.id;
-      } else {
-        print('User with email $email not found.');
-        return null;
-      }
-    } catch (e) {
-      print('Error getting UID by email: $e');
-      return null;
-    }
-  }
 
   // delete user function
 
@@ -228,23 +213,31 @@ class FirebaseService {
     String fname = "${currentUser?['fname']}";
     String lname = "${currentUser?['lname']}";
     String date = DateTime.now().toString();
-    await _db.collection(USER_COLLECTION).doc(uid).update({
-      'disabled': true,
-      'disabled_by': "$fname $lname",
-      'disabled_date': date,
-    });
 
-    QuerySnapshot querySnapshot = await _db
-        .collection(VACANCY_COLLECTION)
-        .where('uid', isEqualTo: uid)
-        .get();
+    try {
+      await _db.collection(USER_COLLECTION).doc(uid).update({
+        'disabled': true,
+        'disabled_by': "$fname $lname",
+        'disabled_date': date,
+      });
 
-    for (DocumentSnapshot doc in querySnapshot.docs) {
-      // Update each document
-      await _db
+      print("User Deleted");
+
+      QuerySnapshot querySnapshot = await _db
           .collection(VACANCY_COLLECTION)
-          .doc(doc.id)
-          .update({'disabled': true});
+          .where('uid', isEqualTo: uid)
+          .get();
+
+      for (DocumentSnapshot doc in querySnapshot.docs) {
+        // Update each document
+        await _db
+            .collection(VACANCY_COLLECTION)
+            .doc(doc.id)
+            .update({'disabled': true});
+      }
+      print("Vacancies Deleted");
+    } catch (e) {
+      print("Error deleting user : $e");
     }
   }
 

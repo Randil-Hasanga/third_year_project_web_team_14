@@ -158,6 +158,7 @@ class _RecycleBinState extends State<RecycleBin> {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.max,
         children: [
           Align(
             alignment: Alignment.topLeft,
@@ -182,7 +183,9 @@ class _RecycleBinState extends State<RecycleBin> {
           ),
           Padding(
             padding: EdgeInsets.only(
-                top: _widthXheight! * 0.7, left: _widthXheight! * 0.1),
+                top: _widthXheight! * 0.7,
+                left: _widthXheight! * 0.1,
+                bottom: _deviceHeight! * 0.005),
             child: _richTextWidget.deletedProviderTableRow(
                 "Contact Email",
                 "Company Name",
@@ -191,60 +194,62 @@ class _RecycleBinState extends State<RecycleBin> {
                 "Disabled by",
                 "Disabled date",
                 15,
-                const Color.fromARGB(255, 0, 52, 95)),
+                Colors.black,
+                Color.fromARGB(255, 199, 197, 197), function: () {
+              print("TESTING");
+            }, "Actions"),
           ),
           Expanded(
-            child: SingleChildScrollView(
-              child: Stack(
-                children: [
-                  Visibility(
-                    visible: _showLoader,
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const CircularProgressIndicator(
-                            color: selectionColor,
-                          ),
-                          const SizedBox(height: 8),
-                          if (_deletedJobProviders == null ||
-                              _deletedJobProviders!.isEmpty) ...{
-                            _richTextWidget!.simpleText(
-                                "Loading...", null, Colors.black, null),
-                          } else ...{
-                            _richTextWidget!.simpleText("Fetching database...",
-                                null, Colors.black, null),
-                          }
-                        ],
-                      ),
+            child: Stack(
+              children: [
+                Visibility(
+                  visible: _showLoader,
+                  child: Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const CircularProgressIndicator(
+                          color: selectionColor,
+                        ),
+                        const SizedBox(height: 8),
+                        if (_deletedJobProviders == null ||
+                            _deletedJobProviders!.isEmpty) ...{
+                          _richTextWidget!.simpleText(
+                              "Loading...", null, Colors.black, null),
+                        } else ...{
+                          _richTextWidget!.simpleText(
+                              "Fetching database...", null, Colors.black, null),
+                        }
+                      ],
                     ),
                   ),
-                  Visibility(
-                    visible: _deletedJobProviders != null,
-                    child: Scrollbar(
+                ),
+                Visibility(
+                  visible: _deletedJobProviders != null,
+                  child: Scrollbar(
+                    controller: _scrollControllerLeft,
+                    thumbVisibility: true,
+                    child: ListView.builder(
                       controller: _scrollControllerLeft,
-                      thumbVisibility: true,
-                      child: ListView.builder(
-                        controller: _scrollControllerLeft,
-                        shrinkWrap: true,
-                        itemCount: _deletedJobProviders?.length ?? 0,
-                        scrollDirection: Axis.vertical,
-                        itemBuilder: (context, index) {
-                          return _deletedProvidersListViewBuilder(
-                              _deletedJobProviders![index]);
-                        },
-                      ),
+                      shrinkWrap: true,
+                      itemCount: _deletedJobProviders?.length ?? 0,
+                      scrollDirection: Axis.vertical,
+                      itemBuilder: (context, index) {
+                        return _deletedProvidersListViewBuilder(
+                            _deletedJobProviders![index]);
+                      },
                     ),
                   ),
-                  Visibility(
-                    visible: _showNoProvidersFound,
-                    child: Center(
-                      child: _richTextWidget!.simpleText(
-                          "No providers found.", null, Colors.black, null),
-                    ),
+                ),
+                Visibility(
+                  visible: _showNoProvidersFound,
+                  child: Center(
+                    child: _richTextWidget!.simpleText(
+                        "No providers found.", null, Colors.black, null),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ],
@@ -253,69 +258,39 @@ class _RecycleBinState extends State<RecycleBin> {
   }
 
   Widget _deletedProvidersListViewBuilder(Map<String, dynamic> provider) {
-    return Padding(
-      padding: EdgeInsets.only(
-        right: _deviceWidth! * 0.0125,
-        top: _deviceHeight! * 0.01,
-      ),
-      child: GestureDetector(
-        onTap: () {
-          setState(() {
-            _selectedProvider = provider;
-          });
-        },
-        child: AnimatedContainer(
-          duration: const Duration(microseconds: 300),
-          height: _deviceHeight! * 0.08,
-          width: _deviceWidth! * 0.175,
-          decoration: BoxDecoration(
-            color: cardBackgroundColor,
-            borderRadius: BorderRadius.circular(_widthXheight! * 0.66),
-            boxShadow: const [
-              BoxShadow(
-                color: Colors.black12,
-                blurRadius: 5,
-                offset: Offset(0, 0),
-              ),
-            ],
-          ),
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-                horizontal: _deviceWidth! * 0.001,
-                vertical: _deviceHeight! * 0.015),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              mainAxisSize: MainAxisSize.max,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                // Icon(
-                //   Icons.developer_mode,
-                //   size: _widthXheight! * 1,
-                // ),
-                if (provider['company_name'] != null) ...{
-                  _richTextWidget.deletedProviderTableRow(
-                      provider['repEmail'],
-                      provider['company_name'],
-                      provider['repName'],
-                      provider['repTelephone'],
-                      provider['disabled_by'],
-                      provider['disabled_date'],
-                      15,
-                      Colors.black)
-                } else ...{
-                  Text(provider['username']),
-                },
-                if (_deviceWidth! > 1800) ...{
-                  IconButton(
-                    onPressed: () {
-                      _showRestoreConfirmationDialog(context, provider['uid']);
-                    },
-                    icon: const Icon(Icons.restore_page),
-                  ),
-                }
-              ],
-            ),
-          ),
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedProvider = provider;
+        });
+      },
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+            horizontal: _deviceWidth! * 0.001,
+            vertical: _deviceHeight! * 0.005),
+        child: Stack(
+          children: [
+            // Icon(
+            //   Icons.developer_mode,
+            //   size: _widthXheight! * 1,
+            // ),
+            if (provider['company_name'] != null) ...{
+              _richTextWidget.deletedProviderTableRow(
+                  provider['repEmail'],
+                  provider['company_name'],
+                  provider['repName'],
+                  provider['repTelephone'],
+                  provider['disabled_by'],
+                  provider['disabled_date'],
+                  15,
+                  Colors.black,
+                  Colors.white, function: () {
+                _showRestoreConfirmationDialog(context, provider['uid']);
+              }, "Restore"),
+            } else ...{
+              Text(provider['username']),
+            },
+          ],
         ),
       ),
     );
@@ -398,7 +373,7 @@ class _RecycleBinState extends State<RecycleBin> {
                     child: ListView.builder(
                       controller: _scrollControllerLeft,
                       shrinkWrap: true,
-                      itemCount: _deletedJobProviders?.length ?? 0,
+                      itemCount: _deletedJobProviders?.length,
                       scrollDirection: Axis.vertical,
                       itemBuilder: (context, index) {
                         return _deletedSeekersListViewBuilder(
