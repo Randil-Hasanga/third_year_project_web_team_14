@@ -69,12 +69,12 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         scrollbarTheme: ScrollbarThemeData(
           thumbColor: MaterialStateProperty.all(
-              Color.fromARGB(255, 90, 89, 88)), // Change thumb color
+              const Color.fromARGB(255, 90, 89, 88)), // Change thumb color
           trackColor: MaterialStateProperty.all(Colors.blue),
           thumbVisibility: const MaterialStatePropertyAll(true),
-          thickness: MaterialStatePropertyAll(17), // Change track color
+          thickness: const MaterialStatePropertyAll(17), // Change track color
         ),
-        appBarTheme: AppBarTheme(
+        appBarTheme: const AppBarTheme(
           backgroundColor: backgroundColor3,
         ),
         navigationRailTheme: const NavigationRailThemeData(
@@ -89,13 +89,13 @@ class MyApp extends StatelessWidget {
         textTheme: GoogleFonts.poppinsTextTheme(),
       ),
       routes: {
-        '/login': (context) => LoginScreen(),
-        '/dashboard': (context) => Dashboard(),
+        '/login': (context) => const LoginScreen(),
+        '/dashboard': (context) => const Dashboard(),
         '/profile': (context) => ProfilePage(),
-        '/logout': (context) => LoginScreen(),
+        '/logout': (context) => const LoginScreen(),
         '/officer': (context) => OfficersPage(),
-        '/MainPage': (context) => MainPage(),
-        '/provider': (context) => JobProviders(),
+        '/MainPage': (context) => const MainPage(),
+        '/provider': (context) => const JobProviders(),
         '/bin': (context) => RecycleBin(),
         '/bulkMail': (context) => BulkMailPage(),
         '/pendingApprovals': (context) => PendingApprovals(),
