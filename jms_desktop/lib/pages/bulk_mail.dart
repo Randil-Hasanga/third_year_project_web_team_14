@@ -5,6 +5,7 @@ import 'package:get_it/get_it.dart';
 import 'package:jms_desktop/const/constants.dart';
 import 'package:jms_desktop/services/email_services.dart';
 import 'package:jms_desktop/services/firebase_services.dart';
+import 'package:jms_desktop/widgets/alert_box_widget.dart';
 import 'package:jms_desktop/widgets/buttons.dart';
 
 class BulkMailPage extends StatefulWidget {
@@ -23,8 +24,12 @@ class _BulkMailPageState extends State<BulkMailPage> {
   String? _IndustryDropdownValue = "Any";
   String? englishDistrict;
   Set<String>? emailList;
-
+  AlertBoxWidgets alertBoxWidgets = AlertBoxWidgets();
   String? _subject, _body;
+  List<String>? _emailList;
+  Color warningColor = const Color.fromARGB(255, 255, 242, 125);
+  Color successColor = const Color.fromARGB(255, 162, 255, 165);
+  Color errorColor = const Color.fromARGB(255, 255, 153, 145);
 
   // Define dropdown menus for each recipient type
   static const List<String> _recipientType = [
@@ -668,6 +673,8 @@ class _BulkMailPageState extends State<BulkMailPage> {
 
     if (emailList == null) {
       print('Error: emailList is null.');
+      alertBoxWidgets.showAlert(
+          context, "Error!", "Emails list is empty!", warningColor);
       return;
     } else {
       try {
@@ -675,11 +682,36 @@ class _BulkMailPageState extends State<BulkMailPage> {
           _isSending = true;
         });
 
-        List<String> _emailList = emailList!.toList();
-        await _emailService!.sendEmail(_emailList, _subject!, _body!);
-        print('All emails sent successfully.');
+        _emailList = emailList!.toList();
+        if (_emailList != null && _emailList!.isNotEmpty) {
+          if ((_subject != null && _subject!.isNotEmpty) ||
+              (_body != null && _body!.isNotEmpty)) {
+            if (_subject != null && _subject!.isNotEmpty) {
+              if (_body != null && _body!.isNotEmpty) {
+                await _emailService!.sendEmail(_emailList!, _subject!, _body!);
+                print('All emails sent successfully.');
+                alertBoxWidgets.showAlert(context, "Success!",
+                    "Emails sent successfully!", successColor);
+              } else {
+                alertBoxWidgets.showAlert(
+                    context, "Error!", "Email body is empty!", warningColor);
+              }
+            } else {
+              alertBoxWidgets.showAlert(
+                  context, "Error!", "Subject is empty!", warningColor);
+            }
+          } else {
+            alertBoxWidgets.showAlert(
+                context, "Error!", "Subject and Body are empty!", warningColor);
+          }
+        } else {
+          alertBoxWidgets.showAlert(
+              context, "Error!", "Emails list is empty!", warningColor);
+        }
       } catch (error) {
         print('Error sending emails: $error');
+        alertBoxWidgets.showAlert(
+            context, "Error!", "Error sending emails!", errorColor);
       } finally {
         setState(() {
           _isSending = false;
@@ -704,8 +736,13 @@ class _BulkMailPageState extends State<BulkMailPage> {
               label: Text(email),
               onDeleted: () {
                 setState(() {
+                  print(emailList);
                   emailList!.remove(email);
+                  print(emailList);
                 });
+                if (_emailList!.isNotEmpty && _emailList != null) {
+                  setList();
+                }
               },
             );
           }).toList(),
@@ -714,6 +751,15 @@ class _BulkMailPageState extends State<BulkMailPage> {
     } else {
       return const SizedBox();
     }
+  }
+
+  void setList() {
+    setState(() {
+      print(_emailList);
+      _emailList!.clear();
+      _emailList = emailList!.toList();
+    });
+    print(_emailList);
   }
 
   // button for confirm required recipients
