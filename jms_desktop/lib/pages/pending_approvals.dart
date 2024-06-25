@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:jms_desktop/const/constants.dart';
 import 'package:jms_desktop/services/firebase_services.dart';
 import 'package:jms_desktop/widgets/Search_bar_widget.dart';
+import 'package:jms_desktop/widgets/alert_box_widget.dart';
 import 'package:jms_desktop/widgets/buttons.dart';
 import 'package:jms_desktop/widgets/downloadFile.dart';
 import 'package:jms_desktop/widgets/richText.dart';
@@ -320,6 +321,11 @@ class SelectedApprovalDetailsWidget extends StatefulWidget {
 
 class _SelectedApprovalDetailsWidgetState
     extends State<SelectedApprovalDetailsWidget> {
+  AlertBoxWidgets alertBoxWidgets = AlertBoxWidgets();
+  Color warningColor = const Color.fromARGB(255, 255, 242, 125);
+  Color successColor = const Color.fromARGB(255, 162, 255, 165);
+  Color errorColor = const Color.fromARGB(255, 255, 153, 145);
+
   @override
   Widget build(BuildContext context) {
     _deviceHeight = MediaQuery.of(context).size.height;
@@ -726,9 +732,13 @@ class _SelectedApprovalDetailsWidgetState
                                 if (action == "Reject") {
                                   await _firebaseService!
                                       .deleteProvider(provider!['uid']);
+                                  alertBoxWidgets.showAlert(context, "Alert",
+                                      "Job provider rejected!", errorColor);
                                 } else if (action == "Approve") {
                                   await _firebaseService!
                                       .approveProvider(provider!['uid']);
+                                  alertBoxWidgets.showAlert(context, "Alert",
+                                      "Job provider approved!", successColor);
                                 }
                                 widget.onUpdateUI();
                               } catch (error) {
