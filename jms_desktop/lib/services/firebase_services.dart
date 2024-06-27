@@ -38,6 +38,7 @@ class FirebaseService {
         final SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setString('email', email);
         prefs.setString('password', password);
+        print("login successfull");
         return true;
       } else {
         return false;
@@ -913,10 +914,10 @@ class FirebaseService {
         UploadTask _task =
             _storage.ref('officerProfile/$uid/$imageName').putData(imageFile);
 
-        return _task.then((_snapshot) async {
+        await _task.then((_snapshot) async {
           String _downloadURL = await _snapshot.ref.getDownloadURL();
 
-          return _db.collection(USER_COLLECTION).doc(uid).set({
+          await _db.collection(USER_COLLECTION).doc(uid).set({
             'fname': fname,
             'lname': lname,
             'contact': contact,
@@ -928,7 +929,7 @@ class FirebaseService {
         });
       } else {
         if (imageLink != null) {
-          return _db.collection(USER_COLLECTION).doc(uid).set({
+          await _db.collection(USER_COLLECTION).doc(uid).set({
             'fname': fname,
             'lname': lname,
             'contact': contact,
@@ -936,6 +937,15 @@ class FirebaseService {
             'position': position,
             'reg_no': regNo,
             'profile_image': imageLink
+          }, SetOptions(merge: true));
+        } else {
+          await _db.collection(USER_COLLECTION).doc(uid).set({
+            'fname': fname,
+            'lname': lname,
+            'contact': contact,
+            'email': email,
+            'position': position,
+            'reg_no': regNo,
           }, SetOptions(merge: true));
         }
       }

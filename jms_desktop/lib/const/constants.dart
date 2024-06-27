@@ -27,7 +27,7 @@ const cardBackgroundColorLayer2 = Color.fromARGB(232, 211, 223, 255);
 const cardBackgroundColorLayer3 = Color.fromARGB(255, 172, 194, 255);
 const cardBackgroundColor = Color.fromARGB(171, 255, 255, 255);
 
-const selectionColor = Color.fromARGB(255, 243, 107, 23);
+const selectionColor = Color.fromARGB(255, 208, 107, 255);
 //const selectionColor = Color(0xFF88b2ac);
 
 const defaultPadding = 20.0;
