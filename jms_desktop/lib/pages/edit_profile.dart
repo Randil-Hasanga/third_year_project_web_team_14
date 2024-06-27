@@ -9,6 +9,7 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jms_desktop/const/constants.dart';
 import 'package:jms_desktop/services/firebase_services.dart';
+import 'package:jms_desktop/widgets/alert_box_widget.dart';
 import 'package:jms_desktop/widgets/buttons.dart';
 import 'package:jms_desktop/widgets/richText.dart';
 import 'package:jms_desktop/widgets/textFieldWidget.dart';
@@ -41,6 +42,13 @@ class _EditProfileState extends State<EditProfile> {
   TextEditingController contactController = TextEditingController();
   TextEditingController regNoController = TextEditingController();
   TextEditingController positionController = TextEditingController();
+
+  AlertBoxWidgets _alertBoxWidgets = AlertBoxWidgets();
+  Color warningColor = const Color.fromARGB(255, 255, 242, 125);
+  Color successColor = const Color.fromARGB(255, 162, 255, 165);
+  Color errorColor = const Color.fromARGB(255, 255, 153, 145);
+
+  double? width, height, _widthXheight;
 
   Map<String, dynamic>? officer;
 
@@ -84,23 +92,14 @@ class _EditProfileState extends State<EditProfile> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          Expanded(
-            flex: 4,
-            child: _currentDetails(),
-          ),
-          Expanded(
-            flex: 5,
-            child: _editProfile(),
-          ),
-        ],
-      ),
-    );
+    return Scaffold(body: LayoutBuilder(
+      builder: (context, constraints) {
+        height = constraints.maxHeight;
+        width = constraints.maxWidth;
+        _widthXheight = (height! * width!) / 50000;
+        return _editProfile();
+      },
+    ));
   }
 
   Widget _currentDetails() {
@@ -158,44 +157,73 @@ class _EditProfileState extends State<EditProfile> {
               height: 30,
             ),
             Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 _selectImageWidget(),
-                const SizedBox(
-                  width: 50,
-                ),
               ],
             ),
             const SizedBox(
               height: 30,
             ),
             _officerUpdateForm(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _officerUpdateForm() {
+    return Form(
+      key: _officerUpdateFormKey,
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: width! * 0.1),
+        child: Column(
+          children: [
+            _textFieldWidgets.outlinedNormalTextFieldwithValidate((value) {
+              setState(
+                () {
+                  _Fname = value;
+                },
+              );
+            }, "First Name", validate: true, fnameController),
+            _textFieldWidgets.outlinedNormalTextFieldwithValidate((value) {
+              setState(
+                () {
+                  _Lname = value;
+                },
+              );
+            }, "Last Name", validate: true, lnameController),
+            _textFieldWidgets.outlinedNormalTextFieldwithValidate((value) {
+              setState(
+                () {
+                  _regNo = value;
+                },
+              );
+            }, "Registration Number", validate: true, regNoController),
+            _textFieldWidgets!.outlinedEmailTextFieldwithValidate((value) {
+              setState(() {
+                _email = value;
+              });
+            }, "Contact Email", validate: true, emailController),
+            _textFieldWidgets.outlinedContactTextFieldwithValidate((value) {
+              setState(
+                () {
+                  _contact = value;
+                },
+              );
+            }, "Contact Number", validate: true, contactController),
+            _textFieldWidgets.outlinedNormalTextFieldwithValidate((value) {
+              setState(
+                () {
+                  _position = value;
+                },
+              );
+            }, "Position", validate: true, positionController),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  // child: _buttonWidgets.simpleElevatedButtonWidget(
-                  //     onPressed: () {
-                  //       _updateOfficer();
-                  //     },
-                  //     buttonText: "Update",
-                  //     style: null),
-
-                  // child: ElevatedButton(
-                  //     onPressed: _updateOfficer,
-                  //     child: Stack(
-                  //       children: [
-                  //         if (!isUploading) ...{
-                  //           Text("Upload"),
-                  //         } else ...{
-                  //           Center(
-                  //             child: CircularProgressIndicator(),
-                  //           ),
-                  //         }
-                  //       ],
-                  //     )),
-
                   child: Stack(
                     children: [
                       if (!isUploading) ...{
@@ -217,74 +245,32 @@ class _EditProfileState extends State<EditProfile> {
     );
   }
 
-  Widget _officerUpdateForm() {
-    return Form(
-      key: _officerUpdateFormKey,
-      child: Column(
-        children: [
-          _textFieldWidgets.outlinedNormalTextFieldwithValidate((value) {
-            setState(
-              () {
-                _Fname = value;
-              },
-            );
-          }, "First Name", validate: true, fnameController),
-          _textFieldWidgets.outlinedNormalTextFieldwithValidate((value) {
-            setState(
-              () {
-                _Lname = value;
-              },
-            );
-          }, "Last Name", validate: true, lnameController),
-          _textFieldWidgets.outlinedNormalTextFieldwithValidate((value) {
-            setState(
-              () {
-                _regNo = value;
-              },
-            );
-          }, "Registration Number", validate: true, regNoController),
-          _textFieldWidgets!.outlinedEmailTextFieldwithValidate((value) {
-            setState(() {
-              _email = value;
-            });
-          }, "Contact Email", validate: true, emailController),
-          _textFieldWidgets.outlinedContactTextFieldwithValidate((value) {
-            setState(
-              () {
-                _contact = value;
-              },
-            );
-          }, "Contact Number", validate: true, contactController),
-          _textFieldWidgets.outlinedNormalTextFieldwithValidate((value) {
-            setState(
-              () {
-                _position = value;
-              },
-            );
-          }, "Position", validate: true, positionController),
-        ],
-      ),
-    );
-  }
-
   void _updateOfficer() async {
-    if (_officerUpdateFormKey.currentState!.validate()) {
-      _officerUpdateFormKey.currentState!.save();
+    try {
+      if (_officerUpdateFormKey.currentState!.validate()) {
+        _officerUpdateFormKey.currentState!.save();
 
-      print("$_Fname $_Lname $_contact $_email $_position $_regNo");
+        print("$_Fname $_Lname $_contact $_email $_position $_regNo");
 
-      setState(() {
-        isUploading = true;
-      });
+        setState(() {
+          isUploading = true;
+        });
 
-      await _firebaseService!.updateOfficerProfile(_Fname, _Lname, _contact,
-          _email, _position, _regNo, imageFile, imageName, imageLink);
+        await _firebaseService!.updateOfficerProfile(_Fname, _Lname, _contact,
+            _email, _position, _regNo, imageFile, imageName, imageLink);
 
-      setState(() {
-        isUploading = false;
-      });
+        setState(() {
+          isUploading = false;
+        });
 
-      await getDataFromDB();
+        await getDataFromDB();
+        _alertBoxWidgets.showAlert(
+            context, "Success", "Profile successfully updated", successColor);
+      }
+    } catch (e) {
+      print("Error updatin officer : $e");
+      _alertBoxWidgets.showAlert(
+          context, "Error", "Profile update failed\n$e", errorColor);
     }
   }
 
@@ -299,10 +285,10 @@ class _EditProfileState extends State<EditProfile> {
             child: Stack(
               children: [
                 Container(
-                  height: 400,
-                  width: 400,
+                  height: _widthXheight! * 15,
+                  width: _widthXheight! * 15,
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(100),
+                    borderRadius: BorderRadius.circular(_widthXheight! * 9),
                     child: Image.memory(imageFile),
                   ),
                 ),
@@ -320,10 +306,10 @@ class _EditProfileState extends State<EditProfile> {
             child: Stack(
               children: [
                 Container(
-                  width: 400,
-                  height: 400,
+                  width: _widthXheight! * 15,
+                  height: _widthXheight! * 15,
                   child: CircleAvatar(
-                    radius: 200,
+                    radius: _widthXheight! * 7.5,
                     backgroundImage: NetworkImage(_imageLink!),
                   ),
                 ),
@@ -339,10 +325,10 @@ class _EditProfileState extends State<EditProfile> {
             child: Stack(
               children: [
                 Container(
-                  width: 400,
-                  height: 400,
-                  child: const CircleAvatar(
-                    radius: 200,
+                  width: _widthXheight! * 15,
+                  height: _widthXheight! * 15,
+                  child: CircleAvatar(
+                    radius: _widthXheight! * 7.5,
                     backgroundImage: NetworkImage(
                         'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRpmMLA8odEi8CaMK39yvrOg-EGJP6127PmCjqURn_ssg&s'),
                   ),

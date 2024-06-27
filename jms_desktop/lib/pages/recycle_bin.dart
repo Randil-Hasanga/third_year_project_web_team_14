@@ -31,8 +31,6 @@ class _RecycleBinState extends State<RecycleBin> {
   @override
   void initState() {
     super.initState();
-    _firebaseService = GetIt.instance.get<FirebaseService>();
-    _getDataFromDB();
   }
 
   void _getDataFromDB() async {
@@ -67,6 +65,9 @@ class _RecycleBinState extends State<RecycleBin> {
     _deviceHeight = MediaQuery.of(context).size.height;
     _deviceWidth = MediaQuery.of(context).size.width;
     _widthXheight = _deviceHeight! * _deviceWidth! / 50000;
+
+    _firebaseService = GetIt.instance.get<FirebaseService>();
+    _getDataFromDB();
 
     return Scaffold(
       body: SafeArea(

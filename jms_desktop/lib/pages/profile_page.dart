@@ -75,7 +75,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 mainAxisSize: MainAxisSize.max,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  _selectImageWidget(),
+                  _imageWidget(),
                 ],
               ),
             ),
@@ -216,91 +216,30 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _selectImageWidget() {
+  Widget _imageWidget() {
     return Column(
       children: [
-        if (imageFile != null) ...{
-          GestureDetector(
-            onTap: () async {
-              await pickImage();
-            },
-            child: Stack(
-              children: [
-                Container(
-                  height: 200,
-                  width: 200,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(100),
-                    child: Image.memory(imageFile),
-                  ),
-                ),
-                const Icon(Icons.add_a_photo),
-              ],
-            ),
-          ),
-
-          // Display the picked image
-        } else if (_imageLink != null) ...{
-          GestureDetector(
-            onTap: () async {
-              await pickImage();
-            },
-            child: Stack(
-              children: [
-                Container(
-                  width: 200,
-                  height: 200,
-                  child: CircleAvatar(
-                    radius: 100,
-                    backgroundImage: NetworkImage(_imageLink!),
-                  ),
-                ),
-                const Icon(Icons.add_a_photo),
-              ],
+        if (_imageLink != null) ...{
+          Container(
+            width: _widthXheight! * 10,
+            height: _widthXheight! * 10,
+            child: CircleAvatar(
+              radius: _widthXheight! * 5,
+              backgroundImage: NetworkImage(_imageLink!),
             ),
           ),
         } else ...{
-          GestureDetector(
-            onTap: () async {
-              await pickImage();
-            },
-            child: Stack(
-              children: [
-                Container(
-                  width: 200,
-                  height: 200,
-                  child: const CircleAvatar(
-                    radius: 100,
-                    backgroundImage: NetworkImage(
-                        "https://firebasestorage.googleapis.com/v0/b/jobcenter-app-74ca3.appspot.com/o/images%2FJIwYENZjwIOSicyjGEaWK7mTCvB2%2Flogo.jpg?alt=media&token=12ae69bd-5832-4420-bf2f-814bafdc5563"),
-                  ),
-                ),
-                const Icon(Icons.add_a_photo),
-              ],
+          Container(
+            width: _widthXheight! * 10,
+            height: _widthXheight! * 10,
+            child: CircleAvatar(
+              radius: _widthXheight! * 5,
+              backgroundImage:
+                  NetworkImage("https://avatar.iran.liara.run/public/3"),
             ),
           ),
         }
       ],
     );
-  }
-
-  Future<void> pickImage() async {
-    FilePickerResult? resultFilePicker = await FilePicker.platform
-        .pickFiles(type: FileType.image, allowMultiple: false);
-
-    if (resultFilePicker != null && resultFilePicker.files.isNotEmpty) {
-      // Ensure that files is not empty
-      Uint8List? bytes = resultFilePicker.files.first.bytes;
-      if (bytes != null) {
-        setState(() {
-          imageFile = bytes;
-          imageName = resultFilePicker.files.first.name;
-        });
-      } else {
-        print("Error: Picked file doesn't contain image data.");
-      }
-    } else {
-      print("Error: No file picked.");
-    }
   }
 }

@@ -6,6 +6,7 @@ class AlertBoxWidgets {
   void showAlert(
       BuildContext context, String title, String content, Color color) {
     showDialog(
+      barrierDismissible: false,
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
