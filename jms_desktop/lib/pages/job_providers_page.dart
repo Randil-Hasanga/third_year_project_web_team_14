@@ -35,6 +35,10 @@ class _JobProvidersState extends State<JobProviders> {
   bool _showLoader = true;
   bool _showNoProvidersFound = false;
 
+  double? _currentProviderListWidth,
+      _currentProviderListHeight,
+      _currentProviderWidthXheight;
+
   @override
   void initState() {
     super.initState();
@@ -95,7 +99,16 @@ class _JobProvidersState extends State<JobProviders> {
             //first part of the row : current providers list
             Expanded(
               flex: 1,
-              child: currentProvidersListWidget(),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  _currentProviderListWidth = constraints.maxWidth;
+                  _currentProviderListHeight = constraints.maxHeight;
+                  _currentProviderWidthXheight = (_currentProviderListHeight! *
+                          _currentProviderListWidth!) /
+                      50000;
+                  return currentProvidersListWidget();
+                },
+              ),
             ),
             // second part of row : detais of selected provider (Using another class)
             Expanded(
@@ -148,14 +161,17 @@ class _JobProvidersState extends State<JobProviders> {
               ),
               child: Row(
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.handshake,
-                    size: 35,
+                    size: _currentProviderListWidth! * 0.07,
                   ),
                   SizedBox(width: _deviceWidth! * 0.005),
                   Expanded(
                     child: _richTextWidget!.simpleText(
-                        "Current Providers", 25, Colors.black, FontWeight.w600),
+                        "Current Providers",
+                        _currentProviderListWidth! * 0.06,
+                        Colors.black,
+                        FontWeight.w600),
                   )
                 ],
               ),
@@ -385,6 +401,8 @@ class _SelectedProviderDetailsWidgetState
     extends State<SelectedProviderDetailsWidget> {
   final ScrollController _scrollController = ScrollController();
   List<Map<String, dynamic>>? vacancies;
+
+  double? _widthDetails, _heightDetails, gridHeight, gridWidth;
   @override
   void initState() {
     super.initState();
@@ -419,132 +437,277 @@ class _SelectedProviderDetailsWidgetState
       child: Column(
         children: [
           Container(
-            margin: EdgeInsets.only(
-                left: _deviceWidth! * 0.01,
-                right: _deviceWidth! * 0.02,
-                top: _deviceHeight! * 0.02,
-                bottom: _deviceHeight! * 0.02),
-            padding: EdgeInsets.symmetric(
-              horizontal: _deviceWidth! * 0.01,
-              vertical: _widthXheight! * 0.7,
-            ),
-            decoration: BoxDecoration(
-              color: cardBackgroundColorLayer2,
-              borderRadius: BorderRadius.circular(_widthXheight! * 1),
-              boxShadow: const [
-                BoxShadow(
-                  color: Colors.black12,
-                  blurRadius: 5,
-                  offset: Offset(0, 0),
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _richTextWidget!.simpleText("Details of Selected Job Provider",
-                    _widthXheight! * 0.9, Colors.black, FontWeight.bold),
-                const SizedBox(height: 20),
-                if (widget.provider != null) ...{
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
+              margin: EdgeInsets.only(
+                  left: _deviceWidth! * 0.01,
+                  right: _deviceWidth! * 0.02,
+                  top: _deviceHeight! * 0.02,
+                  bottom: _deviceHeight! * 0.02),
+              padding: EdgeInsets.symmetric(
+                horizontal: _deviceWidth! * 0.01,
+                vertical: _widthXheight! * 0.7,
+              ),
+              decoration: BoxDecoration(
+                color: cardBackgroundColorLayer2,
+                borderRadius: BorderRadius.circular(_widthXheight! * 1),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 5,
+                    offset: Offset(0, 0),
+                  ),
+                ],
+              ),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  _widthDetails = constraints.maxWidth;
+                  _heightDetails = constraints.maxHeight;
+                  return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Expanded(
-                        child: Column(
+                      _richTextWidget!.simpleText(
+                          "Details of Selected Job Provider",
+                          _widthDetails! * 0.025,
+                          Colors.black,
+                          FontWeight.bold),
+                      const SizedBox(height: 20),
+                      if (widget.provider != null) ...{
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            Container(
-                              padding: const EdgeInsets.all(8.0),
-                              decoration: BoxDecoration(
-                                color: cardBackgroundColor,
-                                borderRadius: BorderRadius.circular(15),
-                                boxShadow: const [
-                                  BoxShadow(
-                                    color: Colors.black12,
-                                    blurRadius: 5,
-                                    offset: Offset(0, 0),
-                                  ),
-                                ],
-                              ),
-                              // show basic data of provider
+                            Expanded(
                               child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  _richTextWidget!.simpleText("Basic data", 20,
-                                      Colors.black, FontWeight.w600),
-                                  const Divider(),
-                                  _richTextWidget!.KeyValuePairrichText(
-                                    "User Name : ",
-                                    "${widget.provider!['username']}",
-                                    18,
+                                  Container(
+                                    padding: const EdgeInsets.all(8.0),
+                                    decoration: BoxDecoration(
+                                      color: cardBackgroundColor,
+                                      borderRadius: BorderRadius.circular(15),
+                                      boxShadow: const [
+                                        BoxShadow(
+                                          color: Colors.black12,
+                                          blurRadius: 5,
+                                          offset: Offset(0, 0),
+                                        ),
+                                      ],
+                                    ),
+                                    // show basic data of provider
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        _richTextWidget!.simpleText(
+                                            "Basic data",
+                                            20,
+                                            Colors.black,
+                                            FontWeight.w600),
+                                        const Divider(),
+                                        _richTextWidget!.KeyValuePairrichText(
+                                          "User Name : ",
+                                          "${widget.provider!['username']}",
+                                          18,
+                                        ),
+                                        _richTextWidget!.KeyValuePairrichText(
+                                          "Email : ",
+                                          "${widget.provider!['email']}",
+                                          18,
+                                        )
+                                      ],
+                                    ),
                                   ),
-                                  _richTextWidget!.KeyValuePairrichText(
-                                    "Email : ",
-                                    "${widget.provider!['email']}",
-                                    18,
-                                  )
+                                  SizedBox(height: _deviceHeight! * 0.02),
+                                  if (widget.provider!['company_name'] !=
+                                      null) ...{
+                                    Container(
+                                      padding: const EdgeInsets.all(8.0),
+                                      decoration: BoxDecoration(
+                                        color: cardBackgroundColor,
+                                        borderRadius: BorderRadius.circular(15),
+                                        boxShadow: const [
+                                          BoxShadow(
+                                            color: Colors.black12,
+                                            blurRadius: 5,
+                                            offset: Offset(0, 0),
+                                          ),
+                                        ],
+                                      ),
+                                      // show contact person details if company details added
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          _richTextWidget!.simpleText(
+                                              "Contact person details",
+                                              20,
+                                              Colors.black,
+                                              FontWeight.w600),
+                                          const Divider(),
+                                          _richTextWidget!.KeyValuePairrichText(
+                                            "Name : ",
+                                            "${widget.provider!['repName']}",
+                                            18,
+                                          ),
+                                          _richTextWidget!.KeyValuePairrichText(
+                                            "Designation : ",
+                                            "${widget.provider!['repPost']}",
+                                            18,
+                                          ),
+                                          _richTextWidget!.KeyValuePairrichText(
+                                            "Email : ",
+                                            "${widget.provider!['repEmail']}",
+                                            18,
+                                          ),
+                                          _richTextWidget!.KeyValuePairrichText(
+                                            "Mobile : ",
+                                            "${widget.provider!['repMobile']}",
+                                            18,
+                                          ),
+                                          _richTextWidget!.KeyValuePairrichText(
+                                            "Telephone : ",
+                                            "${widget.provider!['repTelephone']}",
+                                            18,
+                                          ),
+                                          _richTextWidget!.KeyValuePairrichText(
+                                            "Fax : ",
+                                            "${widget.provider!['repFax']}",
+                                            18,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  }
                                 ],
                               ),
                             ),
-                            SizedBox(height: _deviceHeight! * 0.02),
+                            SizedBox(
+                                width: _deviceHeight! *
+                                    0.02), // Add space between the containers
+                            // show contact logo if company details added
                             if (widget.provider!['company_name'] != null) ...{
-                              Container(
-                                padding: const EdgeInsets.all(8.0),
-                                decoration: BoxDecoration(
-                                  color: cardBackgroundColor,
-                                  borderRadius: BorderRadius.circular(15),
-                                  boxShadow: const [
-                                    BoxShadow(
-                                      color: Colors.black12,
-                                      blurRadius: 5,
-                                      offset: Offset(0, 0),
-                                    ),
-                                  ],
-                                ),
-                                // show contact person details if company details added
+                              Expanded(
                                 child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    _richTextWidget!.simpleText(
-                                        "Contact person details",
-                                        20,
-                                        Colors.black,
-                                        FontWeight.w600),
-                                    const Divider(),
-                                    _richTextWidget!.KeyValuePairrichText(
-                                      "Name : ",
-                                      "${widget.provider!['repName']}",
-                                      18,
+                                    if (widget.provider!['logo'] != null) ...{
+                                      _logo(),
+                                    },
+                                    const SizedBox(
+                                      height: 10,
                                     ),
-                                    _richTextWidget!.KeyValuePairrichText(
-                                      "Designation : ",
-                                      "${widget.provider!['repPost']}",
-                                      18,
+                                    Container(
+                                      padding: const EdgeInsets.all(16.0),
+                                      decoration: BoxDecoration(
+                                        color: cardBackgroundColor,
+                                        borderRadius: BorderRadius.circular(15),
+                                        boxShadow: const [
+                                          BoxShadow(
+                                            color: Colors.black12,
+                                            blurRadius: 5,
+                                            offset: Offset(0, 0),
+                                          ),
+                                        ],
+                                      ),
+                                      // show contact business registration document if company details added
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          _richTextWidget!.simpleText(
+                                              "Business Registration Document",
+                                              18,
+                                              const Color.fromARGB(
+                                                  255, 255, 0, 0),
+                                              FontWeight.w600),
+                                          SizedBox(
+                                            height: 10,
+                                          ),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.end,
+                                            mainAxisSize: MainAxisSize.max,
+                                            children: [
+                                              _buttonWidgets!
+                                                  .simpleElevatedButtonWidget(
+                                                onPressed: () {
+                                                  // _downloadFile.launchPDF(
+                                                  //     widget.provider!['businessRegDoc']);
+                                                  // _launchPDF(
+                                                  //     widget.provider!['businessRegDoc']);
+                                                  _downloadFile!.downloadFile(
+                                                      widget.provider![
+                                                          'businessRegDoc']);
+                                                },
+                                                buttonText: "Show Document",
+                                                style: null,
+                                              ),
+                                            ],
+                                          )
+                                        ],
+                                      ),
                                     ),
-                                    _richTextWidget!.KeyValuePairrichText(
-                                      "Email : ",
-                                      "${widget.provider!['repEmail']}",
-                                      18,
-                                    ),
-                                    _richTextWidget!.KeyValuePairrichText(
-                                      "Mobile : ",
-                                      "${widget.provider!['repMobile']}",
-                                      18,
-                                    ),
-                                    _richTextWidget!.KeyValuePairrichText(
-                                      "Telephone : ",
-                                      "${widget.provider!['repTelephone']}",
-                                      18,
-                                    ),
-                                    _richTextWidget!.KeyValuePairrichText(
-                                      "Fax : ",
-                                      "${widget.provider!['repFax']}",
-                                      18,
+                                    SizedBox(height: _deviceHeight! * 0.02),
+                                    Container(
+                                      padding: const EdgeInsets.all(8.0),
+                                      decoration: BoxDecoration(
+                                        color: cardBackgroundColor,
+                                        borderRadius: BorderRadius.circular(15),
+                                        boxShadow: const [
+                                          BoxShadow(
+                                            color: Colors.black12,
+                                            blurRadius: 5,
+                                            offset: Offset(0, 0),
+                                          ),
+                                        ],
+                                      ),
+                                      // show contact company details if company details added
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          _richTextWidget!.simpleText(
+                                              "Company details",
+                                              20,
+                                              Colors.black,
+                                              FontWeight.w600),
+                                          const Divider(),
+                                          _richTextWidget!.KeyValuePairrichText(
+                                            "Company Name : ",
+                                            "${widget.provider!['company_name']}",
+                                            18,
+                                          ),
+                                          _richTextWidget!.KeyValuePairrichText(
+                                            "Address : ",
+                                            "${widget.provider!['company_address']}",
+                                            18,
+                                          ),
+                                          _richTextWidget!.KeyValuePairrichText(
+                                            "District : ",
+                                            "${widget.provider!['district']}",
+                                            18,
+                                          ),
+                                          _richTextWidget!.KeyValuePairrichText(
+                                            "Industry : ",
+                                            "${widget.provider!['industry']}",
+                                            18,
+                                          ),
+                                          _richTextWidget!.KeyValuePairrichText(
+                                            "Organization type : ",
+                                            "${widget.provider!['org_type']}",
+                                            18,
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -552,123 +715,11 @@ class _SelectedProviderDetailsWidgetState
                             }
                           ],
                         ),
-                      ),
-                      SizedBox(
-                          width: _deviceHeight! *
-                              0.02), // Add space between the containers
-                      // show contact logo if company details added
-                      if (widget.provider!['company_name'] != null) ...{
-                        Expanded(
-                          child: Column(
-                            children: [
-                              if (widget.provider!['logo'] != null) ...{
-                                _logo(),
-                              },
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Container(
-                                padding: const EdgeInsets.all(16.0),
-                                decoration: BoxDecoration(
-                                  color: cardBackgroundColor,
-                                  borderRadius: BorderRadius.circular(15),
-                                  boxShadow: const [
-                                    BoxShadow(
-                                      color: Colors.black12,
-                                      blurRadius: 5,
-                                      offset: Offset(0, 0),
-                                    ),
-                                  ],
-                                ),
-                                // show contact business registration document if company details added
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    _richTextWidget!.simpleText(
-                                        "Business Registration Document",
-                                        18,
-                                        const Color.fromARGB(255, 255, 0, 0),
-                                        FontWeight.w600),
-                                    _buttonWidgets!.simpleElevatedButtonWidget(
-                                      onPressed: () {
-                                        // _downloadFile.launchPDF(
-                                        //     widget.provider!['businessRegDoc']);
-                                        // _launchPDF(
-                                        //     widget.provider!['businessRegDoc']);
-                                        _downloadFile!.downloadFile(
-                                            widget.provider!['businessRegDoc']);
-                                      },
-                                      buttonText: "Show Document",
-                                      style: null,
-                                    )
-                                  ],
-                                ),
-                              ),
-                              SizedBox(height: _deviceHeight! * 0.02),
-                              Container(
-                                padding: const EdgeInsets.all(8.0),
-                                decoration: BoxDecoration(
-                                  color: cardBackgroundColor,
-                                  borderRadius: BorderRadius.circular(15),
-                                  boxShadow: const [
-                                    BoxShadow(
-                                      color: Colors.black12,
-                                      blurRadius: 5,
-                                      offset: Offset(0, 0),
-                                    ),
-                                  ],
-                                ),
-                                // show contact company details if company details added
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    _richTextWidget!.simpleText(
-                                        "Company details",
-                                        20,
-                                        Colors.black,
-                                        FontWeight.w600),
-                                    const Divider(),
-                                    _richTextWidget!.KeyValuePairrichText(
-                                      "Company Name : ",
-                                      "${widget.provider!['company_name']}",
-                                      18,
-                                    ),
-                                    _richTextWidget!.KeyValuePairrichText(
-                                      "Address : ",
-                                      "${widget.provider!['company_address']}",
-                                      18,
-                                    ),
-                                    _richTextWidget!.KeyValuePairrichText(
-                                      "District : ",
-                                      "${widget.provider!['district']}",
-                                      18,
-                                    ),
-                                    _richTextWidget!.KeyValuePairrichText(
-                                      "Industry : ",
-                                      "${widget.provider!['industry']}",
-                                      18,
-                                    ),
-                                    _richTextWidget!.KeyValuePairrichText(
-                                      "Organization type : ",
-                                      "${widget.provider!['org_type']}",
-                                      18,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
                       }
                     ],
-                  ),
-                }
-              ],
-            ),
-          ),
+                  );
+                },
+              )),
           // show contact posted job vacancies if have any
           if (vacancies != null) ...{
             Container(
@@ -696,7 +747,7 @@ class _SelectedProviderDetailsWidgetState
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _richTextWidget!.simpleText("Posted Job Vacancies",
-                      _widthXheight! * 0.9, Colors.black, FontWeight.bold),
+                      _widthDetails! * 0.025, Colors.black, FontWeight.bold),
                   const SizedBox(height: 20),
                   Container(
                     padding: const EdgeInsets.all(8.0),
@@ -763,6 +814,8 @@ class _SelectedProviderDetailsWidgetState
   Widget _vacanciesGridWidget() {
     return LayoutBuilder(
       builder: (context, constraints) {
+        gridHeight = constraints.maxHeight;
+        gridWidth = constraints.maxWidth;
         int crossAxisCount = 3;
 
         // Adjust cross axis count based on available width
@@ -784,7 +837,7 @@ class _SelectedProviderDetailsWidgetState
             ),
           ),
           child: SizedBox(
-            height: 400,
+            height: 600,
             child: GridView.builder(
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: crossAxisCount, // Adjusted cross axis count
