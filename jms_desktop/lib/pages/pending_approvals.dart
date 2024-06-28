@@ -36,6 +36,10 @@ class _PendingApprovalsState extends State<PendingApprovals> {
   List<Map<String, dynamic>>? filteredJobProviders;
   List<Map<String, dynamic>>? approvals;
 
+  double? _currentProviderListWidth,
+      _currentProviderListHeight,
+      _currentProviderWidthXheight;
+
   bool _showNoApprovalsFound = false;
 
   @override
@@ -119,7 +123,17 @@ class _PendingApprovalsState extends State<PendingApprovals> {
             //first part of the row : pending providers list
             Expanded(
               flex: 1,
-              child: pendingApprovalsListWidget(),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  _currentProviderListHeight = constraints.maxHeight;
+                  _currentProviderListWidth = constraints.maxWidth;
+                  _currentProviderWidthXheight = (_currentProviderListHeight! *
+                          _currentProviderListWidth!) /
+                      50000;
+
+                  return pendingApprovalsListWidget();
+                },
+              ),
             ),
             Expanded(
               // second part of row : detais of selected provider (Using another class)
@@ -178,14 +192,17 @@ class _PendingApprovalsState extends State<PendingApprovals> {
               ),
               child: Row(
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.pending_actions,
-                    size: 35,
+                    size: _currentProviderListWidth! * 0.07,
                   ),
                   SizedBox(width: _deviceWidth! * 0.005),
                   Expanded(
                     child: _richTextWidget!.simpleText(
-                        "Pending Approvals", 25, Colors.black, FontWeight.w600),
+                        "Pending Approvals",
+                        _currentProviderListWidth! * 0.06,
+                        Colors.black,
+                        FontWeight.w600),
                   )
                 ],
               ),
@@ -332,49 +349,326 @@ class _SelectedApprovalDetailsWidgetState
     _deviceWidth = MediaQuery.of(context).size.width;
     _widthXheight = _deviceHeight! * _deviceWidth! / 50000;
 
-    return Container(
-      margin: EdgeInsets.symmetric(
-          horizontal: _deviceWidth! * 0.01, vertical: _deviceHeight! * 0.02),
-      padding: EdgeInsets.symmetric(
-        horizontal: _deviceWidth! * 0.01,
-        vertical: _widthXheight! * 0.7,
-      ),
-      decoration: BoxDecoration(
-        color: cardBackgroundColorLayer2,
-        borderRadius: BorderRadius.circular(_widthXheight! * 1),
-        boxShadow: const [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 5,
-            offset: Offset(0, 0),
-          ),
-        ],
-      ),
-
-      //selected provider details
+    return SingleChildScrollView(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        mainAxisSize: MainAxisSize.max,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Details of Selected Job Provider",
-                style: TextStyle(
-                  fontSize: _widthXheight! * 0.9,
-                  fontWeight: FontWeight.bold,
+          Container(
+            margin: EdgeInsets.symmetric(
+                horizontal: _deviceWidth! * 0.01,
+                vertical: _deviceHeight! * 0.02),
+            padding: EdgeInsets.symmetric(
+              horizontal: _deviceWidth! * 0.01,
+              vertical: _widthXheight! * 0.7,
+            ),
+            decoration: BoxDecoration(
+              color: cardBackgroundColorLayer2,
+              borderRadius: BorderRadius.circular(_widthXheight! * 1),
+              boxShadow: const [
+                BoxShadow(
+                  color: Colors.black12,
+                  blurRadius: 5,
+                  offset: Offset(0, 0),
                 ),
-              ),
-              const SizedBox(height: 20),
-              if (widget.provider != null) ...{
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Expanded(
-                      child: Column(
+              ],
+            ),
+
+            //selected provider details
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Details of Selected Job Provider",
+                          style: TextStyle(
+                            fontSize: _widthXheight! * 0.9,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        if (widget.provider != null) ...{
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.all(8.0),
+                                      decoration: BoxDecoration(
+                                        color: cardBackgroundColor,
+                                        borderRadius: BorderRadius.circular(15),
+                                        boxShadow: const [
+                                          BoxShadow(
+                                            color: Colors.black12,
+                                            blurRadius: 5,
+                                            offset: Offset(0, 0),
+                                          ),
+                                        ],
+                                      ),
+
+                                      // show basic data of provider
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          const Text(
+                                            "Basic data",
+                                            style: TextStyle(
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.w600),
+                                          ),
+                                          const Divider(),
+                                          _richTextWidget!.KeyValuePairrichText(
+                                            "User Name : ",
+                                            "${widget.provider!['username']}",
+                                            18,
+                                          ),
+                                          _richTextWidget!.KeyValuePairrichText(
+                                            "Email : ",
+                                            "${widget.provider!['email']}",
+                                            18,
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                    SizedBox(height: _deviceHeight! * 0.02),
+                                    if (widget.provider!['company_name'] !=
+                                        null) ...{
+                                      Container(
+                                        padding: const EdgeInsets.all(8.0),
+                                        decoration: BoxDecoration(
+                                          color: cardBackgroundColor,
+                                          borderRadius:
+                                              BorderRadius.circular(15),
+                                          boxShadow: const [
+                                            BoxShadow(
+                                              color: Colors.black12,
+                                              blurRadius: 5,
+                                              offset: Offset(0, 0),
+                                            ),
+                                          ],
+                                        ),
+                                        // if company details are filled by provider,
+                                        // show contact person details
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            const Text(
+                                              "Contact person details",
+                                              style: TextStyle(
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.w600),
+                                            ),
+                                            const Divider(),
+                                            _richTextWidget!
+                                                .KeyValuePairrichText(
+                                              "Name : ",
+                                              "${widget.provider!['repName']}",
+                                              18,
+                                            ),
+                                            _richTextWidget!
+                                                .KeyValuePairrichText(
+                                              "Designation : ",
+                                              "${widget.provider!['repPost']}",
+                                              18,
+                                            ),
+                                            _richTextWidget!
+                                                .KeyValuePairrichText(
+                                              "Email : ",
+                                              "${widget.provider!['repEmail']}",
+                                              18,
+                                            ),
+                                            _richTextWidget!
+                                                .KeyValuePairrichText(
+                                              "Mobile : ",
+                                              "${widget.provider!['repMobile']}",
+                                              18,
+                                            ),
+                                            _richTextWidget!
+                                                .KeyValuePairrichText(
+                                              "Telephone : ",
+                                              "${widget.provider!['repTelephone']}",
+                                              18,
+                                            ),
+                                            _richTextWidget!
+                                                .KeyValuePairrichText(
+                                              "Fax : ",
+                                              "${widget.provider!['repFax']}",
+                                              18,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    }
+                                  ],
+                                ),
+                              ),
+                              SizedBox(width: _deviceHeight! * 0.02),
+                              if (widget.provider!['company_name'] != null) ...{
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      if (widget.provider!['logo'] != null) ...{
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            _logo(), // show logo
+                                          ],
+                                        )
+                                      },
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      Container(
+                                        padding: const EdgeInsets.all(16.0),
+                                        decoration: BoxDecoration(
+                                          color: cardBackgroundColor,
+                                          borderRadius:
+                                              BorderRadius.circular(15),
+                                          boxShadow: const [
+                                            BoxShadow(
+                                              color: Colors.black12,
+                                              blurRadius: 5,
+                                              offset: Offset(0, 0),
+                                            ),
+                                          ],
+                                        ),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            //show business registration document
+                                            _richTextWidget!.simpleText(
+                                                "Business Registration Document",
+                                                18,
+                                                const Color.fromARGB(
+                                                    255, 255, 0, 0),
+                                                FontWeight.w600),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.end,
+                                              children: [
+                                                _buttonWidgets!
+                                                    .simpleElevatedButtonWidget(
+                                                  onPressed: () {
+                                                    // _downloadFile.launchPDF(
+                                                    //     widget.provider!['businessRegDoc']);
+                                                    // _launchPDF(
+                                                    //     widget.provider!['businessRegDoc']);
+                                                    _downloadFile.downloadFile(
+                                                        widget.provider![
+                                                            'businessRegDoc']);
+                                                  },
+                                                  buttonText: "Show Document",
+                                                  style: null,
+                                                ),
+                                              ],
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                      SizedBox(height: _deviceHeight! * 0.02),
+                                      Container(
+                                        padding: const EdgeInsets.all(8.0),
+                                        decoration: BoxDecoration(
+                                          color: cardBackgroundColor,
+                                          borderRadius:
+                                              BorderRadius.circular(15),
+                                          boxShadow: const [
+                                            BoxShadow(
+                                              color: Colors.black12,
+                                              blurRadius: 5,
+                                              offset: Offset(0, 0),
+                                            ),
+                                          ],
+                                        ),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisSize: MainAxisSize.min,
+
+                                          // show company details
+                                          children: [
+                                            const Text(
+                                              "Company details",
+                                              style: TextStyle(
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.w600),
+                                            ),
+                                            const Divider(),
+                                            _richTextWidget!
+                                                .KeyValuePairrichText(
+                                              "Company Name : ",
+                                              "${widget.provider!['company_name']}",
+                                              18,
+                                            ),
+                                            _richTextWidget!
+                                                .KeyValuePairrichText(
+                                              "Address : ",
+                                              "${widget.provider!['company_address']}",
+                                              18,
+                                            ),
+                                            _richTextWidget!
+                                                .KeyValuePairrichText(
+                                              "District : ",
+                                              "${widget.provider!['district']}",
+                                              18,
+                                            ),
+                                            _richTextWidget!
+                                                .KeyValuePairrichText(
+                                              "Industry : ",
+                                              "${widget.provider!['industry']}",
+                                              18,
+                                            ),
+                                            _richTextWidget!
+                                                .KeyValuePairrichText(
+                                              "Organization type : ",
+                                              "${widget.provider!['org_type']}",
+                                              18,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              }
+                            ],
+                          ),
+                        }
+                      ],
+                    );
+                  },
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+                if (widget.provider!['company_name'] != null) ...{
+                  Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           Container(
                             padding: const EdgeInsets.all(8.0),
@@ -389,306 +683,79 @@ class _SelectedApprovalDetailsWidgetState
                                 ),
                               ],
                             ),
-
-                            // show basic data of provider
+                            // show give approval card for approve or decline
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
+                              mainAxisSize: MainAxisSize.max,
                               children: [
-                                const Text(
-                                  "Basic data",
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w600),
+                                const Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Text(
+                                    "Give Approval ?",
+                                    style: TextStyle(
+                                      fontSize:
+                                          18, // Adjust font size as needed
+                                      fontWeight: FontWeight
+                                          .bold, // Adjust font weight as needed
+                                      color: Colors
+                                          .black, // Adjust text color as needed
+                                    ),
+                                  ),
                                 ),
-                                const Divider(),
-                                _richTextWidget!.KeyValuePairrichText(
-                                  "User Name : ",
-                                  "${widget.provider!['username']}",
-                                  18,
+                                SizedBox(
+                                    height: _deviceHeight! *
+                                        0.05), // Add spacing between text and buttons
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  mainAxisSize: MainAxisSize.max,
+                                  children: [
+                                    SizedBox(
+                                      width: _deviceWidth! * 0.02,
+                                    ),
+                                    _buttonWidgets!.simpleElevatedButtonWidget(
+                                        onPressed: () {
+                                          _showConfirmationDialog(
+                                              "Approve", widget.provider);
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: const Color.fromARGB(
+                                              255, 120, 255, 124),
+                                        ),
+                                        buttonText: "Approve"),
+                                    SizedBox(
+                                      width: _deviceWidth! * 0.02,
+                                    ),
+                                    _buttonWidgets!.simpleElevatedButtonWidget(
+                                        onPressed: () {
+                                          _showConfirmationDialog(
+                                              "Reject", widget.provider);
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: const Color.fromARGB(
+                                              255, 255, 120, 120),
+                                        ),
+                                        buttonText: "Reject"),
+                                    SizedBox(
+                                      width: _deviceWidth! * 0.02,
+                                    ),
+                                  ],
                                 ),
-                                _richTextWidget!.KeyValuePairrichText(
-                                  "Email : ",
-                                  "${widget.provider!['email']}",
-                                  18,
-                                )
+                                SizedBox(
+                                  height: _deviceHeight! * 0.02,
+                                ),
                               ],
                             ),
                           ),
-                          SizedBox(height: _deviceHeight! * 0.02),
-                          if (widget.provider!['company_name'] != null) ...{
-                            Container(
-                              padding: const EdgeInsets.all(8.0),
-                              decoration: BoxDecoration(
-                                color: cardBackgroundColor,
-                                borderRadius: BorderRadius.circular(15),
-                                boxShadow: const [
-                                  BoxShadow(
-                                    color: Colors.black12,
-                                    blurRadius: 5,
-                                    offset: Offset(0, 0),
-                                  ),
-                                ],
-                              ),
-                              // if company details are filled by provider,
-                              // show contact person details
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const Text(
-                                    "Contact person details",
-                                    style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w600),
-                                  ),
-                                  const Divider(),
-                                  _richTextWidget!.KeyValuePairrichText(
-                                    "Name : ",
-                                    "${widget.provider!['repName']}",
-                                    18,
-                                  ),
-                                  _richTextWidget!.KeyValuePairrichText(
-                                    "Designation : ",
-                                    "${widget.provider!['repPost']}",
-                                    18,
-                                  ),
-                                  _richTextWidget!.KeyValuePairrichText(
-                                    "Email : ",
-                                    "${widget.provider!['repEmail']}",
-                                    18,
-                                  ),
-                                  _richTextWidget!.KeyValuePairrichText(
-                                    "Mobile : ",
-                                    "${widget.provider!['repMobile']}",
-                                    18,
-                                  ),
-                                  _richTextWidget!.KeyValuePairrichText(
-                                    "Telephone : ",
-                                    "${widget.provider!['repTelephone']}",
-                                    18,
-                                  ),
-                                  _richTextWidget!.KeyValuePairrichText(
-                                    "Fax : ",
-                                    "${widget.provider!['repFax']}",
-                                    18,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          }
                         ],
                       ),
-                    ),
-                    SizedBox(width: _deviceHeight! * 0.02),
-                    if (widget.provider!['company_name'] != null) ...{
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (widget.provider!['logo'] != null) ...{
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  _logo(), // show logo
-                                ],
-                              )
-                            },
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Container(
-                              padding: const EdgeInsets.all(16.0),
-                              decoration: BoxDecoration(
-                                color: cardBackgroundColor,
-                                borderRadius: BorderRadius.circular(15),
-                                boxShadow: const [
-                                  BoxShadow(
-                                    color: Colors.black12,
-                                    blurRadius: 5,
-                                    offset: Offset(0, 0),
-                                  ),
-                                ],
-                              ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  //show business registration document
-                                  _richTextWidget!.simpleText(
-                                      "Business Registration Document",
-                                      18,
-                                      const Color.fromARGB(255, 255, 0, 0),
-                                      FontWeight.w600),
-                                  _buttonWidgets!.simpleElevatedButtonWidget(
-                                    onPressed: () {
-                                      // _downloadFile.launchPDF(
-                                      //     widget.provider!['businessRegDoc']);
-                                      // _launchPDF(
-                                      //     widget.provider!['businessRegDoc']);
-                                      _downloadFile.downloadFile(
-                                          widget.provider!['businessRegDoc']);
-                                    },
-                                    buttonText: "Show Document",
-                                    style: null,
-                                  )
-                                ],
-                              ),
-                            ),
-                            SizedBox(height: _deviceHeight! * 0.02),
-                            Container(
-                              padding: const EdgeInsets.all(8.0),
-                              decoration: BoxDecoration(
-                                color: cardBackgroundColor,
-                                borderRadius: BorderRadius.circular(15),
-                                boxShadow: const [
-                                  BoxShadow(
-                                    color: Colors.black12,
-                                    blurRadius: 5,
-                                    offset: Offset(0, 0),
-                                  ),
-                                ],
-                              ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-
-                                // show company details
-                                children: [
-                                  const Text(
-                                    "Company details",
-                                    style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w600),
-                                  ),
-                                  const Divider(),
-                                  _richTextWidget!.KeyValuePairrichText(
-                                    "Company Name : ",
-                                    "${widget.provider!['company_name']}",
-                                    18,
-                                  ),
-                                  _richTextWidget!.KeyValuePairrichText(
-                                    "Address : ",
-                                    "${widget.provider!['company_address']}",
-                                    18,
-                                  ),
-                                  _richTextWidget!.KeyValuePairrichText(
-                                    "District : ",
-                                    "${widget.provider!['district']}",
-                                    18,
-                                  ),
-                                  _richTextWidget!.KeyValuePairrichText(
-                                    "Industry : ",
-                                    "${widget.provider!['industry']}",
-                                    18,
-                                  ),
-                                  _richTextWidget!.KeyValuePairrichText(
-                                    "Organization type : ",
-                                    "${widget.provider!['org_type']}",
-                                    18,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    }
-                  ],
-                ),
-              }
-            ],
-          ),
-          if (widget.provider!['company_name'] != null) ...{
-            Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(8.0),
-                      decoration: BoxDecoration(
-                        color: cardBackgroundColor,
-                        borderRadius: BorderRadius.circular(15),
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Colors.black12,
-                            blurRadius: 5,
-                            offset: Offset(0, 0),
-                          ),
-                        ],
-                      ),
-                      // show give approval card for approve or decline
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          const Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Text(
-                              "Give Approval ?",
-                              style: TextStyle(
-                                fontSize: 18, // Adjust font size as needed
-                                fontWeight: FontWeight
-                                    .bold, // Adjust font weight as needed
-                                color:
-                                    Colors.black, // Adjust text color as needed
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                              height: _deviceHeight! *
-                                  0.05), // Add spacing between text and buttons
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            mainAxisSize: MainAxisSize.max,
-                            children: [
-                              SizedBox(
-                                width: _deviceWidth! * 0.02,
-                              ),
-                              _buttonWidgets!.simpleElevatedButtonWidget(
-                                  onPressed: () {
-                                    _showConfirmationDialog(
-                                        "Approve", widget.provider);
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color.fromARGB(
-                                        255, 120, 255, 124),
-                                  ),
-                                  buttonText: "Approve"),
-                              SizedBox(
-                                width: _deviceWidth! * 0.02,
-                              ),
-                              _buttonWidgets!.simpleElevatedButtonWidget(
-                                  onPressed: () {
-                                    _showConfirmationDialog(
-                                        "Reject", widget.provider);
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color.fromARGB(
-                                        255, 255, 120, 120),
-                                  ),
-                                  buttonText: "Reject"),
-                              SizedBox(
-                                width: _deviceWidth! * 0.02,
-                              ),
-                            ],
-                          ),
-                          SizedBox(
-                            height: _deviceHeight! * 0.02,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
+                }
               ],
             ),
-          }
+          ),
         ],
       ),
     );
@@ -732,11 +799,14 @@ class _SelectedApprovalDetailsWidgetState
                                 if (action == "Reject") {
                                   await _firebaseService!
                                       .deleteProvider(provider!['uid']);
+                                  Navigator.of(context)
+                                      .pop(); //TODO: test this last
                                   alertBoxWidgets.showAlert(context, "Alert",
                                       "Job provider rejected!", errorColor);
                                 } else if (action == "Approve") {
                                   await _firebaseService!
                                       .approveProvider(provider!['uid']);
+                                  Navigator.of(context).pop();
                                   alertBoxWidgets.showAlert(context, "Alert",
                                       "Job provider approved!", successColor);
                                 }
@@ -747,7 +817,7 @@ class _SelectedApprovalDetailsWidgetState
                                 setState(() {
                                   _loading = false; // Hide loading indicator
                                 });
-                                Navigator.of(context).pop(); // Close dialog
+                                // Close dialog
                               }
                             },
                       child: Text(action),
