@@ -798,7 +798,7 @@ class _SelectedApprovalDetailsWidgetState
                                 // Dismiss the dialog before performing the action
                                 if (action == "Reject") {
                                   await _firebaseService!
-                                      .deleteProvider(provider!['uid']);
+                                      .deletePendingProvider(provider!['uid']);
                                   Navigator.of(context)
                                       .pop(); //TODO: test this last
                                   alertBoxWidgets.showAlert(context, "Alert",

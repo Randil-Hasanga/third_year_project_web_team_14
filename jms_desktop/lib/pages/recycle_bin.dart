@@ -39,17 +39,21 @@ class _RecycleBinState extends State<RecycleBin> {
           await _firebaseService!.getDeletedUsersData(_dropDownValue);
 
       if (mounted) {
-        setState(() {
-          if (_dropDownValue == "Job Providers") {
-            _deletedJobProviders = data;
-            _showNoProvidersFound =
-                _deletedJobProviders == null || _deletedJobProviders!.isEmpty;
-          } else if (_dropDownValue == "Job Seekers") {
-            _deletedJobSeekers = data;
-            _showNoSeekersFound =
-                _deletedJobSeekers == null || _deletedJobSeekers!.isEmpty;
-          }
-        });
+        setState(
+          () {
+            if (_dropDownValue == "Job Providers") {
+              _deletedJobProviders = data;
+              print("Deleted job providers : $_deletedJobProviders");
+              _showNoProvidersFound =
+                  _deletedJobProviders == null || _deletedJobProviders!.isEmpty;
+            } else if (_dropDownValue == "Job Seekers") {
+              _deletedJobSeekers = data;
+              print("Deleted job seekers : $_deletedJobSeekers");
+              _showNoSeekersFound =
+                  _deletedJobSeekers == null || _deletedJobSeekers!.isEmpty;
+            }
+          },
+        );
       }
 
       setState(() {
@@ -288,9 +292,7 @@ class _RecycleBinState extends State<RecycleBin> {
                   Colors.white, function: () {
                 _showRestoreConfirmationDialog(context, provider['uid']);
               }, "Restore"),
-            } else ...{
-              Text(provider['username']),
-            },
+            }
           ],
         ),
       ),
@@ -319,27 +321,45 @@ class _RecycleBinState extends State<RecycleBin> {
         ],
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Align(
-              alignment: Alignment.topLeft,
-              child: Padding(
-                padding: EdgeInsets.only(
-                    top: _widthXheight! * 0.7, left: _widthXheight! * 0.1),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "Job Seekers",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: _widthXheight! * 0.7,
-                        fontWeight: FontWeight.w600,
-                      ),
+            alignment: Alignment.topLeft,
+            child: Padding(
+              padding: EdgeInsets.only(
+                  top: _widthXheight! * 0.7, left: _widthXheight! * 0.1),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Job Seekers",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: _widthXheight! * 0.7,
+                      fontWeight: FontWeight.w600,
                     ),
-                    _selectedUserDropdown(),
-                  ],
-                ),
-              )),
+                  ),
+                  _selectedUserDropdown(),
+                ],
+              ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.only(
+                top: _widthXheight! * 0.7,
+                left: _widthXheight! * 0.1,
+                bottom: _deviceHeight! * 0.005),
+            child: _richTextWidget.deletedSeekerTableRow(
+                "Username",
+                "Email",
+                "Disabled by",
+                "Disabled date",
+                15,
+                Colors.black,
+                Color.fromARGB(255, 199, 197, 197), function: () {
+              print("TESTING");
+            }, "Actions"),
+          ),
           Expanded(
             child: Stack(
               children: [
@@ -374,11 +394,11 @@ class _RecycleBinState extends State<RecycleBin> {
                     child: ListView.builder(
                       controller: _scrollControllerLeft,
                       shrinkWrap: true,
-                      itemCount: _deletedJobProviders?.length,
+                      itemCount: _deletedJobSeekers?.length,
                       scrollDirection: Axis.vertical,
                       itemBuilder: (context, index) {
                         return _deletedSeekersListViewBuilder(
-                            _deletedJobProviders![index]);
+                            _deletedJobSeekers![index]);
                       },
                     ),
                   ),
@@ -398,56 +418,28 @@ class _RecycleBinState extends State<RecycleBin> {
     );
   }
 
-  Widget _deletedSeekersListViewBuilder(Map<String, dynamic> provider) {
+  Widget _deletedSeekersListViewBuilder(Map<String, dynamic> seeker) {
     return Padding(
-      padding: EdgeInsets.only(
-        right: _deviceWidth! * 0.0125,
-        top: _deviceHeight! * 0.01,
-      ),
-      child: GestureDetector(
-        onTap: () {
-          setState(() {
-            _selectedProvider = provider;
-          });
-        },
-        child: AnimatedContainer(
-          duration: const Duration(microseconds: 300),
-          height: _deviceHeight! * 0.08,
-          width: _deviceWidth! * 0.175,
-          decoration: BoxDecoration(
-            color: cardBackgroundColor,
-            borderRadius: BorderRadius.circular(_widthXheight! * 0.66),
-            boxShadow: const [
-              BoxShadow(
-                color: Colors.black12,
-                blurRadius: 5,
-                offset: Offset(0, 0),
-              ),
-            ],
-          ),
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-                horizontal: _deviceWidth! * 0.001,
-                vertical: _deviceHeight! * 0.015),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              mainAxisSize: MainAxisSize.max,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SizedBox(
-                  width: _deviceWidth! * 0.01,
-                ),
-                Icon(
-                  Icons.developer_mode,
-                  size: _widthXheight! * 1,
-                ),
-                if (provider['username'] != null) ...{
-                  Text(provider['username']),
-                }
-              ],
-            ),
-          ),
-        ),
+      padding: EdgeInsets.symmetric(
+          horizontal: _deviceWidth! * 0.001, vertical: _deviceHeight! * 0.005),
+      child: Stack(
+        children: [
+          // Icon(
+          //   Icons.developer_mode,
+          //   size: _widthXheight! * 1,
+          // ),
+
+          _richTextWidget.deletedSeekerTableRow(
+              seeker['username'],
+              seeker['email'],
+              seeker['disabled_by'],
+              seeker['disabled_date'],
+              15,
+              Colors.black,
+              Colors.white, function: () {
+            _showRestoreConfirmationDialog(context, seeker['uid']);
+          }, "Restore"),
+        ],
       ),
     );
   }
@@ -506,7 +498,7 @@ class _RecycleBinState extends State<RecycleBin> {
                           setState(() {
                             _deleting = true; // Start deletion process
                           });
-                          await _firebaseService!.restoreUser(uid);
+                          await _firebaseService!.restoreSeeker(uid);
 
                           _getDataFromDB();
                           Navigator.pop(context);
@@ -530,10 +522,7 @@ class _RecycleBinState extends State<RecycleBin> {
   }
 
   Widget _selectedUserDropdown() {
-    List<String> _userType = [
-      "Job Providers",
-      "Job Seekers",
-    ];
+    List<String> _userType = ["Job Providers", "Job Seekers", "Officers"];
     List<DropdownMenuItem<String>> _items = _userType
         .map(
           (e) => DropdownMenuItem(
@@ -560,6 +549,8 @@ class _RecycleBinState extends State<RecycleBin> {
           setState(() {
             _dropDownValue = _value;
             _showLoader = true;
+            _deletedJobProviders = [];
+            _deletedJobSeekers = [];
           });
           _getDataFromDB();
         },

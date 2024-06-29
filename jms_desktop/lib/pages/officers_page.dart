@@ -299,7 +299,7 @@ class _OfficersPageStete extends State<OfficersPage> {
           actions: [
             TextButton(
               onPressed: () async {
-                await _firebaseService!.deleteUser(uid);
+                await _firebaseService!.disableUser(uid);
                 _loadOfficer();
                 Navigator.pop(context);
               },

@@ -210,7 +210,7 @@ class FirebaseService {
 
   // delete user function
 
-  Future<void> deleteUser(String uid) async {
+  Future<void> disableUser(String uid) async {
     String fname = "${currentUser?['fname']}";
     String lname = "${currentUser?['lname']}";
     String date = DateTime.now().toString();
@@ -277,7 +277,7 @@ class FirebaseService {
 
   Future<List<Map<String, dynamic>>?> getDeletedUsersData(
       String? dropDownValue) async {
-    List<Map<String, dynamic>> jobProviders = [];
+    List<Map<String, dynamic>> userData = [];
     QuerySnapshot<Map<String, dynamic>>? _querySnapshot;
     if (dropDownValue == 'Job Providers') {
       _querySnapshot = await _db
@@ -303,7 +303,7 @@ class FirebaseService {
           providerData.addAll(additionalData);
         }
         print(providerData);
-        jobProviders.add(providerData);
+        userData.add(providerData);
       }
     } else if (dropDownValue == 'Job Seekers') {
       _querySnapshot = await _db
@@ -315,21 +315,21 @@ class FirebaseService {
       for (QueryDocumentSnapshot<Map<String, dynamic>> doc
           in _querySnapshot.docs) {
         // Fetch basic data
-        Map<String, dynamic> providerData = doc.data();
+        Map<String, dynamic> seekerData = doc.data();
 
         // Check if additional data exists
         DocumentSnapshot additionalDataSnapshot =
-            await _db.collection(PROVIDER_COLLECTION).doc(doc.id).get();
+            await _db.collection(CV_COLLECTION).doc(doc.id).get();
 
         if (additionalDataSnapshot.exists) {
-          // Cast the data to Map<String, dynamic>
+          //   // Cast the data to Map<String, dynamic>
           Map<String, dynamic> additionalData =
               additionalDataSnapshot.data() as Map<String, dynamic>;
-          // Merge additional data with basic data
-          providerData.addAll(additionalData);
+          //   // Merge additional data with basic data
+          seekerData.addAll(additionalData);
         }
 
-        jobProviders.add(providerData);
+        userData.add(seekerData);
       }
     } else if (dropDownValue == 'All') {
       _querySnapshot = await _db
@@ -354,12 +354,12 @@ class FirebaseService {
           providerData.addAll(additionalData);
         }
 
-        jobProviders.add(providerData);
+        userData.add(providerData);
       }
     }
 
-    if (jobProviders.isNotEmpty) {
-      return jobProviders;
+    if (userData.isNotEmpty) {
+      return userData;
     } else {
       return null;
     }
@@ -541,8 +541,8 @@ class FirebaseService {
     }
   }
 
-  // delete provider function
-  Future<void> deleteProvider(String providerId) async {
+  // reject and delete pending provider
+  Future<void> deletePendingProvider(String providerId) async {
     try {
       await _db.collection('provider_details').doc(providerId).delete();
     } catch (error) {
@@ -872,8 +872,8 @@ class FirebaseService {
     }
   }
 
-  // function for restore deleted user
-  Future<bool> restoreUser(String uid) async {
+  // function for restore deleted provider
+  Future<bool> restoreProvider(String uid) async {
     try {
       await _db.collection(USER_COLLECTION).doc(uid).update({
         'disabled': false,
@@ -891,6 +891,20 @@ class FirebaseService {
             .doc(doc.id)
             .update({'disabled': false});
       }
+
+      return true;
+    } catch (e) {
+      print("Error restoring user $e");
+      return false;
+    }
+  }
+
+  // function for restore deleted seeker
+  Future<bool> restoreSeeker(String uid) async {
+    try {
+      await _db.collection(USER_COLLECTION).doc(uid).update({
+        'disabled': false,
+      });
 
       return true;
     } catch (e) {
