@@ -361,7 +361,7 @@ class _JobProvidersState extends State<JobProviders> {
                           setState(() {
                             _deleting = true; // Start deletion process
                           });
-                          await _firebaseService!.deleteUser(uid);
+                          await _firebaseService!.disableUser(uid);
 
                           _loadJobProviders();
                           Navigator.pop(context);
