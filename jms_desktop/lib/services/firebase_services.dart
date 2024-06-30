@@ -25,6 +25,10 @@ class FirebaseService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   final FirebaseStorage _storage = FirebaseStorage.instance;
 
+  String getUid() {
+    return uid!;
+  }
+
 // login the new user in the system
   Future<bool> loginUser(
       {required String email, required String password}) async {
@@ -211,14 +215,12 @@ class FirebaseService {
   // delete user function
 
   Future<void> disableUser(String uid) async {
-    String fname = "${currentUser?['fname']}";
-    String lname = "${currentUser?['lname']}";
     String date = DateTime.now().toString();
 
     try {
       await _db.collection(USER_COLLECTION).doc(uid).update({
         'disabled': true,
-        'disabled_by': "$fname $lname",
+        'disabled_by': this.uid,
         'disabled_date': date,
       });
 
