@@ -240,9 +240,37 @@ class _RecycleBinState extends State<RecycleBin> {
                       shrinkWrap: true,
                       itemCount: _deletedJobProviders?.length ?? 0,
                       scrollDirection: Axis.vertical,
+                      // itemBuilder: (context, index) {
+                      //   return _deletedProvidersListViewBuilder(
+                      //       _deletedJobProviders![index]);
+                      // },
                       itemBuilder: (context, index) {
-                        return _deletedProvidersListViewBuilder(
-                            _deletedJobProviders![index]);
+                        Map<String, dynamic> provider =
+                            _deletedJobProviders![index];
+                        return FutureBuilder<Map?>(
+                          future: _firebaseService!
+                              .getUserData(uid: provider['disabled_by']),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasError) {
+                              return Text('Error: ${snapshot.error}');
+                            } else if (snapshot.hasData) {
+                              Map? deletedBy = snapshot.data;
+                              String? fname = deletedBy?['fname'];
+                              String? lname = deletedBy?['lname'];
+                              print("Deleted data $fname $lname");
+
+                              return _deletedProvidersListViewBuilder(
+                                provider,
+                                deletedByName: '$fname $lname',
+                              );
+                            } else {
+                              return const Center(
+                                  child: LinearProgressIndicator(
+                                color: backgroundColor,
+                              ));
+                            }
+                          },
+                        );
                       },
                     ),
                   ),
@@ -262,7 +290,8 @@ class _RecycleBinState extends State<RecycleBin> {
     );
   }
 
-  Widget _deletedProvidersListViewBuilder(Map<String, dynamic> provider) {
+  Widget _deletedProvidersListViewBuilder(Map<String, dynamic> provider,
+      {required String deletedByName}) {
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -285,7 +314,7 @@ class _RecycleBinState extends State<RecycleBin> {
                   provider['company_name'],
                   provider['repName'],
                   provider['repTelephone'],
-                  provider['disabled_by'],
+                  deletedByName,
                   provider['disabled_date'],
                   15,
                   Colors.black,
@@ -396,9 +425,38 @@ class _RecycleBinState extends State<RecycleBin> {
                       shrinkWrap: true,
                       itemCount: _deletedJobSeekers?.length,
                       scrollDirection: Axis.vertical,
+                      // itemBuilder: (context, index) {
+                      //   return _deletedSeekersListViewBuilder(
+                      //       _deletedJobSeekers![index]);
+                      // },
                       itemBuilder: (context, index) {
-                        return _deletedSeekersListViewBuilder(
-                            _deletedJobSeekers![index]);
+                        Map<String, dynamic> seeker =
+                            _deletedJobSeekers![index];
+                        return FutureBuilder<Map?>(
+                          future: _firebaseService!
+                              .getUserData(uid: seeker['disabled_by']),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasError) {
+                              return Text('Error: ${snapshot.error}');
+                            } else if (snapshot.hasData) {
+                              Map? deletedBy = snapshot.data;
+                              String? fname = deletedBy?['fname'];
+                              String? lname = deletedBy?['lname'];
+                              print("Deleted data $fname $lname");
+
+                              return _deletedSeekersListViewBuilder(
+                                seeker,
+                                deletedByName: '$fname $lname',
+                              );
+                            } else {
+                              return const Center(
+                                child: LinearProgressIndicator(
+                                  color: backgroundColor,
+                                ),
+                              );
+                            }
+                          },
+                        );
                       },
                     ),
                   ),
@@ -418,7 +476,8 @@ class _RecycleBinState extends State<RecycleBin> {
     );
   }
 
-  Widget _deletedSeekersListViewBuilder(Map<String, dynamic> seeker) {
+  Widget _deletedSeekersListViewBuilder(Map<String, dynamic> seeker,
+      {required String deletedByName}) {
     return Padding(
       padding: EdgeInsets.symmetric(
           horizontal: _deviceWidth! * 0.001, vertical: _deviceHeight! * 0.005),
@@ -432,7 +491,7 @@ class _RecycleBinState extends State<RecycleBin> {
           _richTextWidget.deletedSeekerTableRow(
               seeker['username'],
               seeker['email'],
-              seeker['disabled_by'],
+              deletedByName,
               seeker['disabled_date'],
               15,
               Colors.black,
