@@ -473,4 +473,178 @@ class RichTextWidget {
       },
     );
   }
+
+  Widget deletedOfficerTableRow(
+      String regNo,
+      String name,
+      String email,
+      String contact,
+      String deletedBy,
+      String deletedDate,
+      double fontSize,
+      Color color,
+      Color backgroundColor,
+      String? action,
+      {VoidCallback? function}) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        double totalWidth = constraints.maxWidth;
+        double columnWidth1 = totalWidth * 0.10; // 15% of total width
+        double columnWidth2 = totalWidth * 0.20; // 25% of total width
+        double columnWidth3 = totalWidth * 0.20; // 15% of total width
+        double columnWidth4 = totalWidth * 0.20; // 15% of total width
+        double columnWidth5 = totalWidth * 0.20; // 15% of total width
+        double columnWidth6 = totalWidth * 0.10; // 15% of total width
+
+        return Table(
+          defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+          border: TableBorder.symmetric(
+              inside: const BorderSide(
+                  color: Colors.black, style: BorderStyle.solid)),
+          columnWidths: {
+            0: FixedColumnWidth(columnWidth1), // Adjust as necessary
+            1: FixedColumnWidth(columnWidth2), // Adjust as necessary
+            2: FixedColumnWidth(columnWidth3), // Adjust as necessary
+            3: FixedColumnWidth(columnWidth4), // Adjust as necessary
+            4: FixedColumnWidth(columnWidth5), // Adjust as necessary
+            5: FixedColumnWidth(columnWidth6),
+          },
+          children: [
+            TableRow(
+              decoration: BoxDecoration(
+                color: backgroundColor,
+                borderRadius: const BorderRadius.all(
+                  Radius.circular(5),
+                ),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 2,
+                    offset: Offset(0, 0),
+                  ),
+                ],
+              ),
+              children: [
+                TableCell(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 5.0, horizontal: 2.0),
+                    child: Center(
+                      child: Text(
+                        regNo,
+                        style: TextStyle(
+                          fontSize: fontSize,
+                          color: color,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: GoogleFonts.poppins().fontFamily,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                TableCell(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 5.0, horizontal: 2.0),
+                    child: Center(
+                      child: Text(
+                        name,
+                        style: TextStyle(
+                          fontSize: fontSize,
+                          color: color,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: GoogleFonts.poppins().fontFamily,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                TableCell(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 5.0, horizontal: 2.0),
+                    child: Center(
+                      child: Text(
+                        email,
+                        style: TextStyle(
+                          fontSize: fontSize,
+                          color: color,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: GoogleFonts.poppins().fontFamily,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                TableCell(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 5.0, horizontal: 2.0),
+                    child: Center(
+                      child: Text(
+                        deletedBy,
+                        style: TextStyle(
+                          fontSize: fontSize,
+                          color: color,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: GoogleFonts.poppins().fontFamily,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                TableCell(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 5.0, horizontal: 2.0),
+                    child: Center(
+                      child: Text(
+                        deletedDate,
+                        style: TextStyle(
+                          fontSize: fontSize,
+                          color: color,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: GoogleFonts.poppins().fontFamily,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                TableCell(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 5.0, horizontal: 2.0),
+                    child: Center(
+                      child: Row(
+                        children: [
+                          IconButton(
+                            onPressed: function,
+                            icon: const Icon(Icons.restore_page),
+                          ),
+                          InkWell(
+                            child: GestureDetector(
+                              onTap: function,
+                              child: Text(
+                                action!,
+                                style: TextStyle(
+                                  fontSize: fontSize,
+                                  color: color,
+                                  fontWeight: FontWeight.w600,
+                                  fontFamily: GoogleFonts.poppins().fontFamily,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
 }
