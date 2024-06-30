@@ -19,11 +19,11 @@ class _RecycleBinState extends State<RecycleBin> {
   ScrollController _scrollController2 = ScrollController();
   List<Map<String, dynamic>>? _deletedJobProviders;
   List<Map<String, dynamic>>? _deletedJobSeekers;
-  List<Map<String, dynamic>>? _deletedUsers;
+  List<Map<String, dynamic>>? _deletedOfficers;
   bool _showLoader = true;
   bool _showNoProvidersFound = false;
   bool _showNoSeekersFound = false;
-  bool _showNoUsersFound = false;
+  bool _showNoOfficersFound = false;
   Map<String, dynamic>? _selectedProvider, _selecteduser, _selectedSeeker;
   FirebaseService? _firebaseService;
   String? _dropDownValue = "Job Providers";
@@ -51,6 +51,11 @@ class _RecycleBinState extends State<RecycleBin> {
               print("Deleted job seekers : $_deletedJobSeekers");
               _showNoSeekersFound =
                   _deletedJobSeekers == null || _deletedJobSeekers!.isEmpty;
+            } else if (_dropDownValue == "Officers") {
+              _deletedOfficers = data;
+              print("Deleted officers : $_deletedOfficers");
+              _showNoOfficersFound =
+                  _deletedOfficers == null || _deletedOfficers!.isEmpty;
             }
           },
         );
@@ -119,18 +124,12 @@ class _RecycleBinState extends State<RecycleBin> {
                       flex: 1,
                       child: _deletedSeekersListWidget(),
                     ),
+                  } else if (_dropDownValue == "Officers") ...{
+                    Expanded(
+                      flex: 1,
+                      child: _deletedOfficersListWidget(),
+                    ),
                   }
-
-                  // Expanded(
-                  //   flex: 1,
-                  //   child: _DeletedSeekersListWidget(),
-                  // ),
-                  // Expanded(
-                  //   flex: 1,
-                  //   child: Container(
-                  //     color: Colors.green,
-                  //   ),
-                  // )
                 ],
               ),
             ),
@@ -240,10 +239,6 @@ class _RecycleBinState extends State<RecycleBin> {
                       shrinkWrap: true,
                       itemCount: _deletedJobProviders?.length ?? 0,
                       scrollDirection: Axis.vertical,
-                      // itemBuilder: (context, index) {
-                      //   return _deletedProvidersListViewBuilder(
-                      //       _deletedJobProviders![index]);
-                      // },
                       itemBuilder: (context, index) {
                         Map<String, dynamic> provider =
                             _deletedJobProviders![index];
@@ -304,10 +299,6 @@ class _RecycleBinState extends State<RecycleBin> {
             vertical: _deviceHeight! * 0.005),
         child: Stack(
           children: [
-            // Icon(
-            //   Icons.developer_mode,
-            //   size: _widthXheight! * 1,
-            // ),
             if (provider['company_name'] != null) ...{
               _richTextWidget.deletedProviderTableRow(
                   provider['repEmail'],
@@ -425,10 +416,6 @@ class _RecycleBinState extends State<RecycleBin> {
                       shrinkWrap: true,
                       itemCount: _deletedJobSeekers?.length,
                       scrollDirection: Axis.vertical,
-                      // itemBuilder: (context, index) {
-                      //   return _deletedSeekersListViewBuilder(
-                      //       _deletedJobSeekers![index]);
-                      // },
                       itemBuilder: (context, index) {
                         Map<String, dynamic> seeker =
                             _deletedJobSeekers![index];
@@ -483,11 +470,6 @@ class _RecycleBinState extends State<RecycleBin> {
           horizontal: _deviceWidth! * 0.001, vertical: _deviceHeight! * 0.005),
       child: Stack(
         children: [
-          // Icon(
-          //   Icons.developer_mode,
-          //   size: _widthXheight! * 1,
-          // ),
-
           _richTextWidget.deletedSeekerTableRow(
               seeker['username'],
               seeker['email'],
@@ -503,10 +485,174 @@ class _RecycleBinState extends State<RecycleBin> {
     );
   }
 
-  // void _restoreUser(String uid) async {
-  //   await _firebaseService!.restoreUser(uid);
-  //   _getDataFromDB();
-  // }
+  Widget _deletedOfficersListWidget() {
+    return Container(
+      margin: EdgeInsets.only(
+        left: _deviceWidth! * 0.005,
+        right: _deviceWidth! * 0.01,
+        bottom: _deviceHeight! * 0.02,
+        top: _deviceHeight! * 0.02,
+        // /top: _deviceHeight! * 0.02,
+      ),
+      padding: EdgeInsets.symmetric(horizontal: _deviceWidth! * 0.01),
+      decoration: BoxDecoration(
+        color: cardBackgroundColorLayer2,
+        borderRadius: BorderRadius.circular(_widthXheight! * 1),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 5,
+            offset: Offset(0, 0),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Align(
+            alignment: Alignment.topLeft,
+            child: Padding(
+              padding: EdgeInsets.only(
+                  top: _widthXheight! * 0.7, left: _widthXheight! * 0.1),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Deleted Officers",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: _widthXheight! * 0.7,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  _selectedUserDropdown(),
+                ],
+              ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.only(
+                top: _widthXheight! * 0.7,
+                left: _widthXheight! * 0.1,
+                bottom: _deviceHeight! * 0.005),
+            child: _richTextWidget.deletedOfficerTableRow(
+                "Reg No",
+                "Name",
+                "Email",
+                "Contact No",
+                "Deleted by",
+                "Deleted date",
+                15,
+                Colors.black,
+                Color.fromARGB(255, 199, 197, 197), function: () {
+              print("TESTING");
+            }, "Actions"),
+          ),
+          Expanded(
+            child: Stack(
+              children: [
+                Visibility(
+                  visible: _showLoader,
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const CircularProgressIndicator(
+                          color: selectionColor,
+                        ),
+                        const SizedBox(height: 8),
+                        if (_deletedOfficers == null ||
+                            _deletedOfficers!.isEmpty) ...{
+                          _richTextWidget!.simpleText(
+                              "Loading...", null, Colors.black, null),
+                        } else ...{
+                          _richTextWidget!.simpleText(
+                              "Fetching database...", null, Colors.black, null),
+                        }
+                      ],
+                    ),
+                  ),
+                ),
+                Visibility(
+                  visible:
+                      _deletedOfficers != null && _dropDownValue == 'Officers',
+                  child: Scrollbar(
+                    controller: _scrollControllerLeft,
+                    thumbVisibility: true,
+                    child: ListView.builder(
+                      controller: _scrollControllerLeft,
+                      shrinkWrap: true,
+                      itemCount: _deletedOfficers?.length,
+                      scrollDirection: Axis.vertical,
+                      itemBuilder: (context, index) {
+                        Map<String, dynamic> officer = _deletedOfficers![index];
+                        return FutureBuilder<Map?>(
+                          future: _firebaseService!
+                              .getUserData(uid: officer['disabled_by']),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasError) {
+                              return Text('Error: ${snapshot.error}');
+                            } else if (snapshot.hasData) {
+                              Map? deletedBy = snapshot.data;
+                              String? fname = deletedBy?['fname'];
+                              String? lname = deletedBy?['lname'];
+                              print("Deleted data $fname $lname");
+
+                              return _deletedOfficersListViewBuilder(
+                                officer,
+                                deletedByName: '$fname $lname',
+                              );
+                            } else {
+                              return const Center(
+                                child: LinearProgressIndicator(
+                                  color: backgroundColor,
+                                ),
+                              );
+                            }
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                Visibility(
+                  visible: _showNoSeekersFound,
+                  child: Center(
+                    child: _richTextWidget!.simpleText(
+                        "No job seekers found.", null, Colors.black, null),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _deletedOfficersListViewBuilder(Map<String, dynamic> officer,
+      {required String deletedByName}) {
+    return Padding(
+      padding: EdgeInsets.symmetric(
+          horizontal: _deviceWidth! * 0.001, vertical: _deviceHeight! * 0.005),
+      child: Stack(
+        children: [
+          _richTextWidget.deletedOfficerTableRow(
+              officer['reg_no'],
+              "${officer['fname']} ${officer['lname']}",
+              officer['email'],
+              officer['contact'],
+              deletedByName,
+              officer['disabled_date'],
+              15,
+              Colors.black,
+              Colors.white, function: () {
+            _showRestoreConfirmationDialog(context, officer['uid']);
+          }, "Restore"),
+        ],
+      ),
+    );
+  }
 
   void _showRestoreConfirmationDialog(BuildContext context, String uid) {
     showDialog(
@@ -610,6 +756,7 @@ class _RecycleBinState extends State<RecycleBin> {
             _showLoader = true;
             _deletedJobProviders = [];
             _deletedJobSeekers = [];
+            _deletedOfficers = [];
           });
           _getDataFromDB();
         },

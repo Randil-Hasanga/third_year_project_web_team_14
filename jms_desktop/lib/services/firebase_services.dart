@@ -333,9 +333,10 @@ class FirebaseService {
 
         userData.add(seekerData);
       }
-    } else if (dropDownValue == 'All') {
+    } else if (dropDownValue == 'Officers') {
       _querySnapshot = await _db
           .collection(USER_COLLECTION)
+          .where('type', isEqualTo: 'officer')
           .where('disabled', isEqualTo: true)
           .get();
 
@@ -343,19 +344,6 @@ class FirebaseService {
           in _querySnapshot.docs) {
         // Fetch basic data
         Map<String, dynamic> providerData = doc.data();
-
-        // Check if additional data exists
-        DocumentSnapshot additionalDataSnapshot =
-            await _db.collection(PROVIDER_COLLECTION).doc(doc.id).get();
-
-        if (additionalDataSnapshot.exists) {
-          // Cast the data to Map<String, dynamic>
-          Map<String, dynamic> additionalData =
-              additionalDataSnapshot.data() as Map<String, dynamic>;
-          // Merge additional data with basic data
-          providerData.addAll(additionalData);
-        }
-
         userData.add(providerData);
       }
     }
