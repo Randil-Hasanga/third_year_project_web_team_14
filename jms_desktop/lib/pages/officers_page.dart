@@ -334,114 +334,116 @@ class SelectedOfficerDetailsWidget extends StatelessWidget {
     _deviceHeight = MediaQuery.of(context).size.height;
     _deviceWidth = MediaQuery.of(context).size.width;
     _widthXheight = _deviceHeight! * _deviceWidth! / 50000;
-    return Container(
-      margin: EdgeInsets.symmetric(
-          horizontal: _deviceWidth! * 0.01, vertical: _deviceHeight! * 0.02),
-      padding: EdgeInsets.symmetric(
-          horizontal: _deviceWidth! * 0.05, vertical: _deviceHeight! * 0.04),
-      decoration: BoxDecoration(
-        color: cardBackgroundColorLayer2,
-        borderRadius: BorderRadius.circular(_widthXheight! * 1),
-        boxShadow: const [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 5,
-            offset: Offset(0, 0),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            "Details of Selected Officer",
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
+    return SingleChildScrollView(
+      child: Container(
+        margin: EdgeInsets.symmetric(
+            horizontal: _deviceWidth! * 0.01, vertical: _deviceHeight! * 0.02),
+        padding: EdgeInsets.symmetric(
+            horizontal: _deviceWidth! * 0.05, vertical: _deviceHeight! * 0.04),
+        decoration: BoxDecoration(
+          color: cardBackgroundColorLayer2,
+          borderRadius: BorderRadius.circular(_widthXheight! * 1),
+          boxShadow: const [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 5,
+              offset: Offset(0, 0),
             ),
-          ),
-          const SizedBox(height: 20),
-          if (officer != null) ...{
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Expanded(
-                  child: Column(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(8.0),
-                        decoration: BoxDecoration(
-                          color: cardBackgroundColor,
-                          borderRadius: BorderRadius.circular(15),
-                          boxShadow: const [
-                            BoxShadow(
-                              color: Colors.black12,
-                              blurRadius: 5,
-                              offset: Offset(0, 0),
-                            ),
-                          ],
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              "Details of Selected Officer",
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 20),
+            if (officer != null) ...{
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Expanded(
+                    child: Column(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8.0),
+                          decoration: BoxDecoration(
+                            color: cardBackgroundColor,
+                            borderRadius: BorderRadius.circular(15),
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Colors.black12,
+                                blurRadius: 5,
+                                offset: Offset(0, 0),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              _richTextWidget!.simpleText("Basic details", 20,
+                                  Colors.black, FontWeight.w600),
+                              const Divider(),
+                              _richTextWidget!.KeyValuePairrichText(
+                                "User Name:",
+                                "${officer!['username']}",
+                                15,
+                              ),
+                              const Divider(),
+                              _richTextWidget!.KeyValuePairrichText(
+                                "Registration No:",
+                                "${officer!['reg_no']}",
+                                15,
+                              ),
+                              const Divider(),
+                              _richTextWidget!.KeyValuePairrichText(
+                                "Gender:",
+                                "${officer!['gender']}",
+                                15,
+                              ),
+                              const Divider(),
+                              _richTextWidget!.KeyValuePairrichText(
+                                "Position:",
+                                "${officer!['position']}",
+                                15,
+                              ),
+                              const Divider(),
+                              _richTextWidget!.KeyValuePairrichText(
+                                "Contact No:",
+                                "${officer!['contact']}",
+                                15,
+                              ),
+                              const Divider(),
+                              _richTextWidget!.KeyValuePairrichText(
+                                "NIC",
+                                "${officer!['nic']}",
+                                15,
+                              ),
+                              const Divider(),
+                              _richTextWidget!.KeyValuePairrichText(
+                                "Email:",
+                                "${officer!['email']}",
+                                15,
+                              ),
+                            ],
+                          ),
                         ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            _richTextWidget!.simpleText("Basic details", 20,
-                                Colors.black, FontWeight.w600),
-                            const Divider(),
-                            _richTextWidget!.KeyValuePairrichText(
-                              "User Name:",
-                              "${officer!['username']}",
-                              15,
-                            ),
-                            const Divider(),
-                            _richTextWidget!.KeyValuePairrichText(
-                              "Registration No:",
-                              "${officer!['reg_no']}",
-                              15,
-                            ),
-                            const Divider(),
-                            _richTextWidget!.KeyValuePairrichText(
-                              "Gender:",
-                              "${officer!['gender']}",
-                              15,
-                            ),
-                            const Divider(),
-                            _richTextWidget!.KeyValuePairrichText(
-                              "Position:",
-                              "${officer!['position']}",
-                              15,
-                            ),
-                            const Divider(),
-                            _richTextWidget!.KeyValuePairrichText(
-                              "Contact No:",
-                              "${officer!['contact']}",
-                              15,
-                            ),
-                            const Divider(),
-                            _richTextWidget!.KeyValuePairrichText(
-                              "NIC",
-                              "${officer!['nic']}",
-                              15,
-                            ),
-                            const Divider(),
-                            _richTextWidget!.KeyValuePairrichText(
-                              "Email:",
-                              "${officer!['email']}",
-                              15,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            ),
-          }
-        ],
+                ],
+              ),
+            }
+          ],
+        ),
       ),
     );
   }
