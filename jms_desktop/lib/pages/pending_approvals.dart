@@ -36,9 +36,9 @@ class _PendingApprovalsState extends State<PendingApprovals> {
   List<Map<String, dynamic>>? filteredJobProviders;
   List<Map<String, dynamic>>? approvals;
 
-  double? _currentProviderListWidth,
-      _currentProviderListHeight,
-      _currentProviderWidthXheight;
+  double? _pendingProviderListWidth,
+      _pendingProviderListHeight,
+      _pendingProviderWidthXheight;
 
   bool _showNoApprovalsFound = false;
 
@@ -125,10 +125,10 @@ class _PendingApprovalsState extends State<PendingApprovals> {
               flex: 1,
               child: LayoutBuilder(
                 builder: (context, constraints) {
-                  _currentProviderListHeight = constraints.maxHeight;
-                  _currentProviderListWidth = constraints.maxWidth;
-                  _currentProviderWidthXheight = (_currentProviderListHeight! *
-                          _currentProviderListWidth!) /
+                  _pendingProviderListHeight = constraints.maxHeight;
+                  _pendingProviderListWidth = constraints.maxWidth;
+                  _pendingProviderWidthXheight = (_pendingProviderListHeight! *
+                          _pendingProviderListWidth!) /
                       50000;
 
                   return pendingApprovalsListWidget();
@@ -137,7 +137,7 @@ class _PendingApprovalsState extends State<PendingApprovals> {
             ),
             Expanded(
               // second part of row : detais of selected provider (Using another class)
-              flex: 2,
+              flex: 3,
               child: _isDetailsVisible
                   ? SelectedApprovalDetailsWidget(
                       provider: _selectedApproval,
@@ -194,13 +194,13 @@ class _PendingApprovalsState extends State<PendingApprovals> {
                 children: [
                   Icon(
                     Icons.pending_actions,
-                    size: _currentProviderListWidth! * 0.07,
+                    size: _pendingProviderListWidth! * 0.07,
                   ),
                   SizedBox(width: _deviceWidth! * 0.005),
                   Expanded(
                     child: _richTextWidget!.simpleText(
                         "Pending Approvals",
-                        _currentProviderListWidth! * 0.06,
+                        _pendingProviderListWidth! * 0.06,
                         Colors.black,
                         FontWeight.w600),
                   )
