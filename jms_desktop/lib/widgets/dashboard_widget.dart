@@ -1,7 +1,12 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jms_desktop/const/constants.dart';
+import 'package:jms_desktop/pages/job_providers_page.dart';
+import 'package:jms_desktop/pages/pending_approvals.dart';
 import 'package:jms_desktop/services/firebase_services.dart';
+import 'package:jms_desktop/widgets/richText.dart';
 
 class DashboardWidget extends StatefulWidget {
   @override
@@ -18,6 +23,7 @@ class _DashboardState extends State<DashboardWidget> {
   int? _JobProvidersCount, _PendingApprovalsCount, _jobSeekerCount;
   bool _showLoaderCurrent = false;
   bool _showLoaderApprovals = false;
+  RichTextWidget _richTextWidget = RichTextWidget();
 
   @override
   void initState() {
@@ -136,6 +142,7 @@ class _DashboardState extends State<DashboardWidget> {
               padding: EdgeInsets.only(
                   top: _widthXheight! * 0.7, left: _widthXheight! * 0.1),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     "Pending Job Providers",
@@ -143,6 +150,23 @@ class _DashboardState extends State<DashboardWidget> {
                       color: Colors.black,
                       fontSize: _deviceWidth! * 0.0135,
                       fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => PendingApprovals(),
+                        ),
+                      );
+                    },
+                    child: Text(
+                      "See all",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: _deviceWidth! * 0.0085,
+                        fontWeight: FontWeight.w400,
+                      ),
                     ),
                   ),
                 ],
@@ -198,12 +222,13 @@ class _DashboardState extends State<DashboardWidget> {
         top: _deviceHeight! * 0.01,
       ),
       child: GestureDetector(
-        // onTap: () {
-        //   setState(() {
-        //     _isDetailsVisible = true;
-        //     _selectedApproval = provider;
-        //   });
-        // },
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => PendingApprovals(),
+            ),
+          );
+        },
         child: AnimatedContainer(
           duration: const Duration(microseconds: 300),
           height: _deviceHeight! * 0.08,
@@ -228,15 +253,21 @@ class _DashboardState extends State<DashboardWidget> {
               mainAxisSize: MainAxisSize.max,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                SizedBox(
-                  width: _deviceWidth! * 0.01,
+                const SizedBox(
+                  width: 10,
                 ),
-                Icon(
-                  Icons.developer_mode,
-                  size: _widthXheight! * 1,
+                const Icon(
+                  Icons.pending_actions,
+                  size: 25,
+                ),
+                const SizedBox(
+                  width: 15,
                 ),
                 if (provider['username'] != null) ...{
-                  Text(provider['username']),
+                  Expanded(
+                    child: _richTextWidget!.simpleText(
+                        provider['username'], null, Colors.black, null),
+                  ),
                 }
               ],
             ),
@@ -606,6 +637,7 @@ class _DashboardState extends State<DashboardWidget> {
               padding: EdgeInsets.only(
                   top: _widthXheight! * 0.7, left: _widthXheight! * 0.1),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     "Current Job Providers",
@@ -613,6 +645,23 @@ class _DashboardState extends State<DashboardWidget> {
                       color: Colors.black,
                       fontSize: _deviceWidth! * 0.0135,
                       fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => JobProviders(),
+                        ),
+                      );
+                    },
+                    child: Text(
+                      "See all",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: _deviceWidth! * 0.0085,
+                        fontWeight: FontWeight.w400,
+                      ),
                     ),
                   ),
                 ],
@@ -668,12 +717,13 @@ class _DashboardState extends State<DashboardWidget> {
         top: _deviceHeight! * 0.01,
       ),
       child: GestureDetector(
-        // onTap: () {
-        //   setState(() {
-        //     _isDetailsVisible = true;
-        //     _selectedProvider = provider;
-        //   });
-        // },
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => JobProviders(),
+            ),
+          );
+        },
         child: AnimatedContainer(
           duration: const Duration(microseconds: 300),
           height: _deviceHeight! * 0.08,
@@ -694,20 +744,31 @@ class _DashboardState extends State<DashboardWidget> {
                 horizontal: _deviceWidth! * 0.001,
                 vertical: _deviceHeight! * 0.015),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               mainAxisSize: MainAxisSize.max,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                SizedBox(
-                  width: _deviceWidth! * 0.01,
+                const SizedBox(
+                  width: 10,
                 ),
-                Icon(
-                  Icons.developer_mode,
-                  size: _widthXheight! * 1,
+                const Icon(
+                  Icons.handshake,
+                  size: 25,
                 ),
-                if (provider['username'] != null) ...{
-                  Text(provider['username']),
-                }
+                const SizedBox(
+                  width: 20,
+                ),
+                if (provider['company_name'] != null) ...{
+                  Expanded(
+                    child: _richTextWidget!.simpleText(
+                        provider['company_name'], null, Colors.black, null),
+                  ),
+                } else ...{
+                  Expanded(
+                    child: _richTextWidget!.simpleText(
+                        provider['username'], null, Colors.black, null),
+                  ),
+                },
               ],
             ),
           ),

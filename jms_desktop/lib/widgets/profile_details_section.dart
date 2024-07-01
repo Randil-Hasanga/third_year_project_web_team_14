@@ -25,6 +25,7 @@ class _ProfileDetailsSectionState extends State<ProfileDetailsSection> {
   String? _lname = null;
   String? _regNo = null;
   String? _post = null;
+  String? _imageLink;
 
   Future<List<Map<String, dynamic>>> _getNotifications() async {
     List<Map<String, dynamic>>? list;
@@ -64,6 +65,7 @@ class _ProfileDetailsSectionState extends State<ProfileDetailsSection> {
         _lname = _firebaseService!.currentUser!['lname'];
         _regNo = _firebaseService!.currentUser!['reg_no'];
         _post = _firebaseService!.currentUser!['position'];
+        _imageLink = _firebaseService!.currentUser!['profile_image'];
         print("Post _$_post");
       });
     }
@@ -79,18 +81,18 @@ class _ProfileDetailsSectionState extends State<ProfileDetailsSection> {
           future: _getNotifications(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator());
             }
 
             if (snapshot.hasError) {
-              return Center(child: Text('Error loading notifications'));
+              return const Center(child: Text('Error loading notifications'));
             }
 
             var notifications = snapshot.data ?? [];
             if (notifications.isEmpty) {
-              return Center(
+              return const Center(
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: EdgeInsets.all(16.0),
                   child: Text(
                     'No notifications available.',
                     textAlign: TextAlign.center,
@@ -101,7 +103,7 @@ class _ProfileDetailsSectionState extends State<ProfileDetailsSection> {
             }
             return ListView(
               children: [
-                DrawerHeader(
+                const DrawerHeader(
                   child: Text('Notifications'),
                   decoration: BoxDecoration(
                     color: Colors.blue,
@@ -117,7 +119,7 @@ class _ProfileDetailsSectionState extends State<ProfileDetailsSection> {
         future: loadData(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
 
           return _buildProfileDetails();
@@ -172,12 +174,13 @@ class _ProfileDetailsSectionState extends State<ProfileDetailsSection> {
           Container(
             child: Column(
               children: [
-                _profileImage(),
+                //_profileImage(),
+                _imageWidget(),
                 SizedBox(
                   height: _widthXheight! * 0.5,
                 ),
                 if (_fname == null) ...{
-                  Center(
+                  const Center(
                     child: CircularProgressIndicator(),
                   )
                 } else ...{
@@ -229,33 +232,99 @@ class _ProfileDetailsSectionState extends State<ProfileDetailsSection> {
       margin: EdgeInsets.only(bottom: _deviceHeight! * 0.01),
       height: _widthXheight! * 6,
       width: _widthXheight! * 6,
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(100)),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(50000),
-        child: Image.network(
-          "https://avatar.iran.liara.run/public/3",
-          fit: BoxFit.cover,
-          loadingBuilder: (BuildContext context, Widget child,
-              ImageChunkEvent? loadingProgress) {
-            if (loadingProgress == null) {
-              return child;
-            } else {
-              return Center(
-                child: CircularProgressIndicator(
-                  value: loadingProgress.expectedTotalBytes != null
-                      ? loadingProgress.cumulativeBytesLoaded /
-                          loadingProgress.expectedTotalBytes!
-                      : null,
-                ),
-              );
-            }
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(500)),
+      child: Column(
+        children: [
+          if (_imageLink != null) ...{
+            ClipRRect(
+              borderRadius: BorderRadius.circular(50000),
+              child: Image.network(
+                _imageLink!,
+                fit: BoxFit.cover,
+                loadingBuilder: (BuildContext context, Widget child,
+                    ImageChunkEvent? loadingProgress) {
+                  if (loadingProgress == null) {
+                    return child;
+                  } else {
+                    return Center(
+                      child: CircularProgressIndicator(
+                        value: loadingProgress.expectedTotalBytes != null
+                            ? loadingProgress.cumulativeBytesLoaded /
+                                loadingProgress.expectedTotalBytes!
+                            : null,
+                      ),
+                    );
+                  }
+                },
+                errorBuilder: (BuildContext context, Object exception,
+                    StackTrace? stackTrace) {
+                  return const Icon(Icons.error);
+                },
+              ),
+            ),
+          } else ...{
+            ClipRRect(
+              borderRadius: BorderRadius.circular(50000),
+              child: Image.network(
+                "https://avatar.iran.liara.run/public/3",
+                fit: BoxFit.cover,
+                loadingBuilder: (BuildContext context, Widget child,
+                    ImageChunkEvent? loadingProgress) {
+                  if (loadingProgress == null) {
+                    return child;
+                  } else {
+                    return Center(
+                      child: CircularProgressIndicator(
+                        value: loadingProgress.expectedTotalBytes != null
+                            ? loadingProgress.cumulativeBytesLoaded /
+                                loadingProgress.expectedTotalBytes!
+                            : null,
+                      ),
+                    );
+                  }
+                },
+                errorBuilder: (BuildContext context, Object exception,
+                    StackTrace? stackTrace) {
+                  return const Icon(Icons.error);
+                },
+              ),
+            ),
           },
-          errorBuilder:
-              (BuildContext context, Object exception, StackTrace? stackTrace) {
-            return const Icon(Icons.error);
-          },
-        ),
+        ],
       ),
+    );
+  }
+
+  Widget _imageWidget() {
+    return Column(
+      children: [
+        if (_imageLink != null) ...{
+          Container(
+            width: _widthXheight! * 6,
+            height: _widthXheight! * 6,
+            child: CircleAvatar(
+              radius: _widthXheight! * 3,
+              backgroundImage: NetworkImage(_imageLink!),
+            ),
+          ),
+        } else if (_fname == null) ...{
+          const Center(
+            child: SizedBox(
+              height: 50,
+            ),
+          )
+        } else ...{
+          Container(
+            width: _widthXheight! * 6,
+            height: _widthXheight! * 6,
+            child: CircleAvatar(
+              radius: _widthXheight! * 3,
+              backgroundImage:
+                  NetworkImage("https://avatar.iran.liara.run/public/3"),
+            ),
+          ),
+        }
+      ],
     );
   }
 
