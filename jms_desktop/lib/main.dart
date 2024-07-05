@@ -68,11 +68,11 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         scrollbarTheme: ScrollbarThemeData(
-          thumbColor: MaterialStateProperty.all(
+          thumbColor: WidgetStateProperty.all(
               const Color.fromARGB(255, 90, 89, 88)), // Change thumb color
-          trackColor: MaterialStateProperty.all(Colors.blue),
-          thumbVisibility: const MaterialStatePropertyAll(true),
-          thickness: const MaterialStatePropertyAll(17), // Change track color
+          trackColor: WidgetStateProperty.all(Colors.blue),
+          thumbVisibility: const WidgetStatePropertyAll(true),
+          thickness: const WidgetStatePropertyAll(17), // Change track color
         ),
         appBarTheme: const AppBarTheme(
           backgroundColor: backgroundColor3,

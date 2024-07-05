@@ -545,16 +545,16 @@ class _BulkMailPageState extends State<BulkMailPage> {
                   ),
                   Icon(
                     Icons.mail,
-                    size: _widthXheight! * 1.5,
+                    size: _widthXheight! * 1,
                   ),
                   SizedBox(
-                    width: _deviceWidth! * 0.01,
+                    width: _deviceWidth! * 0.007,
                   ),
                   Text(
                     "Bulk mail",
                     style: TextStyle(
                       color: Colors.black,
-                      fontSize: _widthXheight! * 1,
+                      fontSize: _widthXheight! * 0.8,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
