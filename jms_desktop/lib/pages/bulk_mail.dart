@@ -545,7 +545,7 @@ class _BulkMailPageState extends State<BulkMailPage> {
                   ),
                   Icon(
                     Icons.mail,
-                    size: _widthXheight! * 1,
+                    size: totalWidth! * 0.02,
                   ),
                   SizedBox(
                     width: _deviceWidth! * 0.007,
@@ -554,7 +554,7 @@ class _BulkMailPageState extends State<BulkMailPage> {
                     "Bulk mail",
                     style: TextStyle(
                       color: Colors.black,
-                      fontSize: _widthXheight! * 0.8,
+                      fontSize: totalWidth! * 0.017,
                       fontWeight: FontWeight.w600,
                     ),
                   ),

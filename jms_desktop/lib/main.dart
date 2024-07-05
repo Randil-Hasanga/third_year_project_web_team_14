@@ -28,6 +28,7 @@ void main() async {
   await Firebase.initializeApp(
     options: const FirebaseOptions(
       apiKey: "AIzaSyBX-f2VAYW6NZOS-1Ra4PvsjYbnA4Xzvcg",
+      authDomain: "jobcenter-app-74ca3.firebaseapp.com",
       projectId: "jobcenter-app-74ca3",
       messagingSenderId: "352414474958",
       storageBucket: "jobcenter-app-74ca3.appspot.com",
