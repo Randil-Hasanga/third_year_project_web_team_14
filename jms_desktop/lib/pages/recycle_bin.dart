@@ -71,71 +71,73 @@ class _RecycleBinState extends State<RecycleBin> {
 
   @override
   Widget build(BuildContext context) {
-    _deviceHeight = MediaQuery.of(context).size.height;
-    _deviceWidth = MediaQuery.of(context).size.width;
-    _widthXheight = _deviceHeight! * _deviceWidth! / 50000;
-
     _firebaseService = GetIt.instance.get<FirebaseService>();
     _getDataFromDB();
 
     return Scaffold(
-      body: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: EdgeInsets.only(
-                  top: _widthXheight! * 0.7, left: _widthXheight! * 0.7),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.recycling_rounded,
-                    size: _widthXheight! * 1.5,
-                  ),
-                  SizedBox(
-                    width: _deviceWidth! * 0.01,
-                  ),
-                  Text(
-                    "Recycle bin",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: _widthXheight! * 1,
-                      fontWeight: FontWeight.w600,
+      body: SafeArea(child: LayoutBuilder(
+        builder: (context, constraints) {
+          _deviceHeight = constraints.maxHeight;
+
+          _deviceWidth = constraints.maxWidth;
+          _widthXheight = _deviceHeight! * _deviceWidth! / 50000;
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: EdgeInsets.only(
+                    top: _widthXheight! * 0.7, left: _widthXheight! * 0.7),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.recycling_rounded,
+                      size: _widthXheight! * 1,
                     ),
-                  ),
-                ],
+                    SizedBox(
+                      width: _deviceWidth! * 0.007,
+                    ),
+                    Text(
+                      "Recycle bin",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: _deviceWidth! * 0.017,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            Expanded(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                mainAxisSize: MainAxisSize.max,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (_dropDownValue == "Job Providers") ...{
-                    Expanded(
-                      flex: 1,
-                      child: _deletedProvidersListWidget(),
-                    ),
-                  } else if (_dropDownValue == "Job Seekers") ...{
-                    Expanded(
-                      flex: 1,
-                      child: _deletedSeekersListWidget(),
-                    ),
-                  } else if (_dropDownValue == "Officers") ...{
-                    Expanded(
-                      flex: 1,
-                      child: _deletedOfficersListWidget(),
-                    ),
-                  }
-                ],
+              Expanded(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.max,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (_dropDownValue == "Job Providers") ...{
+                      Expanded(
+                        flex: 1,
+                        child: _deletedProvidersListWidget(),
+                      ),
+                    } else if (_dropDownValue == "Job Seekers") ...{
+                      Expanded(
+                        flex: 1,
+                        child: _deletedSeekersListWidget(),
+                      ),
+                    } else if (_dropDownValue == "Officers") ...{
+                      Expanded(
+                        flex: 1,
+                        child: _deletedOfficersListWidget(),
+                      ),
+                    }
+                  ],
+                ),
               ),
-            ),
-          ],
-        ),
-      ),
+            ],
+          );
+        },
+      )),
     );
   }
 
@@ -170,16 +172,16 @@ class _RecycleBinState extends State<RecycleBin> {
               padding: EdgeInsets.only(
                   top: _widthXheight! * 0.7, left: _widthXheight! * 0.1),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Text(
-                    "Job Providers",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: _widthXheight! * 0.7,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+                  // Text(
+                  //   "Job Providers",
+                  //   style: TextStyle(
+                  //     color: Colors.black,
+                  //     fontSize: _deviceWidth! * 0.02,
+                  //     fontWeight: FontWeight.w600,
+                  //   ),
+                  // ),
                   _selectedUserDropdown(),
                 ],
               ),
@@ -351,14 +353,14 @@ class _RecycleBinState extends State<RecycleBin> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    "Job Seekers",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: _widthXheight! * 0.7,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+                  // Text(
+                  //   "Job Seekers",
+                  //   style: TextStyle(
+                  //     color: Colors.black,
+                  //     fontSize: _widthXheight! * 0.7,
+                  //     fontWeight: FontWeight.w600,
+                  //   ),
+                  // ),
                   _selectedUserDropdown(),
                 ],
               ),
@@ -517,14 +519,14 @@ class _RecycleBinState extends State<RecycleBin> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    "Deleted Officers",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: _widthXheight! * 0.7,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+                  // Text(
+                  //   "Deleted Officers",
+                  //   style: TextStyle(
+                  //     color: Colors.black,
+                  //     fontSize: _widthXheight! * 0.7,
+                  //     fontWeight: FontWeight.w600,
+                  //   ),
+                  // ),
                   _selectedUserDropdown(),
                 ],
               ),
@@ -736,7 +738,7 @@ class _RecycleBinState extends State<RecycleBin> {
               e,
               style: TextStyle(
                 color: Colors.black,
-                fontSize: _widthXheight! * 0.7,
+                fontSize: _deviceWidth! * 0.017,
                 fontWeight: FontWeight.w600,
               ),
             ),

@@ -25,10 +25,13 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int _currentPage = 0;
-  double? _deviceHeight;
+  double? _deviceHeight, _deviceWidth;
   FirebaseService? _firebaseService;
   final PageController _pageController = PageController();
   String? _email, _password;
+  double? _fontSize, _verticalSpace, _widthXheight;
+  bool isExtended = false;
+  WidgetBuilder? builder;
 
   @override
   void initState() {
@@ -70,27 +73,50 @@ class _MainPageState extends State<MainPage> {
     const Dashboard(),
     ProfilePage(),
     OfficersPage(),
-    JobProviders(),
+    const JobProviders(),
     PendingApprovals(),
     BulkMailPage(),
     RecycleBin(),
     Report(),
   ];
 
+  Widget extendedIcon() {
+    if (isExtended) {
+      return const Icon(
+        Icons.arrow_back_ios,
+        color: Colors.white,
+      );
+    } else {
+      return const Icon(
+        Icons.arrow_forward_ios,
+        color: Colors.white,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     _deviceHeight = MediaQuery.of(context).size.height;
+    _deviceWidth = MediaQuery.of(context).size.width;
+    _widthXheight = (_deviceHeight! * _deviceWidth!) / 50000;
+    _fontSize = _deviceWidth! * 0.01;
+    _verticalSpace = _deviceHeight! * 0.015;
     return Scaffold(
       body: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           NavigationRail(
-            extended: true,
-            minExtendedWidth: 250,
+            extended: isExtended,
+            minExtendedWidth: _deviceWidth! * 0.15,
             labelType: NavigationRailLabelType.none,
-            leading: SizedBox(
-              height: 35,
+            leading: IconButton(
+              onPressed: () {
+                setState(() {
+                  isExtended = !isExtended;
+                });
+              },
+              icon: extendedIcon(),
             ),
-            minWidth: 100,
             onDestinationSelected: (int index) {
               if (index == (_pages.length)) {
                 _logout();
@@ -102,77 +128,103 @@ class _MainPageState extends State<MainPage> {
               }
             },
             indicatorColor: selectionColor,
-            destinations: const [
+            destinations: [
               NavigationRailDestination(
-                padding: EdgeInsets.symmetric(vertical: 7),
-                icon: Icon(Icons.dashboard),
+                padding: EdgeInsets.only(bottom: _verticalSpace!),
+                icon: Icon(
+                  Icons.dashboard,
+                  size: _deviceWidth! * 0.013,
+                ),
                 label: Text(
                   'Dashboard',
-                  style: TextStyle(color: Colors.white, fontSize: 18),
+                  style: TextStyle(color: Colors.white, fontSize: _fontSize),
                 ),
               ),
               NavigationRailDestination(
-                padding: EdgeInsets.symmetric(vertical: 7),
-                icon: Icon(Icons.account_box),
+                padding: EdgeInsets.only(bottom: _verticalSpace!),
+                icon: Icon(
+                  Icons.account_box,
+                  size: _deviceWidth! * 0.013,
+                ),
                 label: Text(
                   'Profile',
-                  style: TextStyle(color: Colors.white, fontSize: 18),
+                  style: TextStyle(color: Colors.white, fontSize: _fontSize),
                 ),
               ),
               NavigationRailDestination(
-                padding: EdgeInsets.symmetric(vertical: 7),
-                icon: Icon(Icons.work),
+                padding: EdgeInsets.only(bottom: _verticalSpace!),
+                icon: Icon(
+                  Icons.work,
+                  size: _deviceWidth! * 0.013,
+                ),
                 label: Text(
                   'Officers',
-                  style: TextStyle(color: Colors.white, fontSize: 18),
+                  style: TextStyle(color: Colors.white, fontSize: _fontSize),
                 ),
               ),
               NavigationRailDestination(
-                padding: EdgeInsets.symmetric(vertical: 7),
-                icon: Icon(Icons.handshake),
+                padding: EdgeInsets.only(bottom: _verticalSpace!),
+                icon: Icon(
+                  Icons.handshake,
+                  size: _deviceWidth! * 0.013,
+                ),
                 label: Text(
                   'Current\nJob Providers',
-                  style: TextStyle(color: Colors.white, fontSize: 18),
+                  style: TextStyle(color: Colors.white, fontSize: _fontSize),
                 ),
               ),
               NavigationRailDestination(
-                padding: EdgeInsets.symmetric(vertical: 7),
-                icon: Icon(Icons.lock_clock),
+                padding: EdgeInsets.only(bottom: _verticalSpace!),
+                icon: Icon(
+                  Icons.lock_clock,
+                  size: _deviceWidth! * 0.013,
+                ),
                 label: Text(
                   'Pending\nJob Providers',
-                  style: TextStyle(color: Colors.white, fontSize: 18),
+                  style: TextStyle(color: Colors.white, fontSize: _fontSize),
                 ),
               ),
               NavigationRailDestination(
-                padding: EdgeInsets.symmetric(vertical: 7),
-                icon: Icon(Icons.email),
+                padding: EdgeInsets.only(bottom: _verticalSpace!),
+                icon: Icon(
+                  Icons.email,
+                  size: _deviceWidth! * 0.013,
+                ),
                 label: Text(
                   'Bulk Mail',
-                  style: TextStyle(color: Colors.white, fontSize: 18),
+                  style: TextStyle(color: Colors.white, fontSize: _fontSize),
                 ),
               ),
               NavigationRailDestination(
-                padding: EdgeInsets.symmetric(vertical: 7),
-                icon: Icon(Icons.recycling_rounded),
+                padding: EdgeInsets.only(bottom: _verticalSpace!),
+                icon: Icon(
+                  Icons.recycling_rounded,
+                  size: _deviceWidth! * 0.013,
+                ),
                 label: Text(
                   'Recycle Bin',
-                  style: TextStyle(color: Colors.white, fontSize: 18),
+                  style: TextStyle(color: Colors.white, fontSize: _fontSize),
                 ),
               ),
               NavigationRailDestination(
-                padding: EdgeInsets.symmetric(vertical: 7),
-                icon: Icon(Icons.report),
+                padding: EdgeInsets.only(bottom: _verticalSpace!),
+                icon: Icon(
+                  Icons.report,
+                  size: _deviceWidth! * 0.013,
+                ),
                 label: Text(
                   'Report',
-                  style: TextStyle(color: Colors.white, fontSize: 18),
+                  style: TextStyle(color: Colors.white, fontSize: _fontSize),
                 ),
               ),
               NavigationRailDestination(
-                padding: EdgeInsets.symmetric(vertical: 7),
-                icon: Icon(Icons.logout),
+                icon: Icon(
+                  Icons.logout,
+                  size: _deviceWidth! * 0.013,
+                ),
                 label: Text(
                   'Log Out',
-                  style: TextStyle(color: Colors.white, fontSize: 18),
+                  style: TextStyle(color: Colors.white, fontSize: _fontSize),
                 ),
               ),
             ],
@@ -182,7 +234,6 @@ class _MainPageState extends State<MainPage> {
             child: Navigator(
               key: GlobalKey<NavigatorState>(),
               onGenerateRoute: (RouteSettings settings) {
-                WidgetBuilder builder;
                 switch (settings.name) {
                   case '/':
                     builder = (BuildContext context) => _pages[_currentPage];
@@ -190,7 +241,7 @@ class _MainPageState extends State<MainPage> {
                   default:
                     throw Exception('Invalid route: ${settings.name}');
                 }
-                return MaterialPageRoute(builder: builder, settings: settings);
+                return MaterialPageRoute(builder: builder!, settings: settings);
               },
             ),
           ),
@@ -208,7 +259,7 @@ class _MainPageState extends State<MainPage> {
 
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => LoginScreen()),
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
       );
     } catch (e) {
       print("Error signing out: $e");
