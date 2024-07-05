@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jms_desktop/pages/chat_page.dart';
 import 'package:jms_desktop/widgets/dashboard_widget.dart';
 import 'package:jms_desktop/widgets/profile_details_section.dart';
 
@@ -38,6 +39,18 @@ class _DashboardState extends State<Dashboard> {
             ),
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ChatPage(),
+            ),
+          );
+        },
+        child: Icon(Icons.chat),
+        backgroundColor: Colors.purple,
       ),
     );
   }
