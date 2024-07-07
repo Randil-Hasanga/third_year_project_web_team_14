@@ -1,12 +1,9 @@
-import 'dart:collection';
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:path/path.dart' as p;
 
 const String USER_COLLECTION = 'users';
 const String POSTS_COLLECTION = 'posts';
@@ -120,6 +117,36 @@ class FirebaseService {
       }
     } catch (e) {
       print("Error getting provider data : $e");
+      return null;
+    }
+  }
+
+  // get user data from db
+  Future<List<Map<String, dynamic>>?> getAllUserData() async {
+    try {
+      QuerySnapshot<Map<String, dynamic>>? querySnapshot = await _db
+          .collection(USER_COLLECTION)
+          .where('pending', isEqualTo: false)
+          .where('disabled', isEqualTo: false)
+          .get();
+
+      List<Map<String, dynamic>> users = [];
+
+      for (QueryDocumentSnapshot<Map<String, dynamic>> doc
+          in querySnapshot.docs) {
+        // Fetch basic data
+        Map<String, dynamic> userData = doc.data();
+
+        users.add(userData);
+      }
+
+      if (users.isNotEmpty) {
+        return users;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print("Error getting user data : $e");
       return null;
     }
   }
