@@ -39,7 +39,7 @@ class _JobSeekerState extends State<JobSeeker> {
           Expanded(
             flex: 1,
             child: Container(
-              color: Colors.blue[100], // Set background color for left panel
+              color: Color.fromARGB(255, 244, 200, 147), // Set background color for left panel
               padding: const EdgeInsets.all(16.0),
               child: FutureBuilder<List<Map<String, dynamic>>?>(
                 future: _futureJobSeekers,
@@ -107,7 +107,7 @@ class _JobSeekerState extends State<JobSeeker> {
           Expanded(
             flex: 2,
             child: Container(
-              color: Colors.grey[200], // Set background color for right panel
+              color: Color.fromARGB(255, 240, 208, 164), // Set background color for right panel
               padding: const EdgeInsets.all(16.0),
               child: _selectedJobSeeker != null
                   ? SingleChildScrollView(
@@ -170,7 +170,7 @@ class _JobSeekerState extends State<JobSeeker> {
       children: [
         Text(
           title,
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blue),
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
         ),
         SizedBox(height: 16.0),
         ...content,
