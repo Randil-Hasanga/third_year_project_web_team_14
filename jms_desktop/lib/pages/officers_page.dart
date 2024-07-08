@@ -433,6 +433,12 @@ class SelectedOfficerDetailsWidget extends StatelessWidget {
                                 "${officer!['email']}",
                                 15,
                               ),
+                              const Divider(),
+                              _richTextWidget!.KeyValuePairrichText(
+                                "Created By:",
+                                "${officer!['created_by']}",
+                                15,
+                              ),
                             ],
                           ),
                         ),
