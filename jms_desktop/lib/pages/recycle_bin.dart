@@ -351,7 +351,7 @@ class _RecycleBinState extends State<RecycleBin> {
               padding: EdgeInsets.only(
                   top: _widthXheight! * 0.7, left: _widthXheight! * 0.1),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   // Text(
                   //   "Job Seekers",
@@ -517,7 +517,7 @@ class _RecycleBinState extends State<RecycleBin> {
               padding: EdgeInsets.only(
                   top: _widthXheight! * 0.7, left: _widthXheight! * 0.1),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   // Text(
                   //   "Deleted Officers",
