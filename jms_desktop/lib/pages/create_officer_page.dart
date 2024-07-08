@@ -89,6 +89,7 @@ class _CreateOfficerPageState extends State<CreateOfficerPage> {
             'disabled': false,
             'type': _accountType,
             'created_by': _createdBy,
+            'isBeingUpdated': false,
             // Optional, to track when data is added
           });
 

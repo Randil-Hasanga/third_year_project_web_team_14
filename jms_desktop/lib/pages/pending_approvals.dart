@@ -762,7 +762,80 @@ class _SelectedApprovalDetailsWidgetState
   }
 
   // approve or decline confirmation dialog
+  // void _showConfirmationDialog(String action, Map<String, dynamic>? provider) {
+  //   showDialog(
+  //     context: context,
+  //     barrierDismissible: false,
+  //     builder: (context) {
+  //       bool _loading = false; // Track loading state
+
+  //       return StatefulBuilder(
+  //         builder: (context, setState) {
+  //           return Center(
+  //             child: SizedBox(
+  //               height: 200, // Set a fixed height for the AlertDialog
+  //               child: AlertDialog(
+  //                 title: const Text("Confirmation"),
+  //                 content: _loading
+  //                     ? const Center(child: CircularProgressIndicator())
+  //                     : Text("Are you sure you want to $action?"),
+  //                 actions: <Widget>[
+  //                   TextButton(
+  //                     onPressed: () {
+  //                       Navigator.of(context).pop();
+  //                     },
+  //                     child: const Text("Cancel"),
+  //                   ),
+  //                   TextButton(
+  //                     onPressed: _loading
+  //                         ? null
+  //                         : () async {
+  //                             setState(() {
+  //                               _loading = true; // Show loading indicator
+  //                             });
+
+  //                             try {
+  //                               // Dismiss the dialog before performing the action
+  //                               if (action == "Reject") {
+  //                                 await _firebaseService!
+  //                                     .deletePendingProvider(provider!['uid']);
+  //                                 Navigator.of(context)
+  //                                     .pop(); //TODO: test this last
+  //                                 alertBoxWidgets.showAlert(context, "Alert",
+  //                                     "Job provider rejected!", errorColor);
+  //                               } else if (action == "Approve") {
+  //                                 await _firebaseService!
+  //                                     .approveProvider(provider!['uid']);
+  //                                 Navigator.of(context).pop();
+  //                                 alertBoxWidgets.showAlert(context, "Alert",
+  //                                     "Job provider approved!", successColor);
+  //                               }
+  //                               widget.onUpdateUI();
+  //                             } catch (error) {
+  //                               print('Error performing action: $error');
+  //                             } finally {
+  //                               setState(() {
+  //                                 _loading = false; // Hide loading indicator
+  //                               });
+  //                               // Close dialog
+  //                             }
+  //                           },
+  //                     child: Text(action),
+  //                   ),
+  //                 ],
+  //               ),
+  //             ),
+  //           );
+  //         },
+  //       );
+  //     },
+  //   );
+  // }
+
   void _showConfirmationDialog(String action, Map<String, dynamic>? provider) {
+    final _formKey = GlobalKey<FormState>();
+    String? _reason;
+
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -773,12 +846,40 @@ class _SelectedApprovalDetailsWidgetState
           builder: (context, setState) {
             return Center(
               child: SizedBox(
-                height: 200, // Set a fixed height for the AlertDialog
+                height: 400, // Set a fixed height for the AlertDialog
                 child: AlertDialog(
                   title: const Text("Confirmation"),
                   content: _loading
                       ? const Center(child: CircularProgressIndicator())
-                      : Text("Are you sure you want to $action?"),
+                      : Form(
+                          key: _formKey,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text("Are you sure you want to $action?"),
+                              if (action == "Reject") ...{
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                TextFormField(
+                                  decoration: InputDecoration(
+                                    labelText: 'Reason for Rejection',
+                                    border: OutlineInputBorder(),
+                                  ),
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Reason cannot be empty';
+                                    }
+                                    return null;
+                                  },
+                                  onSaved: (value) {
+                                    _reason = value;
+                                  },
+                                ),
+                              }
+                            ],
+                          ),
+                        ),
                   actions: <Widget>[
                     TextButton(
                       onPressed: () {
@@ -790,34 +891,40 @@ class _SelectedApprovalDetailsWidgetState
                       onPressed: _loading
                           ? null
                           : () async {
-                              setState(() {
-                                _loading = true; // Show loading indicator
-                              });
+                              if (_formKey.currentState?.validate() ?? false) {
+                                _formKey.currentState?.save();
 
-                              try {
-                                // Dismiss the dialog before performing the action
-                                if (action == "Reject") {
-                                  await _firebaseService!
-                                      .deletePendingProvider(provider!['uid']);
-                                  Navigator.of(context)
-                                      .pop(); //TODO: test this last
-                                  alertBoxWidgets.showAlert(context, "Alert",
-                                      "Job provider rejected!", errorColor);
-                                } else if (action == "Approve") {
-                                  await _firebaseService!
-                                      .approveProvider(provider!['uid']);
-                                  Navigator.of(context).pop();
-                                  alertBoxWidgets.showAlert(context, "Alert",
-                                      "Job provider approved!", successColor);
-                                }
-                                widget.onUpdateUI();
-                              } catch (error) {
-                                print('Error performing action: $error');
-                              } finally {
                                 setState(() {
-                                  _loading = false; // Hide loading indicator
+                                  _loading = true; // Show loading indicator
                                 });
-                                // Close dialog
+
+                                try {
+                                  // Dismiss the dialog before performing the action
+                                  if (action == "Reject") {
+                                    await _firebaseService!.rejectProvider(
+                                      provider!['uid'],
+                                      _reason,
+                                    );
+                                    Navigator.of(context)
+                                        .pop(); //TODO: test this last
+                                    alertBoxWidgets.showAlert(context, "Alert",
+                                        "Job provider rejected!", errorColor);
+                                  } else if (action == "Approve") {
+                                    await _firebaseService!
+                                        .approveProvider(provider!['uid']);
+                                    Navigator.of(context).pop();
+                                    alertBoxWidgets.showAlert(context, "Alert",
+                                        "Job provider approved!", successColor);
+                                  }
+                                  widget.onUpdateUI();
+                                } catch (error) {
+                                  print('Error performing action: $error');
+                                } finally {
+                                  setState(() {
+                                    _loading = false; // Hide loading indicator
+                                  });
+                                  // Close dialog
+                                }
                               }
                             },
                       child: Text(action),
