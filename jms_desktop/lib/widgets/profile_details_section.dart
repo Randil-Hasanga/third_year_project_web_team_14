@@ -32,9 +32,11 @@ class _ProfileDetailsSectionState extends State<ProfileDetailsSection> {
           await _firebaseService!.getLastHoursJobProvider();
       List<Map<String, dynamic>>? seekerList =
           await _firebaseService!.getLastHoursJobSeeker();
+      List<Map<String, dynamic>>? vacancyList =
+          await _firebaseService!.getLastHoursVacancy();
 
       if (mounted) {
-        list = [...?providerList, ...?seekerList];
+        list = [...?providerList, ...?seekerList, ...?vacancyList];
       }
 
       if (list == null) {
@@ -331,7 +333,7 @@ class _ProfileDetailsSectionState extends State<ProfileDetailsSection> {
     return notifications.map((notification) {
       return ListTile(
         title: Text(notification['title']),
-        subtitle: Text(notification['username']),
+        // subtitle: Text(notification['username']),
       );
     }).toList();
   }

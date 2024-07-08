@@ -11,6 +11,7 @@ const String PROVIDER_COLLECTION = 'provider_details';
 const String VACANCY_COLLECTION = 'vacancy';
 const String SEEKER_COLLECTION = 'profileJobSeeker';
 const String CV_COLLECTION = 'CVDetails';
+const String NOTIFICATION = 'notifications';
 
 class FirebaseService {
   FirebaseService();
@@ -798,11 +799,11 @@ class FirebaseService {
     DateTime perviousTime = currentTime.add(Duration(hours: -1));
     try {
       QuerySnapshot<Map<String, dynamic>>? querySnapshot = await _db
-          .collection(USER_COLLECTION)
+          .collection(NOTIFICATION)
           // .where('registered_date', isGreaterThanOrEqualTo: perviousTime)
           // .where('registered_date', isLessThanOrEqualTo: currentTime)
           .where('type', isEqualTo: 'provider')
-          .where('pending', isEqualTo: true)
+          // .where('pending', isEqualTo: true)
           .get();
 
       List<Map<String, dynamic>> providerList = [];
@@ -814,7 +815,7 @@ class FirebaseService {
 
         // Check if additional data exists
         DocumentSnapshot additionalDataSnapshot =
-            await _db.collection(USER_COLLECTION).doc(doc.id).get();
+            await _db.collection(NOTIFICATION).doc(doc.id).get();
 
         if (additionalDataSnapshot.exists) {
           // Cast the data to Map<String, dynamic>
@@ -847,7 +848,7 @@ class FirebaseService {
     DateTime perviousTime = currentTime.add(Duration(hours: -1));
     try {
       QuerySnapshot<Map<String, dynamic>>? querySnapshot = await _db
-          .collection(USER_COLLECTION)
+          .collection(NOTIFICATION)
           // .where('registered_date', isGreaterThanOrEqualTo: perviousTime)
           // .where('registered_date', isLessThanOrEqualTo: currentTime)
           .where('type', isEqualTo: 'seeker')
@@ -863,7 +864,7 @@ class FirebaseService {
 
         // Check if additional data exists
         DocumentSnapshot additionalDataSnapshot =
-            await _db.collection(USER_COLLECTION).doc(doc.id).get();
+            await _db.collection(NOTIFICATION).doc(doc.id).get();
 
         if (additionalDataSnapshot.exists) {
           // Cast the data to Map<String, dynamic>
@@ -885,6 +886,53 @@ class FirebaseService {
       }
     } catch (e) {
       print("Error getting seeker notification : $e");
+      return null;
+    }
+  }
+
+  //generate notification - job vacancy side
+  Future<List<Map<String, dynamic>>?> getLastHoursVacancy() async {
+    DateTime currentTime = DateTime.now();
+    DateTime perviousTime = currentTime.add(Duration(hours: -1));
+    try {
+      QuerySnapshot<Map<String, dynamic>>? querySnapshot = await _db
+          .collection(NOTIFICATION)
+          // .where('registered_date', isGreaterThanOrEqualTo: perviousTime)
+          // .where('registered_date', isLessThanOrEqualTo: currentTime)
+          .where('description', isEqualTo: 'Publish New Vacancy')
+          .get();
+
+      List<Map<String, dynamic>> vacancyList = [];
+
+      for (QueryDocumentSnapshot<Map<String, dynamic>> doc
+          in querySnapshot.docs) {
+        // Fetch basic data
+        Map<String, dynamic> vacancyData = doc.data();
+
+        // Check if additional data exists
+        DocumentSnapshot additionalDataSnapshot =
+            await _db.collection(NOTIFICATION).doc(doc.id).get();
+
+        if (additionalDataSnapshot.exists) {
+          // Cast the data to Map<String, dynamic>
+          Map<String, dynamic> additionalData =
+              additionalDataSnapshot.data() as Map<String, dynamic>;
+          additionalData['title'] = "Publish New Vacancy";
+          // Merge additional data with basic data
+          vacancyData.addAll(additionalData);
+        }
+        vacancyList.add(vacancyData);
+      }
+
+      if (vacancyList.isNotEmpty) {
+        print(vacancyList);
+        return vacancyList;
+      } else {
+        print("Empty");
+        return null;
+      }
+    } catch (e) {
+      print("Error getting vacancy notification : $e");
       return null;
     }
   }
