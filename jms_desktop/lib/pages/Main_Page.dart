@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:jms_desktop/pages/job_seeker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:jms_desktop/const/constants.dart';
 import 'package:jms_desktop/pages/bulk_mail.dart';
 import 'package:jms_desktop/pages/dashboard.dart';
 import 'package:jms_desktop/pages/job_providers_page.dart';
+
 import 'package:jms_desktop/pages/login_screen.dart';
 import 'package:jms_desktop/pages/officers_page.dart';
 import 'package:jms_desktop/pages/pending_approvals.dart';
@@ -12,7 +15,6 @@ import 'package:jms_desktop/pages/profile_page.dart';
 import 'package:jms_desktop/pages/recycle_bin.dart';
 import 'package:jms_desktop/pages/report_page.dart';
 import 'package:jms_desktop/services/firebase_services.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -75,24 +77,11 @@ class _MainPageState extends State<MainPage> {
     OfficersPage(),
     const JobProviders(),
     PendingApprovals(),
+    const JobSeeker(), // Ensure JobSeekerPage is added here
     BulkMailPage(),
     RecycleBin(),
     Report(),
   ];
-
-  Widget extendedIcon() {
-    if (isExtended) {
-      return const Icon(
-        Icons.arrow_back_ios,
-        color: Colors.white,
-      );
-    } else {
-      return const Icon(
-        Icons.arrow_forward_ios,
-        color: Colors.white,
-      );
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -101,6 +90,9 @@ class _MainPageState extends State<MainPage> {
     _widthXheight = (_deviceHeight! * _deviceWidth!) / 50000;
     _fontSize = _deviceWidth! * 0.01;
     _verticalSpace = _deviceHeight! * 0.015;
+
+
+
     return Scaffold(
       body: Row(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -184,6 +176,14 @@ class _MainPageState extends State<MainPage> {
                   style: TextStyle(color: Colors.white, fontSize: _fontSize),
                 ),
               ),
+              const NavigationRailDestination(
+                padding: EdgeInsets.symmetric(vertical: 7),
+                icon: Icon(Icons.person_search),
+                label: Text(
+                  'Job Seekers',
+                  style: TextStyle(color: Colors.white, fontSize: 18),
+                ),
+              ),
               NavigationRailDestination(
                 padding: EdgeInsets.only(bottom: _verticalSpace!),
                 icon: Icon(
@@ -248,6 +248,20 @@ class _MainPageState extends State<MainPage> {
         ],
       ),
     );
+  }
+
+  Widget extendedIcon() {
+    if (isExtended) {
+      return const Icon(
+        Icons.arrow_back_ios,
+        color: Colors.white,
+      );
+    } else {
+      return const Icon(
+        Icons.arrow_forward_ios,
+        color: Colors.white,
+      );
+    }
   }
 
   Future<void> _logout() async {
