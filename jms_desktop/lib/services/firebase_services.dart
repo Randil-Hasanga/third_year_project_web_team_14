@@ -14,6 +14,9 @@ const String CV_COLLECTION = 'CVDetails';
 const String NOTIFICATION = 'notifications';
 const String APPROVAL_COLLECTION = 'provider_approval_data';
 
+
+
+
 class FirebaseService {
   FirebaseService();
   String? uid;
@@ -122,6 +125,8 @@ class FirebaseService {
       return null;
     }
   }
+
+
 
   // get user data from db
   Future<List<Map<String, dynamic>>?> getAllUserData() async {
@@ -1059,5 +1064,19 @@ class FirebaseService {
     } catch (e) {
       print("Error updating officer : $e");
     }
+  }
+
+}
+
+//Fetch the CV URL from Firebase Storage:
+Future<String?> _getCVUrl(String userId) async {
+  try {
+    FirebaseStorage storage = FirebaseStorage.instance;
+    String filePath = 'CVs/$userId.pdf';
+    String downloadURL = await storage.ref(filePath).getDownloadURL();
+    return downloadURL;
+  } catch (e) {
+    print('Error fetching CV URL: $e');
+    return null;
   }
 }
