@@ -35,6 +35,7 @@ class _CreateOfficerPageState extends State<CreateOfficerPage> {
       _contactNo,
       _email,
       _nic,
+      _createdBy,
       _password,
       _confirmPassword;
 
@@ -43,6 +44,9 @@ class _CreateOfficerPageState extends State<CreateOfficerPage> {
     super.initState();
     _richTextWidget = GetIt.instance.get<RichTextWidget>();
   }
+
+  String? uid;
+  Map? currentUser;
 
   // Function to save officer data to Firestore
   Future<void> _saveOfficerData() async {
@@ -84,6 +88,7 @@ class _CreateOfficerPageState extends State<CreateOfficerPage> {
             'registered_date': FieldValue.serverTimestamp(),
             'disabled': false,
             'type': _accountType,
+            'created_by': _createdBy,
             // Optional, to track when data is added
           });
 
@@ -117,6 +122,7 @@ class _CreateOfficerPageState extends State<CreateOfficerPage> {
       _password = null;
       _confirmPassword = null;
       _selectedGender = null;
+      _createdBy = null;
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -358,7 +364,7 @@ class _CreateOfficerPageState extends State<CreateOfficerPage> {
                     if (_value == null || _value.isEmpty) {
                       return 'Please enter contact no';
                     }
-                    final regex = RegExp(r'^\+?[0-9]{10,15}$');
+                    final regex = RegExp(r'^\+?[0-9]{10,12}$');
 
                     if (!regex.hasMatch(_value)) {
                       return "Invalid contact number";
@@ -406,10 +412,34 @@ class _CreateOfficerPageState extends State<CreateOfficerPage> {
                 const SizedBox(
                   height: 16.0,
                 ),
+                // Created person
+                TextFormField(
+                  onSaved: (_value) {
+                    setState(() {
+                      _createdBy = _value!;
+                    });
+                  },
+                  validator: (_value) {
+                    if (_value == null || _value.isEmpty) {
+                      return 'Please enter created person name';
+                    }
+                    return null;
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'Created By',
+                    icon: Icon(Icons.manage_accounts),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 16.0,
+                ),
                 // Password field
                 TextFormField(
-                  focusNode: _passwordFocusNode,
-                  //obscureText: true, // Hides the text for security
+                  // focusNode: _passwordFocusNode,
+                  obscureText: true, // Hides the text for security
                   decoration: InputDecoration(
                     labelText: "Password",
                     icon: Icon(Icons.password),
@@ -436,8 +466,8 @@ class _CreateOfficerPageState extends State<CreateOfficerPage> {
                 ),
                 // confirm password field
                 TextFormField(
-                  focusNode: _confirmpasswordFocusNode,
-                  //obscureText: true, // Hides the text for security
+                  // focusNode: _confirmpasswordFocusNode,
+                  obscureText: true, // Hides the text for security
                   decoration: InputDecoration(
                     labelText: "Confirm Password",
                     icon: Icon(Icons.password_outlined),
