@@ -12,6 +12,7 @@ const String VACANCY_COLLECTION = 'vacancy';
 const String SEEKER_COLLECTION = 'profileJobSeeker';
 const String CV_COLLECTION = 'CVDetails';
 const String NOTIFICATION = 'notifications';
+const String APPROVAL_COLLECTION = 'provider_approval_data';
 
 class FirebaseService {
   FirebaseService();
@@ -177,6 +178,7 @@ class FirebaseService {
           .where('type', isEqualTo: 'provider')
           .where('pending', isEqualTo: true)
           .where('disabled', isEqualTo: false)
+          .where('isBeingUpdated', isEqualTo: false)
           .get();
 
       List<Map<String, dynamic>> approvals = [];
@@ -560,23 +562,48 @@ class FirebaseService {
   }
 
   // reject and delete pending provider
-  Future<void> deletePendingProvider(String providerId) async {
+  Future<void> rejectProvider(String providerId, String? reason) async {
     try {
-      await _db.collection('provider_details').doc(providerId).delete();
+      DocumentReference docRef = await _db.collection(APPROVAL_COLLECTION).add({
+        "uid": providerId,
+        "reason": reason,
+        "date": DateTime.now(),
+        "rejected_by": uid,
+      });
+
+      String docId = docRef.id;
+      print("approval_id : $docId");
+
+      await _db.collection(USER_COLLECTION).doc(providerId).set(
+        {
+          'isBeingUpdated': true,
+          'approval_id': docId,
+        },
+        SetOptions(merge: true),
+      );
     } catch (error) {
       print('Error deleting provider document: $error');
-      throw error;
+      rethrow;
     }
   }
 
   // approve provider function
   Future<void> approveProvider(String userId) async {
     try {
-      await _db.collection('users').doc(userId).update({'pending': false});
+      await _db.collection('users').doc(userId).set({
+        'pending': false,
+        "date": DateTime.now(),
+        "approved_by": uid,
+      });
+      await _db.collection(APPROVAL_COLLECTION).doc().set({
+        "uid": userId,
+        "date": DateTime.now(),
+        "approved_by": uid,
+      });
       print('User approved successfully.');
     } catch (error) {
       print('Error approving user: $error');
-      throw error; // Rethrow the error to propagate it up the call stack
+      rethrow; // Rethrow the error to propagate it up the call stack
     }
   }
 
