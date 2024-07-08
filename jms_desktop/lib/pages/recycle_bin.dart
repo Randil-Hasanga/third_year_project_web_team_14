@@ -263,7 +263,7 @@ class _RecycleBinState extends State<RecycleBin> {
                             } else {
                               return const Center(
                                   child: LinearProgressIndicator(
-                                color: backgroundColor,
+                                color: Colors.orange,
                               ));
                             }
                           },
@@ -440,7 +440,7 @@ class _RecycleBinState extends State<RecycleBin> {
                             } else {
                               return const Center(
                                 child: LinearProgressIndicator(
-                                  color: backgroundColor,
+                                  color: Colors.orange,
                                 ),
                               );
                             }
@@ -607,7 +607,7 @@ class _RecycleBinState extends State<RecycleBin> {
                             } else {
                               return const Center(
                                 child: LinearProgressIndicator(
-                                  color: backgroundColor,
+                                  color: Colors.orange,
                                 ),
                               );
                             }
@@ -767,7 +767,7 @@ class _RecycleBinState extends State<RecycleBin> {
         iconSize: 20,
         icon: const Icon(
           Icons.arrow_drop_down_sharp,
-          color: Colors.white,
+          color: Colors.black,
         ),
         underline: Container(),
       ),
