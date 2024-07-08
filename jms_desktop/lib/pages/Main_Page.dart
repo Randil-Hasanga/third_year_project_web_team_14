@@ -30,7 +30,7 @@ class _MainPageState extends State<MainPage> {
   final PageController _pageController = PageController();
   String? _email, _password;
   double? _fontSize, _verticalSpace, _widthXheight;
-  bool isExtended = false;
+  bool isExtended = true;
   WidgetBuilder? builder;
 
   @override
