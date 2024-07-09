@@ -70,6 +70,8 @@ class _CreateOfficerPageState extends State<CreateOfficerPage> {
         User? user = userCredential.user;
 
         if (user != null) {
+          // Send email verification
+          await user.sendEmailVerification();
           // Store additional user data in Firestore
           await FirebaseFirestore.instance
               .collection('users')
