@@ -50,7 +50,7 @@ class _DashboardState extends State<Dashboard> {
           );
         },
         child: Icon(Icons.chat),
-        backgroundColor: Colors.purple,
+        backgroundColor: Colors.orange,
       ),
     );
   }

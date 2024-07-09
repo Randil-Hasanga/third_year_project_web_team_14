@@ -52,7 +52,7 @@ class _EditProfileState extends State<EditProfile> {
 
   Map<String, dynamic>? officer;
 
-  String? _Fname, _Lname, _email, _contact, _regNo, _position;
+  String? _Fname, _Lname, _contact, _regNo, _position;
 
   @override
   void initState() {
@@ -70,14 +70,14 @@ class _EditProfileState extends State<EditProfile> {
           _imageLink = officer!['profile_image'];
           _Fname = officer!['fname'];
           _Lname = officer!['lname'];
-          _email = officer!['email'];
+
           _contact = officer!['contact'];
           _regNo = officer!['reg_no'];
           _position = officer!['position'];
 
           fnameController.text = _Fname ?? '';
           lnameController.text = _Lname ?? '';
-          emailController.text = _email ?? '';
+
           contactController.text = _contact ?? '';
           regNoController.text = _regNo ?? '';
           positionController.text = _position ?? '';
@@ -200,11 +200,6 @@ class _EditProfileState extends State<EditProfile> {
                 },
               );
             }, "Registration Number", validate: true, regNoController),
-            _textFieldWidgets!.outlinedEmailTextFieldwithValidate((value) {
-              setState(() {
-                _email = value;
-              });
-            }, "Contact Email", validate: true, emailController),
             _textFieldWidgets.outlinedContactTextFieldwithValidate((value) {
               setState(
                 () {
@@ -229,7 +224,7 @@ class _EditProfileState extends State<EditProfile> {
                       if (!isUploading) ...{
                         ElevatedButton(
                           onPressed: _updateOfficer,
-                          child: Text("Upload"),
+                          child: Text("Update"),
                         ),
                       } else ...{
                         CircularProgressIndicator(),
@@ -250,14 +245,14 @@ class _EditProfileState extends State<EditProfile> {
       if (_officerUpdateFormKey.currentState!.validate()) {
         _officerUpdateFormKey.currentState!.save();
 
-        print("$_Fname $_Lname $_contact $_email $_position $_regNo");
+        print("$_Fname $_Lname $_contact $_position $_regNo");
 
         setState(() {
           isUploading = true;
         });
 
         await _firebaseService!.updateOfficerProfile(_Fname, _Lname, _contact,
-            _email, _position, _regNo, imageFile, imageName, imageLink);
+            _position, _regNo, imageFile, imageName, imageLink);
 
         setState(() {
           isUploading = false;

@@ -263,7 +263,12 @@ class _DashboardState extends State<DashboardWidget> {
                 const SizedBox(
                   width: 15,
                 ),
-                if (provider['username'] != null) ...{
+                if (provider['company_name'] != null) ...{
+                  Expanded(
+                    child: _richTextWidget!.simpleText(
+                        provider['company_name'], null, Colors.black, null),
+                  ),
+                } else ...{
                   Expanded(
                     child: _richTextWidget!.simpleText(
                         provider['username'], null, Colors.black, null),

@@ -232,6 +232,7 @@ class _JobProvidersState extends State<JobProviders> {
   }
 
   Widget currentListViewBuilderWidget(Map<String, dynamic> provider) {
+    bool isSelected = _selectedProvider == provider;
     return Padding(
       padding: EdgeInsets.only(
         right: _deviceWidth! * 0.0125,
@@ -249,7 +250,9 @@ class _JobProvidersState extends State<JobProviders> {
           height: 80,
           width: _deviceWidth! * 0.175,
           decoration: BoxDecoration(
-            color: cardBackgroundColor,
+            color: isSelected
+                ? const Color.fromARGB(255, 201, 255, 203)
+                : cardBackgroundColor,
             borderRadius: BorderRadius.circular(20),
             boxShadow: const [
               BoxShadow(
@@ -877,7 +880,7 @@ class _SelectedProviderDetailsWidgetState
                           children: [
                             _richTextWidget!.simpleTextWithIconRight(
                                 Icons.money_rounded,
-                                "Rs. ${vacancy['minimum_salary']}",
+                                "Rs. ${vacancy['minimum_salary']}.00",
                                 20,
                                 Colors.black,
                                 FontWeight.w700),

@@ -261,6 +261,7 @@ class _PendingApprovalsState extends State<PendingApprovals> {
   }
 
   Widget pendingListViewBuilderWidget(Map<String, dynamic> provider) {
+    bool isSelected = _selectedApproval == provider;
     return Padding(
       padding: EdgeInsets.only(
         right: _deviceWidth! * 0.0125,
@@ -278,7 +279,9 @@ class _PendingApprovalsState extends State<PendingApprovals> {
           height: 80,
           width: _deviceWidth! * 0.175,
           decoration: BoxDecoration(
-            color: cardBackgroundColor,
+            color: isSelected
+                ? const Color.fromARGB(255, 201, 255, 203)
+                : cardBackgroundColor,
             borderRadius: BorderRadius.circular(20),
             boxShadow: const [
               BoxShadow(
@@ -308,7 +311,12 @@ class _PendingApprovalsState extends State<PendingApprovals> {
                 const SizedBox(
                   width: 10,
                 ),
-                if (provider['username'] != null) ...{
+                if (provider['company_name'] != null) ...{
+                  Expanded(
+                    child: _richTextWidget!.simpleText(
+                        provider['company_name'], null, Colors.black, null),
+                  ),
+                } else ...{
                   Expanded(
                     child: _richTextWidget!.simpleText(
                         provider['username'], null, Colors.black, null),

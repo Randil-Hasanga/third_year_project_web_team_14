@@ -509,7 +509,7 @@ class FirebaseService {
         QuerySnapshot seekerSnapshot =
             await FirebaseFirestore.instance.collection(CV_COLLECTION).get();
 
-        // Process the provider data
+        // Process the seeker data
         Map<String, Map<String, dynamic>> seekerDataMap = {};
 
         for (var seeker in seekerSnapshot.docs) {
@@ -651,6 +651,7 @@ class FirebaseService {
     _querySnapshot = await _db
         .collection(VACANCY_COLLECTION)
         .where('uid', isEqualTo: userId)
+        .where('active', isEqualTo: true)
         .get();
 
     List<Map<String, dynamic>> vacancies = [];
@@ -1081,7 +1082,6 @@ class FirebaseService {
       String? fname,
       String? lname,
       String? contact,
-      String? email,
       String? position,
       String? regNo,
       Uint8List? imageFile,
@@ -1099,7 +1099,6 @@ class FirebaseService {
             'fname': fname,
             'lname': lname,
             'contact': contact,
-            'email': email,
             'position': position,
             'reg_no': regNo,
             'profile_image': _downloadURL
@@ -1111,7 +1110,6 @@ class FirebaseService {
             'fname': fname,
             'lname': lname,
             'contact': contact,
-            'email': email,
             'position': position,
             'reg_no': regNo,
             'profile_image': imageLink
@@ -1121,7 +1119,6 @@ class FirebaseService {
             'fname': fname,
             'lname': lname,
             'contact': contact,
-            'email': email,
             'position': position,
             'reg_no': regNo,
           }, SetOptions(merge: true));

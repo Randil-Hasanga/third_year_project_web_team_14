@@ -77,7 +77,7 @@ class _MainPageState extends State<MainPage> {
     OfficersPage(),
     const JobProviders(),
     PendingApprovals(),
-    const JobSeeker(), // Ensure JobSeekerPage is added here
+    const JobSeeker(),
     BulkMailPage(),
     RecycleBin(),
     Report(),
@@ -90,8 +90,6 @@ class _MainPageState extends State<MainPage> {
     _widthXheight = (_deviceHeight! * _deviceWidth!) / 50000;
     _fontSize = _deviceWidth! * 0.01;
     _verticalSpace = _deviceHeight! * 0.015;
-
-
 
     return Scaffold(
       body: Row(
@@ -176,12 +174,12 @@ class _MainPageState extends State<MainPage> {
                   style: TextStyle(color: Colors.white, fontSize: _fontSize),
                 ),
               ),
-              const NavigationRailDestination(
-                padding: EdgeInsets.symmetric(vertical: 7),
+              NavigationRailDestination(
+                padding: EdgeInsets.only(bottom: _verticalSpace!),
                 icon: Icon(Icons.person_search),
                 label: Text(
                   'Job Seekers',
-                  style: TextStyle(color: Colors.white, fontSize: 18),
+                  style: TextStyle(color: Colors.white, fontSize: _fontSize),
                 ),
               ),
               NavigationRailDestination(

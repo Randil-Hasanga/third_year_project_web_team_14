@@ -78,7 +78,7 @@ class TextFieldWidgets {
     if (_value == null || _value.isEmpty) {
       return 'Please enter contact no';
     }
-    final regex = RegExp(r'^\+?[0-9]{10,15}$');
+    final regex = RegExp(r'^\d{10}$');
 
     if (!regex.hasMatch(_value)) {
       return "Invalid contact number";
