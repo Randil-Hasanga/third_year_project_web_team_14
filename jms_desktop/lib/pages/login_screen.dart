@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
@@ -64,6 +65,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     _loginForm(),
                     _loginButton(),
                     const SizedBox(height: 10.0),
+                    TextButton(
+                        onPressed: _showForgotPasswordDialog,
+                        child: Text('Forgot Password?'))
                   ],
                 ),
               ),
@@ -228,6 +232,50 @@ class _LoginScreenState extends State<LoginScreen> {
         () {
           _isLoading = false; // Set to false when login ends
         },
+      );
+    }
+  }
+
+  void _showForgotPasswordDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Forgot Password'),
+          content: TextField(
+            controller: _emailController,
+            decoration: InputDecoration(
+              labelText: 'Enter your email',
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: _sendPasswordResetEmail,
+              child: Text('Send'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _sendPasswordResetEmail() async {
+    try {
+      await FirebaseAuth.instance
+          .sendPasswordResetEmail(email: _emailController.text);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Password reset email sent')),
+      );
+      Navigator.of(context).pop(); // Close the dialog
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}')),
       );
     }
   }
