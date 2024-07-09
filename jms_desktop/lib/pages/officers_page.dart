@@ -29,6 +29,7 @@ class _OfficersPageStete extends State<OfficersPage> {
   final ScrollController _scrollControllerLeft = ScrollController();
   bool _isDetailsVisible = false;
   Map<String, dynamic>? _selectedOfficer;
+  List<Map<String, dynamic>>? filteredOfficer;
   bool _showLoader = true;
 
   @override
@@ -38,6 +39,8 @@ class _OfficersPageStete extends State<OfficersPage> {
     _richTextWidget = GetIt.instance.get<RichTextWidget>();
     _searchBarWidget = GetIt.instance.get<SearchBarWidget>();
     _loadOfficer();
+    // Add listener to search controller
+    _searchController.addListener(_filterOfficer); // search fuction
 
     Future.delayed(const Duration(seconds: 3), () {
       if (mounted) {
@@ -48,15 +51,34 @@ class _OfficersPageStete extends State<OfficersPage> {
     });
   }
 
+  // search fuction
+  void _filterOfficer() {
+    String query = _searchController.text.toLowerCase();
+    setState(() {
+      filteredOfficer = officer?.where((officer) {
+        // If company_name doesn't exist, check username
+        if (officer['username'] != null &&
+            officer['username'].toLowerCase().contains(query)) {
+          return true;
+        }
+        return false;
+      }).toList();
+    });
+  }
+
   void _loadOfficer() async {
-    List<Map<String, dynamic>>? data = await _firebaseService!.getOfficerData();
-    if (mounted) {
+    try {
+      List<Map<String, dynamic>>? data =
+          await _firebaseService!.getOfficerData();
       setState(() {
         officer = data;
+        filteredOfficer = data;
+        _showLoader = false;
       });
+      print(data);
+    } catch (error) {
+      print('Error fetching data: $error');
     }
-
-    print(data);
   }
 
   @override
@@ -119,7 +141,7 @@ class _OfficersPageStete extends State<OfficersPage> {
                 children: [
                   Icon(
                     Icons.work,
-                    size: 35,
+                    size: 30,
                   ),
                   SizedBox(
                     width: 10,
@@ -128,7 +150,7 @@ class _OfficersPageStete extends State<OfficersPage> {
                     "Current Officer ",
                     style: TextStyle(
                       color: Colors.black,
-                      fontSize: 25,
+                      fontSize: 20,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -181,10 +203,11 @@ class _OfficersPageStete extends State<OfficersPage> {
                     child: ListView.builder(
                       controller: _scrollControllerLeft,
                       shrinkWrap: true,
-                      itemCount: officer?.length ?? 0,
+                      itemCount: filteredOfficer?.length ?? 0,
                       scrollDirection: Axis.vertical,
                       itemBuilder: (context, index) {
-                        return OfficerLisviewBuilderWidget(officer![index]);
+                        return OfficerLisviewBuilderWidget(
+                            filteredOfficer![index]);
                       },
                     ),
                   ),
