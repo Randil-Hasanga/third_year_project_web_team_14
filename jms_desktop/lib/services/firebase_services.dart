@@ -764,6 +764,11 @@ class FirebaseService {
   //get Seeker detailes in DB , use this details in seeker report
   Future<List<Map<String, dynamic>>?> getSeekerReport(int index) async {
     List<DateTime> monthList = _generateMonthList();
+    // Check if index is within the range of monthList
+    if (index < 0 || index >= monthList.length) {
+      print("Index out of range");
+      return null;
+    }
     DateTime startDate = monthList[index];
     DateTime endDate = _getMonthEndDate(startDate);
     try {
@@ -784,7 +789,7 @@ class FirebaseService {
       }
 
       if (seekerList.isNotEmpty) {
-        // print(seekerList);
+        print(seekerList);
         return seekerList;
       } else {
         print("Empty");
@@ -803,8 +808,7 @@ class FirebaseService {
     DateTime endDate = _getMonthEndDate(startDate);
     try {
       QuerySnapshot<Map<String, dynamic>>? querySnapshot = await _db
-          .collection(USER_COLLECTION)
-          .where('type', isEqualTo: 'seeker')
+          .collection(SEEKER_COLLECTION)
           .where('registered_date', isGreaterThanOrEqualTo: startDate)
           .where('registered_date', isLessThanOrEqualTo: endDate)
           // .where('pending', isEqualTo: false)
