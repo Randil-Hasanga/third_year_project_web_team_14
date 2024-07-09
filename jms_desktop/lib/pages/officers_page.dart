@@ -198,6 +198,8 @@ class _OfficersPageStete extends State<OfficersPage> {
   }
 
   Widget OfficerLisviewBuilderWidget(Map<String, dynamic> officer) {
+    bool isSelected = _selectedOfficer == officer;
+
     return Padding(
       padding: EdgeInsets.only(
         right: _deviceWidth! * 0.0125,
@@ -215,7 +217,9 @@ class _OfficersPageStete extends State<OfficersPage> {
           height: _deviceHeight! * 0.08,
           width: _deviceWidth! * 0.175,
           decoration: BoxDecoration(
-            color: cardBackgroundColor,
+            color: isSelected
+                ? const Color.fromARGB(255, 201, 255, 203)
+                : cardBackgroundColor,
             borderRadius: BorderRadius.circular(_widthXheight! * 0.66),
             boxShadow: const [
               BoxShadow(
