@@ -35,7 +35,7 @@ class _ProfileDetailsSectionState extends State<ProfileDetailsSection> {
           await _firebaseService!.getLastHoursJobSeeker() ?? [];
       List<Map<String, dynamic>>? vacancyList =
           await _firebaseService!.getLastHoursVacancy() ?? [];
-      List<Map<String, dynamic>>? campanyList =
+      List<Map<String, dynamic>>? companyList =
           await _firebaseService!.getLastHoursNewCompany() ?? [];
 
       // Combine all notifications into a single list
@@ -43,7 +43,7 @@ class _ProfileDetailsSectionState extends State<ProfileDetailsSection> {
       allNotifications.addAll(providerList);
       allNotifications.addAll(seekerList);
       allNotifications.addAll(vacancyList);
-      allNotifications.addAll(campanyList);
+      allNotifications.addAll(companyList);
 
       // Sort allNotifications by 'registered_date' in descending order
       allNotifications.sort((a, b) {
