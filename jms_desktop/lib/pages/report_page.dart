@@ -96,18 +96,31 @@ class _ReportState extends State<Report> {
     return pw.Column(
       crossAxisAlignment:
           pw.CrossAxisAlignment.start, // Aligns text to the start (left)
-      children: data.entries.map((entry) {
-        return pw.Row(
+      children: [
+        // Display "DISTRICT: MATARA" only once
+        pw.Row(
           children: [
             pw.Text(
-              '${entry.key}:', // Key (field name)
+              'DISTRICT: MATARA',
               style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
             ),
-            pw.SizedBox(width: 10), // Space between key and value
-            pw.Text(entry.value), // Value (field data)
           ],
-        );
-      }).toList(),
+        ),
+
+        // Display the rest of the data
+        ...data.entries.map((entry) {
+          return pw.Row(
+            children: [
+              pw.Text(
+                '${entry.key}:', // Key (field name)
+                style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+              ),
+              pw.SizedBox(width: 10), // Space between key and value
+              pw.Text(entry.value), // Value (field data)
+            ],
+          );
+        }).toList(),
+      ],
     );
   }
 
@@ -153,23 +166,60 @@ class _ReportState extends State<Report> {
     return pw.Column(
       crossAxisAlignment:
           pw.CrossAxisAlignment.start, // Aligns text to the start (left)
-      children: data.entries.map((entry) {
-        return pw.Row(
+      children: [
+        // Display "DISTRICT: MATARA" only once
+        pw.Row(
           children: [
             pw.Text(
-              '${entry.key}:', // Key (field name)
+              'DISTRICT: MATARA',
               style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
             ),
-            pw.SizedBox(width: 10), // Space between key and value
-            pw.Text(entry.value), // Value (field data)
           ],
-        );
-      }).toList(),
+        ),
+        // Display the rest of the data
+        ...data.entries.map((entry) {
+          return pw.Row(
+            children: [
+              pw.Text(
+                '${entry.key}:', // Key (field name)
+                style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+              ),
+              pw.SizedBox(width: 10), // Space between key and value
+              pw.Text(entry.value), // Value (field data)
+            ],
+          );
+        }).toList(),
+      ],
     );
   }
 
   //feach the seeker data and map the details
   pw.Widget _createSeekerTable(List<Map<String, String>> data) {
+    // Convert null values to "N/A"
+    List<List<String>> tableData = [
+      [
+        'Name of the Job Seeker',
+        'Address',
+        'Gender',
+        'Contact No',
+        'Name of the Placed Company',
+        'Job Position',
+        'Company Contact'
+      ], // Table headers
+    ];
+
+    for (var row in data) {
+      tableData.add([
+        row['fullname'] ?? 'N/A',
+        row['address'] ?? 'N/A',
+        row['gender'] ?? 'N/A',
+        row['contact'] ?? 'N/A',
+        row['placed_company_name'] ?? 'N/A',
+        row['job_position'] ?? 'N/A',
+        row['company_contact'] ?? 'N/A',
+      ]);
+    }
+
     // ignore: deprecated_member_use
     return pw.Table.fromTextArray(
       // Setting the style for the table headers
@@ -183,19 +233,7 @@ class _ReportState extends State<Report> {
       ),
       cellAlignment: pw.Alignment.centerLeft, // Align text in cells to the left
       border: pw.TableBorder.all(), // Adding borders to the table
-      data: <List<String>>[
-        [
-          'Name of the Job Seeker',
-          'Address',
-          'Gender',
-          'Contact No',
-          'Name of the Placed Company',
-          'Job Position',
-          'Company Contact'
-        ], // Table headers
-        for (var row in data)
-          [row['fullname']!, row['address']!, row['gender']!, row['contact']!],
-      ],
+      data: tableData,
     );
   }
 
@@ -407,14 +445,11 @@ class _ReportState extends State<Report> {
 
   void _generateProviderPdf() async {
     final pdf = pw.Document();
-    String dis = "MATARA";
     int index = _monthList.indexOf(_providerMonth);
-    int providerCount = await _firebaseService!.getMonthlyProviderCount(index);
-    String providerCountStr = providerCount.toString();
+    int _providerCount = await _firebaseService!.getMonthlyProviderCount(index);
     final data_ = {
-      'DISTRICT : $dis\n'
-          'TOTAL COMPANY REGISTRATION : \n'
-          'MONTH : $_providerMonth': '$providerCountStr',
+      'MONTH': _providerMonth,
+      'TOTAL COMPANY REGISTRATION': _providerCount.toString(),
     };
     // Load the logo image from assets
     final logoBytes = await rootBundle.load('assets/images/logo.jpg');
@@ -576,8 +611,7 @@ class _ReportState extends State<Report> {
     int index = _monthList.indexOf(_seekerMonth);
     int seekerCount = await _firebaseService!.getMonthlySeekerCount(index);
     final data_ = {
-      'DISTRICT: MATARA'
-          'MONTH': _seekerMonth,
+      'MONTH': _seekerMonth,
       'TOTAL SEEKERS REGISTRATION': seekerCount.toString(), //modify this after
     };
 
