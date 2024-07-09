@@ -1,8 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jms_desktop/const/constants.dart';
 import 'package:jms_desktop/services/firebase_services.dart';
+import 'package:intl/intl.dart';
 
 class ProfileDetailsSection extends StatefulWidget {
   @override
@@ -34,9 +36,16 @@ class _ProfileDetailsSectionState extends State<ProfileDetailsSection> {
           await _firebaseService!.getLastHoursJobSeeker();
       List<Map<String, dynamic>>? vacancyList =
           await _firebaseService!.getLastHoursVacancy();
+      List<Map<String, dynamic>>? campanyList =
+          await _firebaseService!.getLastHoursNewCompany();
 
       if (mounted) {
-        list = [...?providerList, ...?seekerList, ...?vacancyList];
+        list = [
+          ...?providerList,
+          ...?seekerList,
+          ...?vacancyList,
+          ...?campanyList
+        ];
       }
 
       if (list == null) {
@@ -328,12 +337,41 @@ class _ProfileDetailsSectionState extends State<ProfileDetailsSection> {
     );
   }
 
+// List<Widget> _buildNotificationTiles(
+//       List<Map<String, dynamic>> notifications) {
+//     return notifications.map((notification) {
+//       return ListTile(
+//         title: Text(notification['title']),
+//         subtitle: Text(notification['registered_date'].toString()),
+//       );
+//     }).toList();
+//   }
+
   List<Widget> _buildNotificationTiles(
       List<Map<String, dynamic>> notifications) {
+    final DateFormat formatter = DateFormat('MMMM d, yyyy \'at\' h:mm:ss a');
+
     return notifications.map((notification) {
+      String formattedDate;
+      if (notification['registered_date'] is Timestamp) {
+        // Convert Firestore Timestamp to DateTime
+        DateTime dateTime = notification['registered_date'].toDate();
+        // Format DateTime to desired string format
+        formattedDate = formatter.format(dateTime);
+      } else {
+        // Fallback for any other type (just in case)
+        formattedDate = notification['registered_date'].toString();
+      }
+
       return ListTile(
-        title: Text(notification['title']),
-        // subtitle: Text(notification['username']),
+        title: Text(notification['description']),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text('${notification['name'] ?? 'N/A'}'),
+            Text(formattedDate),
+          ],
+        ),
       );
     }).toList();
   }
