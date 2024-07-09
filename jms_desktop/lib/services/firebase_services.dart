@@ -995,10 +995,10 @@ class FirebaseService {
           .collection(NOTIFICATION)
           // .where('registered_date', isGreaterThanOrEqualTo: perviousTime)
           // .where('registered_date', isLessThanOrEqualTo: currentTime)
-          .where('description', isEqualTo: 'Add new campany')
+          .where('description', isEqualTo: 'Add new company')
           .get();
 
-      List<Map<String, dynamic>> campanyList = [];
+      List<Map<String, dynamic>> companyList = [];
 
       for (QueryDocumentSnapshot<Map<String, dynamic>> doc
           in querySnapshot.docs) {
@@ -1006,10 +1006,10 @@ class FirebaseService {
         Map<String, dynamic> campanyData = doc.data();
         campanyData['name'] = 'Company Name: ${campanyData['company_name']}'
             '\nOrganization Type: ${campanyData['org_type']}';
-        campanyList.add(campanyData);
+        companyList.add(campanyData);
       }
       // Sort providerList by 'registered_date' in descending order
-      campanyList.sort((a, b) {
+      companyList.sort((a, b) {
         DateTime dateA = a['registered_date'] is Timestamp
             ? (a['registered_date'] as Timestamp).toDate()
             : DateTime.parse(a['registered_date']);
@@ -1019,15 +1019,15 @@ class FirebaseService {
         return dateB.compareTo(dateA);
       });
 
-      if (campanyList.isNotEmpty) {
-        print(campanyList);
-        return campanyList;
+      if (companyList.isNotEmpty) {
+        print(companyList);
+        return companyList;
       } else {
         print("Empty");
         return null;
       }
     } catch (e) {
-      print("Error getting campany notification : $e");
+      print("Error getting company notification : $e");
       return null;
     }
   }
