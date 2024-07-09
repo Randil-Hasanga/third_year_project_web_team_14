@@ -27,34 +27,44 @@ class _ProfileDetailsSectionState extends State<ProfileDetailsSection> {
   String? _post = null;
   String? _imageLink;
 
-  Future<List<Map<String, dynamic>>> _getNotifications() async {
-    List<Map<String, dynamic>>? list;
+  Future<List<Map<String, dynamic>>?> _getNotifications() async {
     try {
       List<Map<String, dynamic>>? providerList =
-          await _firebaseService!.getLastHoursJobProvider();
+          await _firebaseService!.getLastHoursJobProvider() ?? [];
       List<Map<String, dynamic>>? seekerList =
-          await _firebaseService!.getLastHoursJobSeeker();
+          await _firebaseService!.getLastHoursJobSeeker() ?? [];
       List<Map<String, dynamic>>? vacancyList =
-          await _firebaseService!.getLastHoursVacancy();
+          await _firebaseService!.getLastHoursVacancy() ?? [];
       List<Map<String, dynamic>>? campanyList =
-          await _firebaseService!.getLastHoursNewCompany();
+          await _firebaseService!.getLastHoursNewCompany() ?? [];
 
-      if (mounted) {
-        list = [
-          ...?providerList,
-          ...?seekerList,
-          ...?vacancyList,
-          ...?campanyList
-        ];
-      }
+      // Combine all notifications into a single list
+      List<Map<String, dynamic>> allNotifications = [];
+      allNotifications.addAll(providerList);
+      allNotifications.addAll(seekerList);
+      allNotifications.addAll(vacancyList);
+      allNotifications.addAll(campanyList);
 
-      if (list == null) {
-        return [];
+      // Sort allNotifications by 'registered_date' in descending order
+      allNotifications.sort((a, b) {
+        DateTime dateA = a['registered_date'] is Timestamp
+            ? (a['registered_date'] as Timestamp).toDate()
+            : DateTime.parse(a['registered_date']);
+        DateTime dateB = b['registered_date'] is Timestamp
+            ? (b['registered_date'] as Timestamp).toDate()
+            : DateTime.parse(b['registered_date']);
+        return dateB.compareTo(dateA);
+      });
+      if (allNotifications.isNotEmpty) {
+        print(allNotifications);
+        return allNotifications;
+      } else {
+        print("Empty");
+        return null;
       }
-      return list;
     } catch (e) {
-      print('Error fetching notifications: $e');
-      return [];
+      print("Error getting notifications: $e");
+      return null;
     }
   }
 
@@ -86,7 +96,7 @@ class _ProfileDetailsSectionState extends State<ProfileDetailsSection> {
       backgroundColor: backgroundColor3,
       key: _scaffoldKey,
       endDrawer: Drawer(
-        child: FutureBuilder<List<Map<String, dynamic>>>(
+        child: FutureBuilder<List<Map<String, dynamic>>?>(
           future: _getNotifications(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {

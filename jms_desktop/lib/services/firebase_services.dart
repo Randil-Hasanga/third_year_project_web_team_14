@@ -844,6 +844,16 @@ class FirebaseService {
 
         providerList.add(providerData);
       }
+      // Sort providerList by 'registered_date' in descending order
+      providerList.sort((a, b) {
+        DateTime dateA = a['registered_date'] is Timestamp
+            ? (a['registered_date'] as Timestamp).toDate()
+            : DateTime.parse(a['registered_date']);
+        DateTime dateB = b['registered_date'] is Timestamp
+            ? (b['registered_date'] as Timestamp).toDate()
+            : DateTime.parse(b['registered_date']);
+        return dateB.compareTo(dateA);
+      });
 
       if (providerList.isNotEmpty) {
         print(providerList);
@@ -893,6 +903,16 @@ class FirebaseService {
         seekerData['name'] = 'username: ${seekerData['username']}';
         seekerList.add(seekerData);
       }
+      // Sort providerList by 'registered_date' in descending order
+      seekerList.sort((a, b) {
+        DateTime dateA = a['registered_date'] is Timestamp
+            ? (a['registered_date'] as Timestamp).toDate()
+            : DateTime.parse(a['registered_date']);
+        DateTime dateB = b['registered_date'] is Timestamp
+            ? (b['registered_date'] as Timestamp).toDate()
+            : DateTime.parse(b['registered_date']);
+        return dateB.compareTo(dateA);
+      });
 
       if (seekerList.isNotEmpty) {
         print(seekerList);
@@ -942,6 +962,16 @@ class FirebaseService {
             '\nJob Type: ${vacancyData['job_type']}';
         vacancyList.add(vacancyData);
       }
+      // Sort providerList by 'registered_date' in descending order
+      vacancyList.sort((a, b) {
+        DateTime dateA = a['registered_date'] is Timestamp
+            ? (a['registered_date'] as Timestamp).toDate()
+            : DateTime.parse(a['registered_date']);
+        DateTime dateB = b['registered_date'] is Timestamp
+            ? (b['registered_date'] as Timestamp).toDate()
+            : DateTime.parse(b['registered_date']);
+        return dateB.compareTo(dateA);
+      });
 
       if (vacancyList.isNotEmpty) {
         print(vacancyList);
@@ -978,6 +1008,16 @@ class FirebaseService {
             '\nOrganization Type: ${campanyData['org_type']}';
         campanyList.add(campanyData);
       }
+      // Sort providerList by 'registered_date' in descending order
+      campanyList.sort((a, b) {
+        DateTime dateA = a['registered_date'] is Timestamp
+            ? (a['registered_date'] as Timestamp).toDate()
+            : DateTime.parse(a['registered_date']);
+        DateTime dateB = b['registered_date'] is Timestamp
+            ? (b['registered_date'] as Timestamp).toDate()
+            : DateTime.parse(b['registered_date']);
+        return dateB.compareTo(dateA);
+      });
 
       if (campanyList.isNotEmpty) {
         print(campanyList);
