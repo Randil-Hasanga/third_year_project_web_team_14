@@ -14,9 +14,6 @@ const String CV_COLLECTION = 'CVDetails';
 const String NOTIFICATION = 'notifications';
 const String APPROVAL_COLLECTION = 'provider_approval_data';
 
-
-
-
 class FirebaseService {
   FirebaseService();
   String? uid;
@@ -125,8 +122,6 @@ class FirebaseService {
       return null;
     }
   }
-
-
 
   // get user data from db
   Future<List<Map<String, dynamic>>?> getAllUserData() async {
@@ -845,18 +840,7 @@ class FirebaseService {
         // Fetch basic data
         Map<String, dynamic> providerData = doc.data();
 
-        // Check if additional data exists
-        DocumentSnapshot additionalDataSnapshot =
-            await _db.collection(NOTIFICATION).doc(doc.id).get();
-
-        if (additionalDataSnapshot.exists) {
-          // Cast the data to Map<String, dynamic>
-          Map<String, dynamic> additionalData =
-              additionalDataSnapshot.data() as Map<String, dynamic>;
-          // Merge additional data with basic data
-          additionalData['title'] = "Registered New Provider";
-          providerData.addAll(additionalData);
-        }
+        providerData['name'] = 'username: ${providerData['username']}';
 
         providerList.add(providerData);
       }
@@ -894,18 +878,19 @@ class FirebaseService {
         // Fetch basic data
         Map<String, dynamic> seekerData = doc.data();
 
-        // Check if additional data exists
-        DocumentSnapshot additionalDataSnapshot =
-            await _db.collection(NOTIFICATION).doc(doc.id).get();
+        // // Check if additional data exists
+        // DocumentSnapshot additionalDataSnapshot =
+        //     await _db.collection(NOTIFICATION).doc(doc.id).get();
 
-        if (additionalDataSnapshot.exists) {
-          // Cast the data to Map<String, dynamic>
-          Map<String, dynamic> additionalData =
-              additionalDataSnapshot.data() as Map<String, dynamic>;
-          additionalData['title'] = "Registered New Job Seeker";
-          // Merge additional data with basic data
-          seekerData.addAll(additionalData);
-        }
+        // if (additionalDataSnapshot.exists) {
+        //   // Cast the data to Map<String, dynamic>
+        //   Map<String, dynamic> additionalData =
+        //       additionalDataSnapshot.data() as Map<String, dynamic>;
+        //   additionalData['title'] = "Registered New Job Seeker";
+        //   // Merge additional data with basic data
+        //   seekerData.addAll(additionalData);
+        // }
+        seekerData['name'] = 'username: ${seekerData['username']}';
         seekerList.add(seekerData);
       }
 
@@ -941,18 +926,20 @@ class FirebaseService {
         // Fetch basic data
         Map<String, dynamic> vacancyData = doc.data();
 
-        // Check if additional data exists
-        DocumentSnapshot additionalDataSnapshot =
-            await _db.collection(NOTIFICATION).doc(doc.id).get();
+        // // Check if additional data exists
+        // DocumentSnapshot additionalDataSnapshot =
+        //     await _db.collection(NOTIFICATION).doc(doc.id).get();
 
-        if (additionalDataSnapshot.exists) {
-          // Cast the data to Map<String, dynamic>
-          Map<String, dynamic> additionalData =
-              additionalDataSnapshot.data() as Map<String, dynamic>;
-          additionalData['title'] = "Publish New Vacancy";
-          // Merge additional data with basic data
-          vacancyData.addAll(additionalData);
-        }
+        // if (additionalDataSnapshot.exists) {
+        //   // Cast the data to Map<String, dynamic>
+        //   Map<String, dynamic> additionalData =
+        //       additionalDataSnapshot.data() as Map<String, dynamic>;
+        //   additionalData['title'] = "Publish New Vacancy";
+        //   // Merge additional data with basic data
+        //   vacancyData.addAll(additionalData);
+        // }
+        vacancyData['name'] = 'Company Name: ${vacancyData['company_name']}'
+            '\nJob Type: ${vacancyData['job_type']}';
         vacancyList.add(vacancyData);
       }
 
@@ -965,6 +952,42 @@ class FirebaseService {
       }
     } catch (e) {
       print("Error getting vacancy notification : $e");
+      return null;
+    }
+  }
+
+  //generate notification - new company side
+  Future<List<Map<String, dynamic>>?> getLastHoursNewCompany() async {
+    DateTime currentTime = DateTime.now();
+    DateTime perviousTime = currentTime.add(Duration(hours: -1));
+    try {
+      QuerySnapshot<Map<String, dynamic>>? querySnapshot = await _db
+          .collection(NOTIFICATION)
+          // .where('registered_date', isGreaterThanOrEqualTo: perviousTime)
+          // .where('registered_date', isLessThanOrEqualTo: currentTime)
+          .where('description', isEqualTo: 'Add new campany')
+          .get();
+
+      List<Map<String, dynamic>> campanyList = [];
+
+      for (QueryDocumentSnapshot<Map<String, dynamic>> doc
+          in querySnapshot.docs) {
+        // Fetch basic data
+        Map<String, dynamic> campanyData = doc.data();
+        campanyData['name'] = 'Company Name: ${campanyData['company_name']}'
+            '\nOrganization Type: ${campanyData['org_type']}';
+        campanyList.add(campanyData);
+      }
+
+      if (campanyList.isNotEmpty) {
+        print(campanyList);
+        return campanyList;
+      } else {
+        print("Empty");
+        return null;
+      }
+    } catch (e) {
+      print("Error getting campany notification : $e");
       return null;
     }
   }
@@ -1065,7 +1088,6 @@ class FirebaseService {
       print("Error updating officer : $e");
     }
   }
-
 }
 
 //Fetch the CV URL from Firebase Storage:
