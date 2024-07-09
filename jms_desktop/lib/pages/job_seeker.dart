@@ -17,7 +17,7 @@ class _JobSeekerState extends State<JobSeeker> {
   late Future<List<Map<String, dynamic>>?> _futureJobSeekers;
   Map<String, dynamic>? _selectedJobSeeker;
   Map<String, dynamic>? _cvDetails;
-  
+
   get http => null; // To store CVDetails for selected job seeker
 
   @override
@@ -39,7 +39,7 @@ class _JobSeekerState extends State<JobSeeker> {
           Expanded(
             flex: 1,
             child: Container(
-              color: Color.fromARGB(255, 244, 200, 147), // Set background color for left panel
+              color: Color.fromRGBO(255, 195, 162, 1), // Set background color for left panel
               padding: const EdgeInsets.all(16.0),
               child: FutureBuilder<List<Map<String, dynamic>>?>(
                 future: _futureJobSeekers,
@@ -85,12 +85,15 @@ class _JobSeekerState extends State<JobSeeker> {
                             borderRadius: BorderRadius.circular(16.0),
                           ),
                           child: ListTile(
-                            leading: const Icon(Icons.person), // Icon in front of username
-                            title: Text(jobSeeker['username'] ?? 'Name not found'),
+                            leading: const Icon(
+                                Icons.person), // Icon in front of username
+                            title:
+                                Text(jobSeeker['username'] ?? 'Name not found'),
                             trailing: IconButton(
                               icon: const Icon(Icons.delete),
                               onPressed: () {
-                                _deleteJobSeeker(jobSeeker['id']); // Assuming 'id' is the document ID
+                                _deleteJobSeeker(jobSeeker[
+                                    'id']); // Assuming 'id' is the document ID
                               },
                             ),
                           ),
@@ -107,7 +110,7 @@ class _JobSeekerState extends State<JobSeeker> {
           Expanded(
             flex: 2,
             child: Container(
-              color: Color.fromARGB(255, 240, 208, 164), // Set background color for right panel
+              color: Color.fromARGB(232, 255, 223, 211),// Set background color for right panel
               padding: const EdgeInsets.all(16.0),
               child: _selectedJobSeeker != null
                   ? SingleChildScrollView(
@@ -116,14 +119,19 @@ class _JobSeekerState extends State<JobSeeker> {
                         children: [
                           const Text(
                             'Details of Selected Job Seeker',
-                            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                                fontSize: 24, fontWeight: FontWeight.bold),
                           ),
                           const SizedBox(height: 16.0),
                           _buildSectionContainer(
                             'Basic Data',
                             [
-                              _buildDetailRow('Username:', _selectedJobSeeker!['username'] ?? 'Not found'),
-                              _buildDetailRow('Email:', _selectedJobSeeker!['email'] ?? 'Not found'),
+                              _buildDetailRow(
+                                  'Username:',
+                                  _selectedJobSeeker!['username'] ??
+                                      'Not found'),
+                              _buildDetailRow('Email:',
+                                  _selectedJobSeeker!['email'] ?? 'Not found'),
                             ],
                             Colors.orange[100]!,
                           ),
@@ -131,12 +139,21 @@ class _JobSeekerState extends State<JobSeeker> {
                           _buildSectionContainer(
                             'Personal Details',
                             [
-                              _buildDetailRow('Full Name:', _cvDetails?['fullname'] ?? 'Not found'),
-                              _buildDetailRow('Gender:', _cvDetails?['gender'] ?? 'Not found'),
-                              _buildDetailRow('Home Contact:', _cvDetails?['ContactHome'] ?? 'Not found'),
-                              _buildDetailRow('Mobile Contact:', _cvDetails?['contactMobile'] ?? 'Not found'),
-                              _buildDetailRow('Address:', _cvDetails?['address'] ?? 'Not found'),
-                              _buildDetailRow('Age:', _cvDetails?['age'] != null ? _cvDetails!['age'].toString() : 'Not found'),
+                              _buildDetailRow('Full Name:',
+                                  _cvDetails?['fullname'] ?? 'Not found'),
+                              _buildDetailRow('Gender:',
+                                  _cvDetails?['gender'] ?? 'Not found'),
+                              _buildDetailRow('Home Contact:',
+                                  _cvDetails?['ContactHome'] ?? 'Not found'),
+                              _buildDetailRow('Mobile Contact:',
+                                  _cvDetails?['contactMobile'] ?? 'Not found'),
+                              _buildDetailRow('Address:',
+                                  _cvDetails?['address'] ?? 'Not found'),
+                              _buildDetailRow(
+                                  'Age:',
+                                  _cvDetails?['age'] != null
+                                      ? _cvDetails!['age'].toString()
+                                      : 'Not found'),
                             ],
                             Colors.green[100]!,
                           ),
@@ -157,27 +174,31 @@ class _JobSeekerState extends State<JobSeeker> {
     );
   }
 
- Widget _buildSectionContainer(String title, List<Widget> content, Color backgroundColor) {
-  return Container(
-    margin: EdgeInsets.only(bottom: 16.0),
-    padding: EdgeInsets.all(16.0),
-    decoration: BoxDecoration(
-      color: backgroundColor,
-      borderRadius: BorderRadius.circular(16.0),
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
-        ),
-        SizedBox(height: 16.0),
-        ...content,
-      ],
-    ),
-  );
-}
+  Widget _buildSectionContainer(
+      String title, List<Widget> content, Color backgroundColor) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16.0),
+      padding: const EdgeInsets.all(16.0),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(16.0),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Color.fromARGB(255, 0, 0, 0)),
+          ),
+          const SizedBox(height: 16.0),
+          ...content,
+        ],
+      ),
+    );
+  }
 
   Widget _buildDetailRow(String label, String value) {
     return Padding(
@@ -194,155 +215,149 @@ class _JobSeekerState extends State<JobSeeker> {
     );
   }
 
-Widget _buildCVViewSection() {
-  return _cvDetails != null
-      ? _buildSectionContainer(
-          'CV View',
-          [
-            ElevatedButton(
-              onPressed: () async {
-                if (_selectedJobSeeker != null) {
-                  String userId = _selectedJobSeeker!['id'];
-                  String? cvUrl = await _getCVUrl(userId);
-                  if (cvUrl != null) {
-                    await _openPDF(context, cvUrl);
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('CV not found or unable to load.')),
-                    );
+  Widget _buildCVViewSection() {
+    return _cvDetails != null
+        ? _buildSectionContainer(
+            'CV View',
+            [
+              ElevatedButton(
+                onPressed: () async {
+                  if (_selectedJobSeeker != null) {
+                    String userId = _selectedJobSeeker!['id'];
+                    String? cvUrl = await _getCVUrl(userId);
+                    if (cvUrl != null) {
+                      await _openPDF(context, cvUrl);
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            content: Text('CV not found')),
+                      );
+                    }
                   }
-                }
-              },
-              child: const Text('View CV'),
-            ),
-          ],
-          Colors.purple[100]!,
-        )
-      : const SizedBox.shrink(); // Hide CV View section if no CV details are loaded
-}
-
-Future<void> _openPDF(BuildContext context, String url) async {
-  try {
-    var response = await http.get(Uri.parse(url));
-    var dir = await getApplicationDocumentsDirectory();
-    File file = File('${dir.path}/temp.pdf');
-    await file.writeAsBytes(response.bodyBytes);
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => PDFViewPage(filePath: file.path),
-      ),
-    );
-  } catch (e) {
-    print('Error opening PDF: $e');
-  }
-}
-
-
-
-Future<String?> _getCVUrl(String userId) async {
-  try {
-    FirebaseStorage storage = FirebaseStorage.instance;
-    String filePath = 'CVs/$userId.pdf';
-    String downloadURL = await storage.ref(filePath).getDownloadURL();
-    return downloadURL;
-  } catch (e) {
-    print('Error fetching CV URL: $e');
-    return null;
-  }
-}
-
-
-
-
- Widget _buildAppliedJobsSection() {
-  if (_selectedJobSeeker == null) {
-    return SizedBox.shrink();
+                },
+                child: const Text('View CV'),
+              ),
+            ],
+            Colors.purple[100]!,
+          )
+        : const SizedBox
+            .shrink(); // Hide CV View section if no CV details are loaded
   }
 
-  return FutureBuilder<List<Map<String, dynamic>>>(
-    future: getAppliedJobs(),
-    builder: (context, snapshot) {
-      if (snapshot.connectionState == ConnectionState.waiting) {
-        return Center(child: CircularProgressIndicator());
-      }
-      if (snapshot.hasError) {
-        return Center(child: Text('Error: ${snapshot.error}'));
-      }
-      if (!snapshot.hasData || snapshot.data!.isEmpty) {
+  Future<void> _openPDF(BuildContext context, String url) async {
+    try {
+      var response = await http.get(Uri.parse(url));
+      var dir = await getApplicationDocumentsDirectory();
+      File file = File('${dir.path}/temp.pdf');
+      await file.writeAsBytes(response.bodyBytes);
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PDFViewPage(filePath: file.path),
+        ),
+      );
+    } catch (e) {
+      print('Error opening PDF: $e');
+    }
+  }
+
+  Future<String?> _getCVUrl(String userId) async {
+    try {
+      FirebaseStorage storage = FirebaseStorage.instance;
+      String filePath = 'CVs/$userId.pdf';
+      String downloadURL = await storage.ref(filePath).getDownloadURL();
+      return downloadURL;
+    } catch (e) {
+      print('Error fetching CV URL: $e');
+      return null;
+    }
+  }
+
+  Widget _buildAppliedJobsSection() {
+    if (_selectedJobSeeker == null) {
+      return const SizedBox.shrink();
+    }
+
+    return FutureBuilder<List<Map<String, dynamic>>>(
+      future: getAppliedJobs(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: const CircularProgressIndicator());
+        }
+        if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        }
+        if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return _buildSectionContainer(
+            'Applied Jobs',
+            [
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 8.0),
+                child: Text('No applied job found.'),
+              ),
+            ],
+            Colors.blue[100]!,
+          );
+        }
+
+        // Display applied jobs as cards
         return _buildSectionContainer(
           'Applied Jobs',
-          [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Text('No applied job found.'),
-            ),
-          ],
+          snapshot.data!.map((job) {
+            return Card(
+              margin: const EdgeInsets.symmetric(vertical: 8.0),
+              child: ListTile(
+                ///leading: Icon(Icons.work),
+                title: Row(
+                  children: [
+                    const Icon(Icons.work, size: 18.0),
+                    const SizedBox(width: 8.0),
+                    Text('${job['industry']}, ${job['job_position']}'),
+                  ],
+                ),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(Icons.category, size: 18.0),
+                        const SizedBox(width: 8.0),
+                        Text('${job['job_type']}'),
+                      ],
+                    ),
+                    const SizedBox(height: 4.0),
+                    Row(
+                      children: [
+                        const Icon(Icons.location_on, size: 18.0),
+                        const SizedBox(width: 8.0),
+                        Text('${job['location']}'),
+                      ],
+                    ),
+                    const SizedBox(height: 4.0),
+                    Row(
+                      children: [
+                        const Icon(Icons.attach_money, size: 18.0),
+                        const SizedBox(width: 8.0),
+                        Text('${job['minimum_salary']}/='),
+                      ],
+                    ),
+                  ],
+                ),
+                trailing: IconButton(
+                  icon: const Icon(Icons.more_vert),
+                  onPressed: () {
+                    // Implement action on card tap
+                  },
+                ),
+              ),
+            );
+          }).toList(),
           Colors.blue[100]!,
         );
-      }
-
-
-
-
-      // Display applied jobs as cards
-      return _buildSectionContainer(
-        'Applied Jobs',
-        snapshot.data!.map((job) {
-          return Card(
-            margin: const EdgeInsets.symmetric(vertical: 8.0),
-            child: ListTile(
-              ///leading: Icon(Icons.work),
-              title: Row(
-                children: [
-                  Icon(Icons.work, size: 18.0),
-                  SizedBox(width: 8.0),
-                  Text('${job['industry']}, ${job['job_position']}'),
-                ],
-              ),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(Icons.category, size: 18.0),
-                      SizedBox(width: 8.0),
-                      Text('${job['job_type']}'),
-                    ],
-                  ),
-                  SizedBox(height: 4.0),
-                  Row(
-                    children: [
-                      Icon(Icons.location_on, size: 18.0),
-                      SizedBox(width: 8.0),
-                      Text('${job['location']}'),
-                    ],
-                  ),
-                  SizedBox(height: 4.0),
-                  Row(
-                    children: [
-                      Icon(Icons.attach_money, size: 18.0),
-                      SizedBox(width: 8.0),
-                      Text('${job['minimum_salary']}'),
-                    ],
-                  ),
-                ],
-              ),
-              trailing: IconButton(
-                icon: Icon(Icons.more_vert),
-                onPressed: () {
-                  // Implement action on card tap
-                },
-              ),
-            ),
-          );
-        }).toList(),
-        Colors.blue[100]!,
-      );
-    },
-  );
-}
+      },
+    );
+  }
 
   Future<List<Map<String, dynamic>>> getAppliedJobs() async {
     try {
@@ -358,7 +373,8 @@ Future<String?> _getCVUrl(String userId) async {
       List<Map<String, dynamic>> appliedJobs = [];
 
       // Iterate through each document in the query snapshot
-      for (QueryDocumentSnapshot<Map<String, dynamic>> doc in querySnapshot.docs) {
+      for (QueryDocumentSnapshot<Map<String, dynamic>> doc
+          in querySnapshot.docs) {
         appliedJobs.add(doc.data());
       }
 
@@ -383,20 +399,20 @@ Future<String?> _getCVUrl(String userId) async {
       List<Map<String, dynamic>> jobSeekers = [];
 
       // Iterate through each document in the query snapshot
-      for (QueryDocumentSnapshot<Map<String, dynamic>> doc in querySnapshot.docs) {
+      for (QueryDocumentSnapshot<Map<String, dynamic>> doc
+          in querySnapshot.docs) {
         // Fetch basic data
         Map<String, dynamic> seekerData = doc.data();
         seekerData['id'] = doc.id; // Add document ID to the data
 
         // Check if additional data exists in profileJobSeeker collection
-        DocumentSnapshot additionalDataSnapshot = await firestore
-            .collection('profileJobSeeker')
-            .doc(doc.id)
-            .get();
+        DocumentSnapshot additionalDataSnapshot =
+            await firestore.collection('profileJobSeeker').doc(doc.id).get();
 
         if (additionalDataSnapshot.exists) {
           // Merge additional data with basic data
-          seekerData.addAll(additionalDataSnapshot.data() as Map<String, dynamic>);
+          seekerData
+              .addAll(additionalDataSnapshot.data() as Map<String, dynamic>);
         }
 
         jobSeekers.add(seekerData);
