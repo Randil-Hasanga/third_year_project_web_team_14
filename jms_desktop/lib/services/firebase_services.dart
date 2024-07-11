@@ -594,7 +594,7 @@ class FirebaseService {
         'pending': false,
         "date": DateTime.now(),
         "approved_by": uid,
-      });
+      }, SetOptions(merge: true));
       await _db.collection(APPROVAL_COLLECTION).doc().set({
         "uid": userId,
         "date": DateTime.now(),
