@@ -60,6 +60,18 @@ class _CreateOfficerPageState extends State<CreateOfficerPage> {
         return;
       }
       try {
+        // Check if reg_no already exists in Firestore
+        var existingRegNo = await FirebaseFirestore.instance
+            .collection('users')
+            .where('reg_no', isEqualTo: _regNo)
+            .get();
+
+        if (existingRegNo.docs.isNotEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Registration number already exists")),
+          );
+          return;
+        }
         // Create a user with Firebase Authentication
         UserCredential userCredential =
             await FirebaseAuth.instance.createUserWithEmailAndPassword(

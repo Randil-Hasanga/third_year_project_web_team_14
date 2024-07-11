@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -265,14 +266,44 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+//  void _sendPasswordResetEmail() async {
+//     try {
+//       await FirebaseAuth.instance
+//           .sendPasswordResetEmail(email: _emailController.text);
+//       ScaffoldMessenger.of(context).showSnackBar(
+//         SnackBar(content: Text('Password reset email sent')),
+//       );
+//       Navigator.of(context).pop(); // Close the dialog
+//     } catch (e) {
+//       ScaffoldMessenger.of(context).showSnackBar(
+//         SnackBar(content: Text('Error: ${e.toString()}')),
+//       );
+//     }
+//   }
   void _sendPasswordResetEmail() async {
     try {
-      await FirebaseAuth.instance
-          .sendPasswordResetEmail(email: _emailController.text);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Password reset email sent')),
-      );
-      Navigator.of(context).pop(); // Close the dialog
+      final email = _emailController.text;
+
+      // Reference to the Firestore user collection
+      final userCollection = FirebaseFirestore.instance.collection('users');
+
+      // Query the user collection for the email
+      final querySnapshot =
+          await userCollection.where('email', isEqualTo: email).get();
+
+      if (querySnapshot.docs.isEmpty) {
+        // Email is not found in the user collection
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: Email not found in database')),
+        );
+      } else {
+        // Email is found, send the password reset email
+        await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Password reset email sent')),
+        );
+        Navigator.of(context).pop(); // Close the dialog
+      }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error: ${e.toString()}')),
