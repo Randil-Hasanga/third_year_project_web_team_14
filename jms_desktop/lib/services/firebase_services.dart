@@ -28,6 +28,10 @@ class FirebaseService {
     return uid!;
   }
 
+  User? getCurrentUserChat() {
+    return auth.currentUser;
+  }
+
 // login the new user in the system
   Future<bool> loginUser(
       {required String email, required String password}) async {
