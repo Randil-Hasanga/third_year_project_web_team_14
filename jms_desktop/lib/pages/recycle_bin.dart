@@ -13,10 +13,9 @@ class RecycleBin extends StatefulWidget {
 }
 
 class _RecycleBinState extends State<RecycleBin> {
-  RichTextWidget _richTextWidget = RichTextWidget();
+  final RichTextWidget _richTextWidget = RichTextWidget();
   double? _deviceWidth, _deviceHeight, _widthXheight;
-  ScrollController _scrollControllerLeft = ScrollController();
-  ScrollController _scrollController2 = ScrollController();
+  final ScrollController _scrollControllerLeft = ScrollController();
   List<Map<String, dynamic>>? _deletedJobProviders;
   List<Map<String, dynamic>>? _deletedJobSeekers;
   List<Map<String, dynamic>>? _deletedOfficers;
@@ -39,31 +38,29 @@ class _RecycleBinState extends State<RecycleBin> {
           await _firebaseService!.getDeletedUsersData(_dropDownValue);
 
       if (mounted) {
-        setState(
-          () {
-            if (_dropDownValue == "Job Providers") {
-              _deletedJobProviders = data;
-              print("Deleted job providers : $_deletedJobProviders");
-              _showNoProvidersFound =
-                  _deletedJobProviders == null || _deletedJobProviders!.isEmpty;
-            } else if (_dropDownValue == "Job Seekers") {
-              _deletedJobSeekers = data;
-              print("Deleted job seekers : $_deletedJobSeekers");
-              _showNoSeekersFound =
-                  _deletedJobSeekers == null || _deletedJobSeekers!.isEmpty;
-            } else if (_dropDownValue == "Officers") {
-              _deletedOfficers = data;
-              print("Deleted officers : $_deletedOfficers");
-              _showNoOfficersFound =
-                  _deletedOfficers == null || _deletedOfficers!.isEmpty;
-            }
-          },
-        );
+        if (_dropDownValue == "Job Providers") {
+          setState(() {
+            _deletedJobProviders = data;
+            _showNoProvidersFound = (_deletedJobProviders == null) ||
+                (_deletedJobProviders!.isEmpty);
+            _showLoader = false;
+          });
+        } else if (_dropDownValue == "Job Seekers") {
+          setState(() {
+            _deletedJobSeekers = data;
+            _showNoSeekersFound =
+                _deletedJobSeekers == null || _deletedJobSeekers!.isEmpty;
+            _showLoader = false;
+          });
+        } else if (_dropDownValue == "Officers") {
+          setState(() {
+            _deletedOfficers = data;
+            _showNoOfficersFound =
+                _deletedOfficers == null || _deletedOfficers!.isEmpty;
+            _showLoader = false;
+          });
+        }
       }
-
-      setState(() {
-        _showLoader = false;
-      });
     } catch (error) {
       print('Error fetching data: $error');
     }
@@ -174,14 +171,6 @@ class _RecycleBinState extends State<RecycleBin> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  // Text(
-                  //   "Job Providers",
-                  //   style: TextStyle(
-                  //     color: Colors.black,
-                  //     fontSize: _deviceWidth! * 0.02,
-                  //     fontWeight: FontWeight.w600,
-                  //   ),
-                  // ),
                   _selectedUserDropdown(),
                 ],
               ),
@@ -201,9 +190,9 @@ class _RecycleBinState extends State<RecycleBin> {
                 "Disabled date",
                 15,
                 Colors.black,
-                Color.fromARGB(255, 199, 197, 197), function: () {
-              print("TESTING");
-            }, "Actions"),
+                Color.fromARGB(255, 199, 197, 197),
+                function: () {},
+                "Actions"),
           ),
           Expanded(
             child: Stack(
@@ -221,10 +210,10 @@ class _RecycleBinState extends State<RecycleBin> {
                         const SizedBox(height: 8),
                         if (_deletedJobProviders == null ||
                             _deletedJobProviders!.isEmpty) ...{
-                          _richTextWidget!.simpleText(
+                          _richTextWidget.simpleText(
                               "Loading...", null, Colors.black, null),
                         } else ...{
-                          _richTextWidget!.simpleText(
+                          _richTextWidget.simpleText(
                               "Fetching database...", null, Colors.black, null),
                         }
                       ],
@@ -254,8 +243,6 @@ class _RecycleBinState extends State<RecycleBin> {
                               Map? deletedBy = snapshot.data;
                               String? fname = deletedBy?['fname'];
                               String? lname = deletedBy?['lname'];
-                              print("Deleted data $fname $lname");
-
                               return _deletedProvidersListViewBuilder(
                                 provider,
                                 deletedByName: '$fname $lname',
@@ -272,13 +259,12 @@ class _RecycleBinState extends State<RecycleBin> {
                     ),
                   ),
                 ),
-                Visibility(
-                  visible: _showNoProvidersFound,
-                  child: Center(
-                    child: _richTextWidget!.simpleText(
+                if (_showNoProvidersFound) ...{
+                  Center(
+                    child: _richTextWidget.simpleText(
                         "No providers found.", null, Colors.black, null),
                   ),
-                ),
+                },
               ],
             ),
           ),
@@ -378,9 +364,9 @@ class _RecycleBinState extends State<RecycleBin> {
                 "Disabled date",
                 15,
                 Colors.black,
-                Color.fromARGB(255, 199, 197, 197), function: () {
-              print("TESTING");
-            }, "Actions"),
+                Color.fromARGB(255, 199, 197, 197),
+                function: () {},
+                "Actions"),
           ),
           Expanded(
             child: Stack(
@@ -431,7 +417,6 @@ class _RecycleBinState extends State<RecycleBin> {
                               Map? deletedBy = snapshot.data;
                               String? fname = deletedBy?['fname'];
                               String? lname = deletedBy?['lname'];
-                              print("Deleted data $fname $lname");
 
                               return _deletedSeekersListViewBuilder(
                                 seeker,
@@ -450,13 +435,12 @@ class _RecycleBinState extends State<RecycleBin> {
                     ),
                   ),
                 ),
-                Visibility(
-                  visible: _showNoSeekersFound,
-                  child: Center(
-                    child: _richTextWidget!.simpleText(
-                        "No job seekers found.", null, Colors.black, null),
+                if (_showNoSeekersFound) ...{
+                  Center(
+                    child: _richTextWidget.simpleText(
+                        "No Seekers found.", null, Colors.black, null),
                   ),
-                ),
+                },
               ],
             ),
           ),
@@ -546,9 +530,9 @@ class _RecycleBinState extends State<RecycleBin> {
                 "Deleted date",
                 15,
                 Colors.black,
-                Color.fromARGB(255, 199, 197, 197), function: () {
-              print("TESTING");
-            }, "Actions"),
+                Color.fromARGB(255, 199, 197, 197),
+                function: () {},
+                "Actions"),
           ),
           Expanded(
             child: Stack(
@@ -598,7 +582,6 @@ class _RecycleBinState extends State<RecycleBin> {
                               Map? deletedBy = snapshot.data;
                               String? fname = deletedBy?['fname'];
                               String? lname = deletedBy?['lname'];
-                              print("Deleted data $fname $lname");
 
                               return _deletedOfficersListViewBuilder(
                                 officer,
@@ -618,10 +601,10 @@ class _RecycleBinState extends State<RecycleBin> {
                   ),
                 ),
                 Visibility(
-                  visible: _showNoSeekersFound,
+                  visible: _showNoOfficersFound,
                   child: Center(
-                    child: _richTextWidget!.simpleText(
-                        "No job seekers found.", null, Colors.black, null),
+                    child: _richTextWidget.simpleText(
+                        "No officers found.", null, Colors.black, null),
                   ),
                 ),
               ],
@@ -752,7 +735,6 @@ class _RecycleBinState extends State<RecycleBin> {
         items: _items,
         onChanged: (_value) {
           //print(_value);
-          print(_dropDownValue);
           setState(() {
             _dropDownValue = _value;
             _showLoader = true;

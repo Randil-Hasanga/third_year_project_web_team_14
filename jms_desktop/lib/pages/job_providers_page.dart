@@ -296,7 +296,6 @@ class _JobProvidersState extends State<JobProviders> {
                   IconButton(
                     onPressed: () async {
                       String? uid = provider['uid'];
-                      print(uid);
                       _showDeleteConfirmationDialog(context, uid!);
                     },
                     icon: const Icon(Icons.delete),
@@ -402,10 +401,9 @@ class SelectedProviderDetailsWidget extends StatefulWidget {
 
 class _SelectedProviderDetailsWidgetState
     extends State<SelectedProviderDetailsWidget> {
-  final ScrollController _scrollController = ScrollController();
   List<Map<String, dynamic>>? vacancies;
 
-  double? _widthDetails, _heightDetails, gridHeight, gridWidth;
+  double? _widthDetails, gridHeight, gridWidth;
   @override
   void initState() {
     super.initState();
@@ -423,7 +421,6 @@ class _SelectedProviderDetailsWidgetState
           vacancies = data;
         });
       }
-      print(vacancies);
     } catch (error) {
       print('Error fetching data: $error');
     }
@@ -463,7 +460,6 @@ class _SelectedProviderDetailsWidgetState
               child: LayoutBuilder(
                 builder: (context, constraints) {
                   _widthDetails = constraints.maxWidth;
-                  _heightDetails = constraints.maxHeight;
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

@@ -30,10 +30,10 @@ class _DashboardState extends State<DashboardWidget> {
     super.initState();
     _firebaseService = GetIt.instance.get<FirebaseService>();
     _getDataFromDB();
-    _GetCounts();
+    _getCounts();
   }
 
-  void _GetCounts() async {
+  void _getCounts() async {
     // Fetch counts asynchronously
     Future.wait([
       _firebaseService!.getProviderCount(),
@@ -82,8 +82,8 @@ class _DashboardState extends State<DashboardWidget> {
   }
 
   double? _deviceWidth, _deviceHeight, _widthXheight;
-  ScrollController _scrollControllerRight = ScrollController();
-  ScrollController _scrollControllerLeft = ScrollController();
+  final ScrollController _scrollControllerRight = ScrollController();
+  final ScrollController _scrollControllerLeft = ScrollController();
   @override
   Widget build(BuildContext context) {
     _deviceHeight = MediaQuery.of(context).size.height;

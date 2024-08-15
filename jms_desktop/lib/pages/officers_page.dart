@@ -75,7 +75,6 @@ class _OfficersPageStete extends State<OfficersPage> {
         filteredOfficer = data;
         _showLoader = false;
       });
-      print(data);
     } catch (error) {
       print('Error fetching data: $error');
     }
@@ -283,7 +282,6 @@ class _OfficersPageStete extends State<OfficersPage> {
                     IconButton(
                       onPressed: () async {
                         String? uid = officer['uid'];
-                        print(uid);
                         _showDeleteConfirmationDialog(context, uid!);
                       },
                       icon: const Icon(Icons.delete),

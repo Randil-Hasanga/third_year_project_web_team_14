@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'dart:typed_data';
-import 'dart:ui';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -54,8 +53,6 @@ class _ProfilePageState extends State<ProfilePage> {
     } else {
       print("officer is null");
     }
-
-    print(officer);
   }
 
   @override

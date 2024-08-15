@@ -10,7 +10,6 @@ import 'package:jms_desktop/widgets/Search_bar_widget.dart';
 import 'package:jms_desktop/widgets/richText.dart';
 
 double? _deviceWidth, _deviceHeight, _widthXheight;
-RichTextWidget? _richTextWidget;
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
@@ -19,11 +18,7 @@ class ChatPage extends StatefulWidget {
   State<ChatPage> createState() => _ChatPageState();
 }
 
-class _ChatPageState extends State<ChatPage> {
-  SearchBarWidget? _searchBarWidget;
-  final TextEditingController _searchController =
-      TextEditingController(); // search fuction
-  final ChatService _chatService = ChatService();
+class _ChatPageState extends State<ChatPage> { // search fuction
   FirebaseService? _firebaseService;
   List<Map<String, dynamic>>? user;
   final ScrollController _scrollControllerLeft = ScrollController();
@@ -36,7 +31,6 @@ class _ChatPageState extends State<ChatPage> {
     // TODO: implement initState
     super.initState();
     _firebaseService = GetIt.instance.get<FirebaseService>();
-    _richTextWidget = GetIt.instance.get<RichTextWidget>();
     _loadUsers();
 
     Future.delayed(const Duration(seconds: 3), () {
