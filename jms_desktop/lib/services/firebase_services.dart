@@ -338,7 +338,6 @@ class FirebaseService {
           // Merge additional data with basic data
           providerData.addAll(additionalData);
         }
-        print(providerData);
         userData.add(providerData);
       }
     } else if (dropDownValue == 'Job Seekers') {
@@ -437,8 +436,6 @@ class FirebaseService {
               providerEmails.add(repEmail);
             }
             foundProvider = true;
-            print('Provider data: $providerData');
-            print('User data: $userData');
           }
         }
 
@@ -501,8 +498,6 @@ class FirebaseService {
               providerEmails.add(repEmail);
             }
             foundProvider = true;
-            print('Provider data: $providerData');
-            print('User data: $userData');
           }
         }
 
@@ -540,8 +535,6 @@ class FirebaseService {
               providerEmails.add(seeker_email);
             }
             foundProvider = true;
-            print('Seeker data: $seekerData');
-            print('User data: $userData');
           }
         }
 
@@ -576,7 +569,6 @@ class FirebaseService {
       });
 
       String docId = docRef.id;
-      print("approval_id : $docId");
 
       await _db.collection(USER_COLLECTION).doc(providerId).set(
         {
@@ -634,10 +626,8 @@ class FirebaseService {
       }
 
       if (vacancyList.isNotEmpty) {
-        print(vacancyList);
         return vacancyList;
       } else {
-        print("Empty");
         return null;
       }
     } catch (e) {
@@ -666,10 +656,8 @@ class FirebaseService {
     }
 
     if (vacancies.isNotEmpty) {
-      print(vacancies);
       return vacancies;
     } else {
-      print("no vacancies");
       return null;
     }
   }
@@ -737,7 +725,6 @@ class FirebaseService {
         // print(providerList);
         return providerList;
       } else {
-        print("Empty");
         return null;
       }
     } catch (e) {
@@ -794,10 +781,8 @@ class FirebaseService {
       }
 
       if (seekerList.isNotEmpty) {
-        print(seekerList);
         return seekerList;
       } else {
-        print("Empty");
         return null;
       }
     } catch (e) {
@@ -816,11 +801,8 @@ class FirebaseService {
           .collection(SEEKER_COLLECTION)
           .where('registered_date', isGreaterThanOrEqualTo: startDate)
           .where('registered_date', isLessThanOrEqualTo: endDate)
-          // .where('pending', isEqualTo: false)
-          // .where('disabled', isEqualTo: false)
           .get();
 
-      // print(querySnapshot.docs.length);
       return querySnapshot.docs.length;
     } catch (e) {
       print("Error getting seeker count : $e");
@@ -865,10 +847,8 @@ class FirebaseService {
       });
 
       if (providerList.isNotEmpty) {
-        print(providerList);
         return providerList;
       } else {
-        print("Empty");
         return null;
       }
     } catch (e) {
@@ -924,10 +904,8 @@ class FirebaseService {
       });
 
       if (seekerList.isNotEmpty) {
-        print(seekerList);
         return seekerList;
       } else {
-        print("Empty");
         return null;
       }
     } catch (e) {
@@ -983,10 +961,8 @@ class FirebaseService {
       });
 
       if (vacancyList.isNotEmpty) {
-        print(vacancyList);
         return vacancyList;
       } else {
-        print("Empty");
         return null;
       }
     } catch (e) {
@@ -1029,10 +1005,8 @@ class FirebaseService {
       });
 
       if (companyList.isNotEmpty) {
-        print(companyList);
         return companyList;
       } else {
-        print("Empty");
         return null;
       }
     } catch (e) {

@@ -56,7 +56,6 @@ class _ProfileDetailsSectionState extends State<ProfileDetailsSection> {
         return dateB.compareTo(dateA);
       });
       if (allNotifications.isNotEmpty) {
-        print(allNotifications);
         return allNotifications;
       } else {
         print("Empty");
@@ -85,7 +84,6 @@ class _ProfileDetailsSectionState extends State<ProfileDetailsSection> {
         _regNo = _firebaseService!.currentUser!['reg_no'];
         _post = _firebaseService!.currentUser!['position'];
         _imageLink = _firebaseService!.currentUser!['profile_image'];
-        print("Post _$_post");
       });
     }
   }

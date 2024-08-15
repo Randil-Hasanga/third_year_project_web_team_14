@@ -31,7 +31,7 @@ class _MainPageState extends State<MainPage> {
   FirebaseService? _firebaseService;
   final PageController _pageController = PageController();
   String? _email, _password;
-  double? _fontSize, _verticalSpace, _widthXheight;
+  double? _fontSize, _verticalSpace;
   bool isExtended = true;
   WidgetBuilder? builder;
 
@@ -87,7 +87,6 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     _deviceHeight = MediaQuery.of(context).size.height;
     _deviceWidth = MediaQuery.of(context).size.width;
-    _widthXheight = (_deviceHeight! * _deviceWidth!) / 50000;
     _fontSize = _deviceWidth! * 0.01;
     _verticalSpace = _deviceHeight! * 0.015;
 

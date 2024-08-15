@@ -86,8 +86,6 @@ class _EditProfileState extends State<EditProfile> {
     } else {
       print("officer is null");
     }
-
-    print(officer);
   }
 
   @override
@@ -244,8 +242,6 @@ class _EditProfileState extends State<EditProfile> {
     try {
       if (_officerUpdateFormKey.currentState!.validate()) {
         _officerUpdateFormKey.currentState!.save();
-
-        print("$_Fname $_Lname $_contact $_position $_regNo");
 
         setState(() {
           isUploading = true;

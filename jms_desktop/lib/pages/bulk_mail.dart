@@ -672,7 +672,6 @@ class _BulkMailPageState extends State<BulkMailPage> {
     _mailFormKey.currentState!.save();
 
     if (emailList == null) {
-      print('Error: emailList is null.');
       alertBoxWidgets.showAlert(
           context, "Error!", "Emails list is empty!", warningColor);
       return;
@@ -736,9 +735,7 @@ class _BulkMailPageState extends State<BulkMailPage> {
               label: Text(email),
               onDeleted: () {
                 setState(() {
-                  print(emailList);
                   emailList!.remove(email);
-                  print(emailList);
                 });
                 if (_emailList!.isNotEmpty && _emailList != null) {
                   setList();
@@ -755,11 +752,9 @@ class _BulkMailPageState extends State<BulkMailPage> {
 
   void setList() {
     setState(() {
-      print(_emailList);
       _emailList!.clear();
       _emailList = emailList!.toList();
     });
-    print(_emailList);
   }
 
   // button for confirm required recipients
@@ -820,7 +815,6 @@ class _BulkMailPageState extends State<BulkMailPage> {
     }
 
     List<String> emailListAsList = emailList!.toList();
-    print(emailListAsList);
     setState(() {
       _isLoading = false;
     });
@@ -908,12 +902,10 @@ class _BulkMailPageState extends State<BulkMailPage> {
         items: _items,
         onChanged: (_value) {
           //print(_value);
-          print(_locationDropdownValueFull);
           List<String> parts = _value!.split(" - ");
           englishDistrict = parts[0];
           setState(() {
             _locationDropdownValueFull = _value;
-            print(englishDistrict);
           });
           //_getDataFromDB();
         },
@@ -953,7 +945,6 @@ class _BulkMailPageState extends State<BulkMailPage> {
         onChanged: (_value) {
           setState(() {
             _EducationDropdownValue = _value;
-            print(_EducationDropdownValue);
           });
           //_getDataFromDB();
         },
@@ -993,7 +984,6 @@ class _BulkMailPageState extends State<BulkMailPage> {
         onChanged: (_value) {
           setState(() {
             _IndustryDropdownValue = _value;
-            print(_IndustryDropdownValue);
           });
           //_getDataFromDB();
         },
