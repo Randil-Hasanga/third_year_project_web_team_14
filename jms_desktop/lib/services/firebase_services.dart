@@ -810,6 +810,67 @@ class FirebaseService {
     }
   }
 
+  // Vacancy report
+  //get vacancy detailes in DB , use this details in Vacancy report
+  Future<List<Map<String, dynamic>>?> getVacancyReport(int index) async {
+    List<DateTime> monthList = _generateMonthList();
+    // Check if index is within the range of monthList
+    if (index < 0 || index >= monthList.length) {
+      print("Index out of range");
+      return null;
+    }
+    DateTime startDate = monthList[index];
+    DateTime endDate = _getMonthEndDate(startDate);
+    try {
+      QuerySnapshot<Map<String, dynamic>>? querySnapshot = await _db
+          .collection(VACANCY_COLLECTION)
+          .where('created_at', isGreaterThanOrEqualTo: startDate)
+          .where('created_at', isLessThanOrEqualTo: endDate)
+          .get();
+
+      List<Map<String, dynamic>> vacancyList = [];
+
+      for (QueryDocumentSnapshot<Map<String, dynamic>> doc
+          in querySnapshot.docs) {
+        // Fetch basic data
+        Map<String, dynamic> vacancyData = doc.data();
+
+        vacancyList.add(vacancyData);
+      }
+
+      if (vacancyList.isNotEmpty) {
+        print(vacancyList);
+        return vacancyList;
+      } else {
+        print("Empty");
+        return null;
+      }
+    } catch (e) {
+      print("Error getting vacancy data : $e");
+      return null;
+    }
+  }
+
+  //count the vacancy in this month
+  Future<int> getMonthlyVacancyCount(int index) async {
+    List<DateTime> monthList = _generateMonthList();
+    DateTime startDate = monthList[index];
+    DateTime endDate = _getMonthEndDate(startDate);
+    try {
+      QuerySnapshot<Map<String, dynamic>>? querySnapshot = await _db
+          .collection(VACANCY_COLLECTION)
+          .where('created_at', isGreaterThanOrEqualTo: startDate)
+          .where('created_at', isLessThanOrEqualTo: endDate)
+          .get();
+
+      // print(querySnapshot.docs.length);
+      return querySnapshot.docs.length;
+    } catch (e) {
+      print("Error getting vacancy count : $e");
+      return 0;
+    }
+  }
+
 // **************NOTIFICATION SYSTEM****************************************
   //generate notification - job provider side
   Future<List<Map<String, dynamic>>?> getLastHoursJobProvider() async {

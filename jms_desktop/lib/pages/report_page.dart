@@ -28,6 +28,7 @@ class _ReportState extends State<Report> {
 
   late String _providerMonth = _genarateFirstMonth();
   late String _seekerMonth = _genarateFirstMonth();
+  late String _vacancyMonth = _genarateFirstMonth();
 
   String _genarateFirstMonth() {
     String firstMonth;
@@ -237,6 +238,79 @@ class _ReportState extends State<Report> {
     );
   }
 
+  pw.Widget _createVacancySummaryTable(Map<String, String> data) {
+    return pw.Column(
+      crossAxisAlignment:
+          pw.CrossAxisAlignment.start, // Aligns text to the start (left)
+      children: [
+        // Display "DISTRICT: MATARA" only once
+        pw.Row(
+          children: [
+            pw.Text(
+              'DISTRICT: MATARA',
+              style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+            ),
+          ],
+        ),
+
+        // Display the rest of the data
+        ...data.entries.map((entry) {
+          return pw.Row(
+            children: [
+              pw.Text(
+                '${entry.key}:', // Key (field name)
+                style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+              ),
+              pw.SizedBox(width: 10), // Space between key and value
+              pw.Text(entry.value), // Value (field data)
+            ],
+          );
+        }).toList(),
+      ],
+    );
+  }
+
+  //feach the provider data and map the details
+  pw.Widget _createVacancyTable(List<Map<String, String>> data) {
+    // ignore: deprecated_member_use
+    return pw.Table.fromTextArray(
+      // Setting the style for the table headers
+      headerStyle: pw.TextStyle(
+        fontSize: 10,
+        fontWeight: pw.FontWeight.bold, // Make the headers bold
+      ),
+      // Setting the style for the table body cells
+      cellStyle: const pw.TextStyle(
+        fontSize: 8,
+      ),
+      cellAlignment: pw.Alignment.centerLeft, // Align text in cells to the left
+      border: pw.TableBorder.all(), // Adding borders to the table
+      data: <List<String>>[
+        [
+          'Campany',
+          'Address',
+          'Contact No',
+          'Contact Parson Name',
+          'Position',
+          'Vacancy Type',
+          'Salary Level',
+          'No:of'
+        ], // Table headers
+        for (var row in data)
+          [
+            row['company_name']!,
+            row['company_address']!,
+            row['contactNo']!,
+            row['name']!,
+            row['position'] ?? 'N/A',
+            row['vacancyType'] ?? 'N/A',
+            row['salaryLevel'] ?? 'N/A',
+            row['noOf'] ?? 'N/A',
+          ],
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     _deviceHeight = MediaQuery.of(context).size.height;
@@ -365,6 +439,63 @@ class _ReportState extends State<Report> {
                           ],
                         ),
                       ),
+                      SizedBox(height: _deviceHeight! * 0.02),
+                      Container(
+                        margin: EdgeInsets.only(
+                          left: _deviceWidth! * 0.01,
+                          bottom: _deviceHeight! * 0.02,
+                          top: _deviceHeight! * 0.02,
+                          right: _deviceWidth! * 0.01,
+                        ),
+                        padding: EdgeInsets.only(
+                            top: _widthXheight! * 0.7,
+                            left: _widthXheight! * 0.1),
+                        decoration: BoxDecoration(
+                          color: cardBackgroundColor,
+                          borderRadius: BorderRadius.circular(15),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Colors.black12,
+                              blurRadius: 5,
+                              offset: Offset(0, 0),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              flex: 1,
+                              child: Column(
+                                children: [
+                                  _richTextWidget!.simpleText(
+                                      "Job Vacancy Report",
+                                      20,
+                                      Colors.black,
+                                      FontWeight.w600),
+                                  const Divider(),
+                                  _richTextWidget!.simpleText("Select Month",
+                                      15, Colors.black, FontWeight.w600),
+                                  _vacancyMonthList(),
+                                ],
+                              ),
+                            ),
+                            const Expanded(
+                              flex: 3,
+                              child: SizedBox(
+                                width: 5,
+                              ),
+                            ),
+                            Expanded(
+                              flex: 1,
+                              child: Column(
+                                children: [
+                                  _vacancyGenerateButton(),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -376,6 +507,7 @@ class _ReportState extends State<Report> {
     );
   }
 
+//----Provider report-----------------
   Widget _providerMonthList() {
     List<DropdownMenuItem<String>> _items = _monthList
         .map(
@@ -679,4 +811,166 @@ class _ReportState extends State<Report> {
       filename: 'Seeker_$_seekerMonth.pdf',
     );
   }
+
+  //-----Vacancy Report-------------
+
+  Widget _vacancyMonthList() {
+    List<DropdownMenuItem<String>> _items = _monthList
+        .map(
+          (e) => DropdownMenuItem(
+            value: e,
+            child: Text(
+              e,
+              style: const TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        )
+        .toList();
+
+    return Center(
+      child: DropdownButton(
+        value: _providerMonth,
+        items: _items,
+        onChanged: (_value) {
+          setState(() {
+            _providerMonth = _value!;
+          });
+        },
+        dropdownColor: backgroundColor3,
+        borderRadius: BorderRadius.circular(10),
+        iconSize: 20,
+        icon: const Icon(
+          Icons.arrow_drop_down_sharp,
+          color: Colors.black,
+        ),
+        underline: Container(),
+      ),
+    );
+  }
+
+  Widget _vacancyGenerateButton() {
+    return Stack(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: MaterialButton(
+            elevation: 0, // Set elevation to 0 to hide the button background
+            color: const Color.fromARGB(255, 150, 255, 124),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            onPressed: _isLoading ? null : _generateVacancyPdf,
+            child: const Row(
+              children: [
+                Text(
+                  "Genarate PDF",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                SizedBox(
+                  width: 5,
+                ),
+                Icon(Icons.send),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _generateVacancyPdf() async {
+    final pdf = pw.Document();
+    int index = _monthList.indexOf(_vacancyMonth);
+    int _vacancyCount = await _firebaseService!.getMonthlyVacancyCount(index);
+    final data_ = {
+      'MONTH': _vacancyMonth,
+      'TOTAL VANANCY REGISTRATION': _vacancyCount.toString(),
+    };
+    // Load the logo image from assets
+    final logoBytes = await rootBundle.load('assets/images/logo.jpg');
+    final logoImage = pw.MemoryImage(
+      logoBytes.buffer.asUint8List(),
+    );
+
+    //get VACANCY list from DB
+    // get String month list index,
+    List<Map<String, String>>? data;
+    List<Map<String, dynamic>>? _data =
+        await _firebaseService!.getVacancyReport(index);
+    data = convertToListOfStringMaps(_data);
+    pdf.addPage(
+      pw.Page(
+        build: (pw.Context context) {
+          return pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.center,
+            children: [
+              // Add the logo at the top
+              pw.Image(logoImage, height: 50, width: 50),
+              pw.SizedBox(height: 15.0),
+              // Title at the top
+              pw.Text(
+                "DISTRICT RAKIYA KENDRAYA - MONTHLY PROGRESS REPORT",
+                style: pw.TextStyle(
+                  fontSize: 15,
+                  fontWeight: pw.FontWeight.bold,
+                ),
+              ),
+              pw.Text(
+                "COMPANY AND VACANCIES DETAILS",
+                style: pw.TextStyle(
+                  fontSize: 15,
+                  fontWeight: pw.FontWeight.bold,
+                ),
+              ),
+              // Spacer to create some space between the title and the content
+              pw.SizedBox(height: 20),
+              if (data == null ||
+                  data.isEmpty) // Check if data is empty or null
+                pw.Text(
+                  "No data available.",
+                  style: pw.TextStyle(
+                    fontSize: 16,
+                    fontWeight: pw.FontWeight.normal,
+                  ),
+                )
+              else ...[
+                // If data is not empty, render the data tables
+                _createVacancySummaryTable(
+                    data_), // Your function to create summary
+                pw.SizedBox(height: 20),
+                _createVacancyTable(
+                    data), // Your function to create the detailed table
+              ],
+            ],
+          );
+        },
+      ),
+    );
+
+    await Printing.sharePdf(
+      bytes: await pdf.save(),
+      filename: 'Vacancy_$_vacancyMonth.pdf',
+    );
+  }
+
+  // List<Map<String, String>>? convertToListOfStringMaps(
+  //     List<Map<String, dynamic>>? dynamicList) {
+  //   if (dynamicList == null) {
+  //     return null; // Handle the null case if the input list is nullable
+  //   }
+
+  //   return dynamicList.map((dynamicMap) {
+  //     Map<String, String> stringMap = {};
+
+  //     dynamicMap.forEach((key, value) {
+  //       stringMap[key] = value?.toString() ??
+  //           'null'; // Convert value to string, handle nulls
+  //     });
+
+  //     return stringMap;
+  //   }).toList();
+  // }
 }
