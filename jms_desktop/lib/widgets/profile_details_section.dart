@@ -345,21 +345,14 @@ class _ProfileDetailsSectionState extends State<ProfileDetailsSection> {
     );
   }
 
-// List<Widget> _buildNotificationTiles(
-//       List<Map<String, dynamic>> notifications) {
-//     return notifications.map((notification) {
-//       return ListTile(
-//         title: Text(notification['title']),
-//         subtitle: Text(notification['registered_date'].toString()),
-//       );
-//     }).toList();
-//   }
-
   List<Widget> _buildNotificationTiles(
       List<Map<String, dynamic>> notifications) {
     final DateFormat formatter = DateFormat('MMMM d, yyyy \'at\' h:mm:ss a');
 
-    return notifications.map((notification) {
+    return notifications.asMap().entries.map((entry) {
+      int index = entry.key;
+      Map<String, dynamic> notification = entry.value;
+
       String formattedDate;
       if (notification['registered_date'] is Timestamp) {
         // Convert Firestore Timestamp to DateTime
@@ -371,6 +364,9 @@ class _ProfileDetailsSectionState extends State<ProfileDetailsSection> {
         formattedDate = notification['registered_date'].toString();
       }
 
+      // Alternate colors between notifications
+      Color tileColor = index % 2 == 0 ? Colors.blue[100]! : Colors.grey[200]!;
+
       return ListTile(
         title: Text(notification['description']),
         subtitle: Column(
@@ -380,6 +376,7 @@ class _ProfileDetailsSectionState extends State<ProfileDetailsSection> {
             Text(formattedDate),
           ],
         ),
+        tileColor: tileColor, // Set the background color
       );
     }).toList();
   }

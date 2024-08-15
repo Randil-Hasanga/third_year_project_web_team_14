@@ -818,10 +818,7 @@ class FirebaseService {
     try {
       QuerySnapshot<Map<String, dynamic>>? querySnapshot = await _db
           .collection(NOTIFICATION)
-          // .where('registered_date', isGreaterThanOrEqualTo: perviousTime)
-          // .where('registered_date', isLessThanOrEqualTo: currentTime)
           .where('type', isEqualTo: 'provider')
-          // .where('pending', isEqualTo: true)
           .get();
 
       List<Map<String, dynamic>> providerList = [];
@@ -864,10 +861,7 @@ class FirebaseService {
     try {
       QuerySnapshot<Map<String, dynamic>>? querySnapshot = await _db
           .collection(NOTIFICATION)
-          // .where('registered_date', isGreaterThanOrEqualTo: perviousTime)
-          // .where('registered_date', isLessThanOrEqualTo: currentTime)
           .where('type', isEqualTo: 'seeker')
-          // .where('pending', isEqualTo: true)
           .get();
 
       List<Map<String, dynamic>> seekerList = [];
@@ -877,18 +871,6 @@ class FirebaseService {
         // Fetch basic data
         Map<String, dynamic> seekerData = doc.data();
 
-        // // Check if additional data exists
-        // DocumentSnapshot additionalDataSnapshot =
-        //     await _db.collection(NOTIFICATION).doc(doc.id).get();
-
-        // if (additionalDataSnapshot.exists) {
-        //   // Cast the data to Map<String, dynamic>
-        //   Map<String, dynamic> additionalData =
-        //       additionalDataSnapshot.data() as Map<String, dynamic>;
-        //   additionalData['title'] = "Registered New Job Seeker";
-        //   // Merge additional data with basic data
-        //   seekerData.addAll(additionalData);
-        // }
         seekerData['name'] = 'username: ${seekerData['username']}';
         seekerList.add(seekerData);
       }
@@ -921,8 +903,6 @@ class FirebaseService {
     try {
       QuerySnapshot<Map<String, dynamic>>? querySnapshot = await _db
           .collection(NOTIFICATION)
-          // .where('registered_date', isGreaterThanOrEqualTo: perviousTime)
-          // .where('registered_date', isLessThanOrEqualTo: currentTime)
           .where('description', isEqualTo: 'Publish New Vacancy')
           .get();
 
@@ -933,18 +913,6 @@ class FirebaseService {
         // Fetch basic data
         Map<String, dynamic> vacancyData = doc.data();
 
-        // // Check if additional data exists
-        // DocumentSnapshot additionalDataSnapshot =
-        //     await _db.collection(NOTIFICATION).doc(doc.id).get();
-
-        // if (additionalDataSnapshot.exists) {
-        //   // Cast the data to Map<String, dynamic>
-        //   Map<String, dynamic> additionalData =
-        //       additionalDataSnapshot.data() as Map<String, dynamic>;
-        //   additionalData['title'] = "Publish New Vacancy";
-        //   // Merge additional data with basic data
-        //   vacancyData.addAll(additionalData);
-        // }
         vacancyData['name'] = 'Company Name: ${vacancyData['company_name']}'
             '\nJob Type: ${vacancyData['job_type']}';
         vacancyList.add(vacancyData);
@@ -978,8 +946,6 @@ class FirebaseService {
     try {
       QuerySnapshot<Map<String, dynamic>>? querySnapshot = await _db
           .collection(NOTIFICATION)
-          // .where('registered_date', isGreaterThanOrEqualTo: perviousTime)
-          // .where('registered_date', isLessThanOrEqualTo: currentTime)
           .where('description', isEqualTo: 'Add new company')
           .get();
 
