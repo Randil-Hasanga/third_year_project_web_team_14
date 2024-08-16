@@ -31,6 +31,7 @@ class _OfficersPageStete extends State<OfficersPage> {
   Map<String, dynamic>? _selectedOfficer;
   List<Map<String, dynamic>>? filteredOfficer;
   bool _showLoader = true;
+  String? userRole;
 
   @override
   void initState() {
@@ -38,6 +39,7 @@ class _OfficersPageStete extends State<OfficersPage> {
     _firebaseService = GetIt.instance.get<FirebaseService>();
     _richTextWidget = GetIt.instance.get<RichTextWidget>();
     _searchBarWidget = GetIt.instance.get<SearchBarWidget>();
+    userRole = _firebaseService!.currentUser!['position'];
     _loadOfficer();
     // Add listener to search controller
     _searchController.addListener(_filterOfficer); // search fuction
@@ -153,21 +155,23 @@ class _OfficersPageStete extends State<OfficersPage> {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  ElevatedButton(
-                    onPressed: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => CreateOfficerPage()),
-                    ),
-                    child: const Text(
-                      "Add",
-                      style: TextStyle(
-                        color: Color.fromARGB(255, 47, 146, 50),
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.w600,
+                  if (userRole == "Admin") ...{
+                    ElevatedButton(
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => CreateOfficerPage()),
+                      ),
+                      child: const Text(
+                        "Add",
+                        style: TextStyle(
+                          color: Color.fromARGB(255, 47, 146, 50),
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
-                  ),
+                  },
                 ],
               ),
             ),
@@ -279,16 +283,18 @@ class _OfficersPageStete extends State<OfficersPage> {
                 ),
                 Row(
                   children: [
-                    IconButton(
-                      onPressed: () async {
-                        String? uid = officer['uid'];
-                        _showDeleteConfirmationDialog(context, uid!);
-                      },
-                      icon: const Icon(Icons.delete),
-                    ),
-                    SizedBox(
-                      width: _deviceWidth! * 0.01,
-                    ),
+                    if (userRole == "Admin") ...{
+                      IconButton(
+                        onPressed: () async {
+                          String? uid = officer['uid'];
+                          _showDeleteConfirmationDialog(context, uid!);
+                        },
+                        icon: const Icon(Icons.delete),
+                      ),
+                      SizedBox(
+                        width: _deviceWidth! * 0.01,
+                      ),
+                    },
                   ],
                 ),
               ],

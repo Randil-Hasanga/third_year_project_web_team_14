@@ -34,6 +34,7 @@ class _JobProvidersState extends State<JobProviders> {
   Map<String, dynamic>? _selectedProvider;
   bool _showLoader = true;
   bool _showNoProvidersFound = false;
+  String? userRole;
 
   double? _currentProviderListWidth,
       _currentProviderListHeight,
@@ -45,6 +46,7 @@ class _JobProvidersState extends State<JobProviders> {
     _firebaseService = GetIt.instance.get<FirebaseService>();
     _richTextWidget = GetIt.instance.get<RichTextWidget>();
     _searchBarWidget = GetIt.instance.get<SearchBarWidget>();
+    userRole = _firebaseService!.currentUser!['position'];
     _loadJobProviders();
     // Add listener to search controller
     _searchController.addListener(_filterJobProviders); // search fuction
@@ -292,18 +294,20 @@ class _JobProvidersState extends State<JobProviders> {
                         provider['username'], null, Colors.black, null),
                   ),
                 },
-                if (_deviceWidth! > 800) ...{
-                  IconButton(
-                    onPressed: () async {
-                      String? uid = provider['uid'];
-                      _showDeleteConfirmationDialog(context, uid!);
-                    },
-                    icon: const Icon(Icons.delete),
-                  ),
-                  SizedBox(
-                    width: _deviceWidth! * 0.01,
-                  ),
-                }
+                if (userRole == "Admin") ...{
+                  if (_deviceWidth! > 800) ...{
+                    IconButton(
+                      onPressed: () async {
+                        String? uid = provider['uid'];
+                        _showDeleteConfirmationDialog(context, uid!);
+                      },
+                      icon: const Icon(Icons.delete),
+                    ),
+                    SizedBox(
+                      width: _deviceWidth! * 0.01,
+                    ),
+                  }
+                },
               ],
             ),
           ),
