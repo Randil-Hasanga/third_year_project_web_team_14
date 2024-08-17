@@ -270,7 +270,7 @@ class _ReportState extends State<Report> {
     );
   }
 
-  //feach the provider data and map the details
+  //feach the vacancy data and map the details
   pw.Widget _createVacancyTable(List<Map<String, String>> data) {
     // ignore: deprecated_member_use
     return pw.Table.fromTextArray(
@@ -298,13 +298,13 @@ class _ReportState extends State<Report> {
         ], // Table headers
         for (var row in data)
           [
-            row['company_name']!,
-            row['company_address']!,
-            row['contactNo']!,
-            row['name']!,
-            row['position'] ?? 'N/A',
-            row['vacancyType'] ?? 'N/A',
-            row['salaryLevel'] ?? 'N/A',
+            row['company_name'] ?? 'N/A',
+            row['address'] ?? 'N/A',
+            row['contactNo'] ?? 'N/A',
+            row['applied_by'] ?? 'N/A',
+            row['job_position'] ?? 'N/A',
+            row['job_type'] ?? 'N/A',
+            row['minimum_salary'] ?? 'N/A',
             row['noOf'] ?? 'N/A',
           ],
       ],
@@ -832,11 +832,11 @@ class _ReportState extends State<Report> {
 
     return Center(
       child: DropdownButton(
-        value: _providerMonth,
+        value: _vacancyMonth,
         items: _items,
         onChanged: (_value) {
           setState(() {
-            _providerMonth = _value!;
+            _vacancyMonth = _value!;
           });
         },
         dropdownColor: backgroundColor3,
@@ -955,22 +955,4 @@ class _ReportState extends State<Report> {
       filename: 'Vacancy_$_vacancyMonth.pdf',
     );
   }
-
-  // List<Map<String, String>>? convertToListOfStringMaps(
-  //     List<Map<String, dynamic>>? dynamicList) {
-  //   if (dynamicList == null) {
-  //     return null; // Handle the null case if the input list is nullable
-  //   }
-
-  //   return dynamicList.map((dynamicMap) {
-  //     Map<String, String> stringMap = {};
-
-  //     dynamicMap.forEach((key, value) {
-  //       stringMap[key] = value?.toString() ??
-  //           'null'; // Convert value to string, handle nulls
-  //     });
-
-  //     return stringMap;
-  //   }).toList();
-  // }
 }
