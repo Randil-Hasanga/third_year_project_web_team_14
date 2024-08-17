@@ -863,7 +863,7 @@ class FirebaseService {
           .where('created_at', isLessThanOrEqualTo: endDate)
           .get();
 
-      // print(querySnapshot.docs.length);
+      print(querySnapshot.docs.length);
       return querySnapshot.docs.length;
     } catch (e) {
       print("Error getting vacancy count : $e");
