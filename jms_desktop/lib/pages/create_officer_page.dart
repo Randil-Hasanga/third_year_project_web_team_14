@@ -30,7 +30,7 @@ class _CreateOfficerPageState extends State<CreateOfficerPage> {
       _fName,
       _lName,
       _regNo,
-      _possition,
+      _position,
       _selectedGender,
       _contactNo,
       _email,
@@ -94,7 +94,7 @@ class _CreateOfficerPageState extends State<CreateOfficerPage> {
             'fname': _fName,
             'lname': _lName,
             'reg_no': _regNo,
-            'position': _possition,
+            'position': _position,
             'gender': _selectedGender,
             'contact': _contactNo,
             'nic': _nic,
@@ -130,7 +130,7 @@ class _CreateOfficerPageState extends State<CreateOfficerPage> {
       _fName = null;
       _lName = null;
       _regNo = null;
-      _possition = null;
+      _position = null;
       _contactNo = null;
       _email = null;
       _nic = null;
@@ -286,35 +286,65 @@ class _CreateOfficerPageState extends State<CreateOfficerPage> {
                 const SizedBox(
                   height: 16.0,
                 ),
-                //position feild
-
-                TextFormField(
-                  onSaved: (_value) {
-                    setState(() {
-                      _possition = _value!;
-                    });
-                  },
-                  validator: (_value) {
-                    if (_value == null || _value.isEmpty) {
-                      return 'Please enter position';
-                    }
-                    return null;
-                  },
-                  decoration: InputDecoration(
-                    labelText: 'Position',
-                    icon: Icon(Icons.manage_accounts),
-                    border: OutlineInputBorder(
+                // Position field
+                DropdownButtonHideUnderline(
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 16.0),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
                       borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    child: DropdownButton<String>(
+                      value: _position,
+                      hint: Text('Select Position'),
+                      icon: Icon(Icons.arrow_drop_down),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          _position = newValue;
+                        });
+                      },
+                      items: <String>['Coordinator', 'Officer']
+                          .map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(
+                            value,
+                            style: TextStyle(fontSize: 14.0),
+                          ),
+                        );
+                      }).toList(),
                     ),
                   ),
                 ),
+                if (_position != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 16.0),
+                    child: Text(
+                      _position == 'Coordinator'
+                          ? 'You have selected Coordinator.'
+                          : 'You have selected Officer.',
+                      style: const TextStyle(
+                        fontSize: 16.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+
                 const SizedBox(
                   height: 16.0,
                 ),
-                //select gender field
-                const Text("Select Gender:"),
+                //Select Gender text
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Icon(Icons.person, size: 24.0),
+                    SizedBox(width: 14.0),
+                    Text("Select Gender:"),
+                  ],
+                ),
                 Row(
                   children: [
+                    SizedBox(width: 40.0),
                     Radio<String>(
                       value: "Male",
                       groupValue: _selectedGender,
@@ -324,11 +354,12 @@ class _CreateOfficerPageState extends State<CreateOfficerPage> {
                         });
                       },
                     ),
-                    Text("Male"),
+                    const Text("Male"),
                   ],
                 ),
                 Row(
                   children: [
+                    const SizedBox(width: 40.0),
                     Radio<String>(
                       value: "Female",
                       groupValue: _selectedGender,
@@ -338,9 +369,10 @@ class _CreateOfficerPageState extends State<CreateOfficerPage> {
                         });
                       },
                     ),
-                    Text("Female"),
+                    const Text("Female"),
                   ],
                 ),
+
                 const SizedBox(
                   height: 16.0,
                 ),
@@ -359,7 +391,7 @@ class _CreateOfficerPageState extends State<CreateOfficerPage> {
                   },
                   decoration: InputDecoration(
                     labelText: 'NIC',
-                    icon: Icon(Icons.perm_identity),
+                    icon: const Icon(Icons.perm_identity),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
@@ -388,7 +420,7 @@ class _CreateOfficerPageState extends State<CreateOfficerPage> {
                   },
                   decoration: InputDecoration(
                     labelText: 'Contact No',
-                    icon: Icon(Icons.mobile_friendly),
+                    icon: const Icon(Icons.mobile_friendly),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
