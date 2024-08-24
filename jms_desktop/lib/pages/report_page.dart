@@ -23,7 +23,7 @@ class Report extends StatefulWidget {
 class _ReportState extends State<Report> {
   bool _isLoading = false;
   bool _isSending = false;
-  // List<Map<String, dynamic>>? vacancies;
+
   late final List<String> _monthList = _generateMonthList();
 
   late String _providerMonth = _genarateFirstMonth();
@@ -38,6 +38,38 @@ class _ReportState extends State<Report> {
       firstMonth = 'List is empty'; // Default value if the list is empty
     }
     return firstMonth;
+  }
+
+  Future<void> _selectDate(BuildContext context, String reportType) async {
+    final DateTime? selectedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime.now(),
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            primaryColor: Colors.black,
+            hintColor: Colors.black,
+            buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.primary),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (selectedDate != null) {
+      final monthName = _monthList[selectedDate.month - 1];
+      setState(() {
+        if (reportType == 'provider') {
+          _providerMonth = monthName;
+        } else if (reportType == 'seeker') {
+          _seekerMonth = monthName;
+        } else if (reportType == 'vacancy') {
+          _vacancyMonth = monthName;
+        }
+      });
+    }
   }
 
   //generate month list
@@ -90,7 +122,6 @@ class _ReportState extends State<Report> {
     super.initState();
     _firebaseService = GetIt.instance.get<FirebaseService>();
     _richTextWidget = GetIt.instance.get<RichTextWidget>();
-    // _loadVacancies();
   }
 
   pw.Widget _createProviderSummaryTable(Map<String, String> data) {
@@ -361,7 +392,7 @@ class _ReportState extends State<Report> {
                                   const Divider(),
                                   _richTextWidget!.simpleText("Select Month",
                                       15, Colors.black, FontWeight.w600),
-                                  _providerMonthList(),
+                                  _providerMonthPicker(),
                                 ],
                               ),
                             ),
@@ -418,7 +449,7 @@ class _ReportState extends State<Report> {
                                   const Divider(),
                                   _richTextWidget!.simpleText("Select Month",
                                       15, Colors.black, FontWeight.w600),
-                                  _seekerMonthList(),
+                                  _seekerMonthPicker(),
                                 ],
                               ),
                             ),
@@ -475,7 +506,7 @@ class _ReportState extends State<Report> {
                                   const Divider(),
                                   _richTextWidget!.simpleText("Select Month",
                                       15, Colors.black, FontWeight.w600),
-                                  _vacancyMonthList(),
+                                  _vacancyMonthPicker(),
                                 ],
                               ),
                             ),
@@ -508,42 +539,42 @@ class _ReportState extends State<Report> {
   }
 
 //----Provider report-----------------
-  Widget _providerMonthList() {
-    List<DropdownMenuItem<String>> _items = _monthList
-        .map(
-          (e) => DropdownMenuItem(
-            value: e,
-            child: Text(
-              e,
-              style: const TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        )
-        .toList();
+  // Widget _providerMonthList() {
+  //   List<DropdownMenuItem<String>> _items = _monthList
+  //       .map(
+  //         (e) => DropdownMenuItem(
+  //           value: e,
+  //           child: Text(
+  //             e,
+  //             style: const TextStyle(
+  //               color: Colors.black,
+  //               fontWeight: FontWeight.w600,
+  //             ),
+  //           ),
+  //         ),
+  //       )
+  //       .toList();
 
-    return Center(
-      child: DropdownButton(
-        value: _providerMonth,
-        items: _items,
-        onChanged: (_value) {
-          setState(() {
-            _providerMonth = _value!;
-          });
-        },
-        dropdownColor: backgroundColor3,
-        borderRadius: BorderRadius.circular(10),
-        iconSize: 20,
-        icon: const Icon(
-          Icons.arrow_drop_down_sharp,
-          color: Colors.black,
-        ),
-        underline: Container(),
-      ),
-    );
-  }
+  //   return Center(
+  //     child: DropdownButton(
+  //       value: _providerMonth,
+  //       items: _items,
+  //       onChanged: (_value) {
+  //         setState(() {
+  //           _providerMonth = _value!;
+  //         });
+  //       },
+  //       dropdownColor: backgroundColor3,
+  //       borderRadius: BorderRadius.circular(10),
+  //       iconSize: 20,
+  //       icon: const Icon(
+  //         Icons.arrow_drop_down_sharp,
+  //         color: Colors.black,
+  //       ),
+  //       underline: Container(),
+  //     ),
+  //   );
+  // }
 
   Widget _providerGenerateButton() {
     return Stack(
@@ -670,43 +701,43 @@ class _ReportState extends State<Report> {
 
   // Seeker reprot*********************************
 
-  Widget _seekerMonthList() {
-    List<DropdownMenuItem<String>> _items = _monthList
-        .map(
-          (e) => DropdownMenuItem(
-            value: e,
-            child: Text(
-              e,
-              style: const TextStyle(
-                color: Colors.black,
-                //fontSize: _widthXheight! * 0.7,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        )
-        .toList();
+  // Widget _seekerMonthList() {
+  //   List<DropdownMenuItem<String>> _items = _monthList
+  //       .map(
+  //         (e) => DropdownMenuItem(
+  //           value: e,
+  //           child: Text(
+  //             e,
+  //             style: const TextStyle(
+  //               color: Colors.black,
+  //               //fontSize: _widthXheight! * 0.7,
+  //               fontWeight: FontWeight.w600,
+  //             ),
+  //           ),
+  //         ),
+  //       )
+  //       .toList();
 
-    return Center(
-      child: DropdownButton(
-        value: _seekerMonth,
-        items: _items,
-        onChanged: (_value) {
-          setState(() {
-            _seekerMonth = _value!;
-          });
-        },
-        dropdownColor: backgroundColor3,
-        borderRadius: BorderRadius.circular(10),
-        iconSize: 20,
-        icon: const Icon(
-          Icons.arrow_drop_down_sharp,
-          color: Colors.black,
-        ),
-        underline: Container(),
-      ),
-    );
-  }
+  //   return Center(
+  //     child: DropdownButton(
+  //       value: _seekerMonth,
+  //       items: _items,
+  //       onChanged: (_value) {
+  //         setState(() {
+  //           _seekerMonth = _value!;
+  //         });
+  //       },
+  //       dropdownColor: backgroundColor3,
+  //       borderRadius: BorderRadius.circular(10),
+  //       iconSize: 20,
+  //       icon: const Icon(
+  //         Icons.arrow_drop_down_sharp,
+  //         color: Colors.black,
+  //       ),
+  //       underline: Container(),
+  //     ),
+  //   );
+  // }
 
   Widget _seekerGenerateButton() {
     return Stack(
@@ -814,42 +845,42 @@ class _ReportState extends State<Report> {
 
   //-----Vacancy Report-------------
 
-  Widget _vacancyMonthList() {
-    List<DropdownMenuItem<String>> _items = _monthList
-        .map(
-          (e) => DropdownMenuItem(
-            value: e,
-            child: Text(
-              e,
-              style: const TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        )
-        .toList();
+  // Widget _vacancyMonthList() {
+  //   List<DropdownMenuItem<String>> _items = _monthList
+  //       .map(
+  //         (e) => DropdownMenuItem(
+  //           value: e,
+  //           child: Text(
+  //             e,
+  //             style: const TextStyle(
+  //               color: Colors.black,
+  //               fontWeight: FontWeight.w600,
+  //             ),
+  //           ),
+  //         ),
+  //       )
+  //       .toList();
 
-    return Center(
-      child: DropdownButton(
-        value: _vacancyMonth,
-        items: _items,
-        onChanged: (_value) {
-          setState(() {
-            _vacancyMonth = _value!;
-          });
-        },
-        dropdownColor: backgroundColor3,
-        borderRadius: BorderRadius.circular(10),
-        iconSize: 20,
-        icon: const Icon(
-          Icons.arrow_drop_down_sharp,
-          color: Colors.black,
-        ),
-        underline: Container(),
-      ),
-    );
-  }
+  //   return Center(
+  //     child: DropdownButton(
+  //       value: _vacancyMonth,
+  //       items: _items,
+  //       onChanged: (_value) {
+  //         setState(() {
+  //           _vacancyMonth = _value!;
+  //         });
+  //       },
+  //       dropdownColor: backgroundColor3,
+  //       borderRadius: BorderRadius.circular(10),
+  //       iconSize: 20,
+  //       icon: const Icon(
+  //         Icons.arrow_drop_down_sharp,
+  //         color: Colors.black,
+  //       ),
+  //       underline: Container(),
+  //     ),
+  //   );
+  // }
 
   Widget _vacancyGenerateButton() {
     return Stack(
@@ -953,6 +984,48 @@ class _ReportState extends State<Report> {
     await Printing.sharePdf(
       bytes: await pdf.save(),
       filename: 'Vacancy_$_vacancyMonth.pdf',
+    );
+  }
+
+  Widget _providerMonthPicker() {
+    return ElevatedButton(
+      onPressed: () => _selectDate(context, 'provider'),
+      child: Text('Select Month: $_providerMonth'),
+      style: ElevatedButton.styleFrom(
+        foregroundColor: Colors.black,
+        backgroundColor: backgroundColor3,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
+    );
+  }
+
+  Widget _seekerMonthPicker() {
+    return ElevatedButton(
+      onPressed: () => _selectDate(context, 'seeker'),
+      child: Text('Select Month: $_seekerMonth'),
+      style: ElevatedButton.styleFrom(
+        foregroundColor: Colors.black,
+        backgroundColor: backgroundColor3,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
+    );
+  }
+
+  Widget _vacancyMonthPicker() {
+    return ElevatedButton(
+      onPressed: () => _selectDate(context, 'vacancy'),
+      child: Text('Select Month: $_vacancyMonth'),
+      style: ElevatedButton.styleFrom(
+        foregroundColor: Colors.black,
+        backgroundColor: backgroundColor3,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
     );
   }
 }
