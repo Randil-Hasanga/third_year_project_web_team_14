@@ -1,4 +1,4 @@
-# jms_desktop
+# jms_web
 
 A new Flutter project.
 
