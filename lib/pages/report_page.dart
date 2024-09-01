@@ -385,14 +385,26 @@ class _ReportState extends State<Report> {
                               child: Column(
                                 children: [
                                   _richTextWidget!.simpleText(
-                                      "Job Providers Report",
-                                      20,
-                                      Colors.black,
-                                      FontWeight.w600),
+                                    "Job Providers Report",
+                                    20,
+                                    Colors.black,
+                                    FontWeight.w600,
+                                  ),
                                   const Divider(),
-                                  _richTextWidget!.simpleText("Select Month",
-                                      15, Colors.black, FontWeight.w600),
-                                  _providerMonthPicker(),
+                                  _richTextWidget!.simpleText(
+                                    "Select Month",
+                                    15,
+                                    Colors.black,
+                                    FontWeight.w600,
+                                  ),
+                                  Column(
+                                    children: [
+                                      _providerStartMonthPicker(),
+                                      const SizedBox(height: 2),
+                                      _providerEndMonthPicker(),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 5),
                                 ],
                               ),
                             ),
@@ -449,7 +461,9 @@ class _ReportState extends State<Report> {
                                   const Divider(),
                                   _richTextWidget!.simpleText("Select Month",
                                       15, Colors.black, FontWeight.w600),
-                                  _seekerMonthPicker(),
+                                  _seekerStartMonthPicker(),
+                                  const SizedBox(height: 2),
+                                  _seekerEndMonthPicker(),
                                 ],
                               ),
                             ),
@@ -506,7 +520,9 @@ class _ReportState extends State<Report> {
                                   const Divider(),
                                   _richTextWidget!.simpleText("Select Month",
                                       15, Colors.black, FontWeight.w600),
-                                  _vacancyMonthPicker(),
+                                  _vacancyStartMonthPicker(),
+                                  const SizedBox(height: 2),
+                                  _vacancyEndMonthPicker(),
                                 ],
                               ),
                             ),
@@ -987,10 +1003,9 @@ class _ReportState extends State<Report> {
     );
   }
 
-  Widget _providerMonthPicker() {
+  Widget _providerStartMonthPicker() {
     return ElevatedButton(
       onPressed: () => _selectDate(context, 'provider'),
-      child: Text('Select Month: $_providerMonth'),
       style: ElevatedButton.styleFrom(
         foregroundColor: Colors.black,
         backgroundColor: backgroundColor3,
@@ -998,13 +1013,48 @@ class _ReportState extends State<Report> {
           borderRadius: BorderRadius.circular(10),
         ),
       ),
+      child: Text.rich(
+        TextSpan(
+          text: 'From: ',
+          style: const TextStyle(fontWeight: FontWeight.bold),
+          children: [
+            TextSpan(
+              text: _providerMonth,
+              style: const TextStyle(fontWeight: FontWeight.normal),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
-  Widget _seekerMonthPicker() {
+  Widget _providerEndMonthPicker() {
+    return ElevatedButton(
+      onPressed: () => _selectDate(context, 'provider'),
+      style: ElevatedButton.styleFrom(
+        foregroundColor: Colors.black,
+        backgroundColor: backgroundColor3,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
+      child: Text.rich(
+        TextSpan(
+          text: 'To: ',
+          style: const TextStyle(fontWeight: FontWeight.bold),
+          children: [
+            TextSpan(
+                text: _providerMonth,
+                style: const TextStyle(fontWeight: FontWeight.normal)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _seekerStartMonthPicker() {
     return ElevatedButton(
       onPressed: () => _selectDate(context, 'seeker'),
-      child: Text('Select Month: $_seekerMonth'),
       style: ElevatedButton.styleFrom(
         foregroundColor: Colors.black,
         backgroundColor: backgroundColor3,
@@ -1012,18 +1062,87 @@ class _ReportState extends State<Report> {
           borderRadius: BorderRadius.circular(10),
         ),
       ),
+      child: Text.rich(
+        TextSpan(
+          text: 'From: ',
+          style: const TextStyle(fontWeight: FontWeight.bold),
+          children: [
+            TextSpan(
+                text: _seekerMonth,
+                style: const TextStyle(fontWeight: FontWeight.normal)),
+          ],
+        ),
+      ),
     );
   }
 
-  Widget _vacancyMonthPicker() {
+  Widget _seekerEndMonthPicker() {
     return ElevatedButton(
-      onPressed: () => _selectDate(context, 'vacancy'),
-      child: Text('Select Month: $_vacancyMonth'),
+      onPressed: () => _selectDate(context, 'seeker'),
       style: ElevatedButton.styleFrom(
         foregroundColor: Colors.black,
         backgroundColor: backgroundColor3,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
+        ),
+      ),
+      child: Text.rich(
+        TextSpan(
+          text: 'To: ',
+          style: const TextStyle(fontWeight: FontWeight.bold),
+          children: [
+            TextSpan(
+                text: _seekerMonth,
+                style: const TextStyle(fontWeight: FontWeight.normal)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _vacancyStartMonthPicker() {
+    return ElevatedButton(
+      onPressed: () => _selectDate(context, 'vacancy'),
+      style: ElevatedButton.styleFrom(
+        foregroundColor: Colors.black,
+        backgroundColor: backgroundColor3,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
+      child: Text.rich(
+        TextSpan(
+          text: 'From: ',
+          style: const TextStyle(fontWeight: FontWeight.bold),
+          children: [
+            TextSpan(
+                text: _vacancyMonth,
+                style: const TextStyle(fontWeight: FontWeight.normal)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _vacancyEndMonthPicker() {
+    return ElevatedButton(
+      onPressed: () => _selectDate(context, 'vacancy'),
+      style: ElevatedButton.styleFrom(
+        foregroundColor: Colors.black,
+        backgroundColor: backgroundColor3,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
+      child: Text.rich(
+        TextSpan(
+          text: 'To: ',
+          style: const TextStyle(fontWeight: FontWeight.bold),
+          children: [
+            TextSpan(
+                text: _vacancyMonth,
+                style: const TextStyle(fontWeight: FontWeight.normal)),
+          ],
         ),
       ),
     );
