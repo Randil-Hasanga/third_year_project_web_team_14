@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
+import 'package:intl/intl.dart';
 import 'package:jms_desktop/const/constants.dart';
 import 'package:jms_desktop/services/firebase_services.dart';
 import 'package:jms_desktop/widgets/richText.dart';
@@ -24,24 +26,16 @@ class _ReportState extends State<Report> {
   bool _isLoading = false;
   bool _isSending = false;
 
-  late final List<String> _monthList = _generateMonthList();
+  DateTime? _providerStartDate;
+  DateTime? _providerEndDate;
+  DateTime? _seekerStartDate;
+  DateTime? _seekerEndDate;
+  DateTime? _vacancyStartDate;
+  DateTime? _vacancyEndDate;
 
-  late String _providerMonth = _genarateFirstMonth();
-  late String _seekerMonth = _genarateFirstMonth();
-  late String _vacancyMonth = _genarateFirstMonth();
-
-  String _genarateFirstMonth() {
-    String firstMonth;
-    if (_monthList.isNotEmpty) {
-      firstMonth = _monthList[0]; // Access the first element safely
-    } else {
-      firstMonth = 'List is empty'; // Default value if the list is empty
-    }
-    return firstMonth;
-  }
-
-  Future<void> _selectDate(BuildContext context, String reportType) async {
-    final DateTime? selectedDate = await showDatePicker(
+  Future<void> _selectStartDate(BuildContext context, String reportType) async {
+    // Select the start date first
+    final DateTime? selectedStartDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(2000),
@@ -51,70 +45,54 @@ class _ReportState extends State<Report> {
           data: ThemeData.light().copyWith(
             primaryColor: Colors.black,
             hintColor: Colors.black,
-            buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.primary),
+            buttonTheme:
+                const ButtonThemeData(textTheme: ButtonTextTheme.primary),
           ),
           child: child!,
         );
       },
     );
 
-    if (selectedDate != null) {
-      final monthName = _monthList[selectedDate.month - 1];
-      setState(() {
-        if (reportType == 'provider') {
-          _providerMonth = monthName;
-        } else if (reportType == 'seeker') {
-          _seekerMonth = monthName;
-        } else if (reportType == 'vacancy') {
-          _vacancyMonth = monthName;
-        }
-      });
-    }
+    setState(() {
+      if (reportType == 'provider') {
+        _providerStartDate = selectedStartDate;
+      } else if (reportType == 'seeker') {
+        _seekerStartDate = selectedStartDate;
+      } else {
+        _vacancyStartDate = selectedStartDate;
+      }
+    });
   }
 
-  //generate month list
-  List<String> _generateMonthList() {
-    DateTime currentDate = DateTime.now();
-    List<String> monthList = [];
+  Future<void> _selectEndDate(BuildContext context, String reportType) async {
+    // Select the start date first
+    final DateTime? selectedEndDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime.now(),
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            primaryColor: Colors.black,
+            hintColor: Colors.black,
+            buttonTheme:
+                const ButtonThemeData(textTheme: ButtonTextTheme.primary),
+          ),
+          child: child!,
+        );
+      },
+    );
 
-    // Map for month names
-    const List<String> monthNames = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December'
-    ];
-
-    for (int i = 0; i < 12; i++) {
-      // Get a Year and Month for the past 12 months
-      DateTime pastDate = DateTime(
-        currentDate.year,
-        currentDate.month -
-            i, //one month will be deducted from the relevent month
-      );
-
-      // Adjust year and month if it goes out of bounds
-      while (pastDate.month < 1) {
-        pastDate = DateTime(pastDate.year - 1, 12 + pastDate.month);
+    setState(() {
+      if (reportType == 'provider') {
+        _providerEndDate = selectedEndDate;
+      } else if (reportType == 'seeker') {
+        _seekerEndDate = selectedEndDate;
+      } else {
+        _vacancyEndDate = selectedEndDate;
       }
-
-      String year = pastDate.year.toString();
-      String monthName =
-          monthNames[pastDate.month - 1]; // Get month name from map
-
-      String element = '$monthName $year'; // Using month name
-      monthList.add(element);
-    }
-
-    return monthList;
+    });
   }
 
   @override
@@ -392,7 +370,7 @@ class _ReportState extends State<Report> {
                                   ),
                                   const Divider(),
                                   _richTextWidget!.simpleText(
-                                    "Select Month",
+                                    "Select Date Range",
                                     15,
                                     Colors.black,
                                     FontWeight.w600,
@@ -459,8 +437,11 @@ class _ReportState extends State<Report> {
                                       Colors.black,
                                       FontWeight.w600),
                                   const Divider(),
-                                  _richTextWidget!.simpleText("Select Month",
-                                      15, Colors.black, FontWeight.w600),
+                                  _richTextWidget!.simpleText(
+                                      "Select Date Range",
+                                      15,
+                                      Colors.black,
+                                      FontWeight.w600),
                                   _seekerStartMonthPicker(),
                                   const SizedBox(height: 2),
                                   _seekerEndMonthPicker(),
@@ -518,8 +499,11 @@ class _ReportState extends State<Report> {
                                       Colors.black,
                                       FontWeight.w600),
                                   const Divider(),
-                                  _richTextWidget!.simpleText("Select Month",
-                                      15, Colors.black, FontWeight.w600),
+                                  _richTextWidget!.simpleText(
+                                      "Select Date Range",
+                                      15,
+                                      Colors.black,
+                                      FontWeight.w600),
                                   _vacancyStartMonthPicker(),
                                   const SizedBox(height: 2),
                                   _vacancyEndMonthPicker(),
@@ -555,42 +539,59 @@ class _ReportState extends State<Report> {
   }
 
 //----Provider report-----------------
-  // Widget _providerMonthList() {
-  //   List<DropdownMenuItem<String>> _items = _monthList
-  //       .map(
-  //         (e) => DropdownMenuItem(
-  //           value: e,
-  //           child: Text(
-  //             e,
-  //             style: const TextStyle(
-  //               color: Colors.black,
-  //               fontWeight: FontWeight.w600,
-  //             ),
-  //           ),
-  //         ),
-  //       )
-  //       .toList();
+  Widget _providerStartMonthPicker() {
+    return ElevatedButton(
+      onPressed: () => _selectStartDate(context, 'provider'),
+      style: ElevatedButton.styleFrom(
+        foregroundColor: Colors.black,
+        backgroundColor: backgroundColor3,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
+      child: Text.rich(
+        TextSpan(
+          text: 'From: ',
+          style: const TextStyle(fontWeight: FontWeight.bold),
+          children: [
+            TextSpan(
+              text: _providerStartDate != null
+                  ? DateFormat('yyyy-MMM-dd').format(_providerStartDate!)
+                  : 'Select Start Date',
+              style: const TextStyle(fontWeight: FontWeight.normal),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
-  //   return Center(
-  //     child: DropdownButton(
-  //       value: _providerMonth,
-  //       items: _items,
-  //       onChanged: (_value) {
-  //         setState(() {
-  //           _providerMonth = _value!;
-  //         });
-  //       },
-  //       dropdownColor: backgroundColor3,
-  //       borderRadius: BorderRadius.circular(10),
-  //       iconSize: 20,
-  //       icon: const Icon(
-  //         Icons.arrow_drop_down_sharp,
-  //         color: Colors.black,
-  //       ),
-  //       underline: Container(),
-  //     ),
-  //   );
-  // }
+  Widget _providerEndMonthPicker() {
+    return ElevatedButton(
+      onPressed: () => _selectEndDate(context, 'provider'),
+      style: ElevatedButton.styleFrom(
+        foregroundColor: Colors.black,
+        backgroundColor: backgroundColor3,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
+      child: Text.rich(
+        TextSpan(
+          text: 'To: ',
+          style: const TextStyle(fontWeight: FontWeight.bold),
+          children: [
+            TextSpan(
+              text: _providerEndDate != null
+                  ? DateFormat('yyyy-MMM-dd').format(_providerEndDate!)
+                  : 'Select End Date',
+              style: const TextStyle(fontWeight: FontWeight.normal),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   Widget _providerGenerateButton() {
     return Stack(
@@ -624,77 +625,68 @@ class _ReportState extends State<Report> {
 
   void _generateProviderPdf() async {
     final pdf = pw.Document();
-    int index = _monthList.indexOf(_providerMonth);
-    int _providerCount = await _firebaseService!.getMonthlyProviderCount(index);
-    final data_ = {
-      'MONTH': _providerMonth,
-      'TOTAL COMPANY REGISTRATION': _providerCount.toString(),
-    };
-    // Load the logo image from assets
-    final logoBytes = await rootBundle.load('assets/images/logo.jpg');
-    final logoImage = pw.MemoryImage(
-      logoBytes.buffer.asUint8List(),
-    );
 
-    //get provider list from DB
-    // get String month list index,
-    List<Map<String, String>>? data;
-    List<Map<String, dynamic>>? _data =
-        await _firebaseService!.getJobProviderReport(index);
-    data = convertToListOfStringMaps(_data);
-    pdf.addPage(
-      pw.Page(
-        build: (pw.Context context) {
-          return pw.Column(
-            crossAxisAlignment: pw.CrossAxisAlignment.center,
-            children: [
-              // Add the logo at the top
-              pw.Image(logoImage, height: 50, width: 50),
-              pw.SizedBox(height: 15.0),
-              // Title at the top
-              pw.Text(
-                "DISTRICT RAKIYA KENDRAYA - MONTHLY PROGRESS REPORT",
-                style: pw.TextStyle(
-                  fontSize: 15,
-                  fontWeight: pw.FontWeight.bold,
-                ),
-              ),
-              pw.Text(
-                "COMPANY DETAILS",
-                style: pw.TextStyle(
-                  fontSize: 15,
-                  fontWeight: pw.FontWeight.bold,
-                ),
-              ),
-              // Spacer to create some space between the title and the content
-              pw.SizedBox(height: 20),
-              if (data == null ||
-                  data.isEmpty) // Check if data is empty or null
+    if (_providerStartDate != null && _providerEndDate != null) {
+      List<Map<String, dynamic>>? _data = await _firebaseService!
+          .getJobProviderReport(_providerStartDate!, _providerEndDate!);
+      List<Map<String, String>>? data = convertToListOfStringMaps(_data);
+
+      final DateFormat dateFormatter = DateFormat('yyyy-MMMM -dd');
+      final data_ = {
+        'FROM':
+            dateFormatter.format(_providerStartDate!), // Format the start date
+        'TO': dateFormatter.format(_providerEndDate!), // Format the end date
+        'TOTAL COMPANY REGISTRATION':
+            data != null ? data.length.toString() : '0',
+      };
+
+      final logoBytes = await rootBundle.load('assets/images/logo.jpg');
+      final logoImage = pw.MemoryImage(logoBytes.buffer.asUint8List());
+
+      pdf.addPage(
+        pw.Page(
+          build: (pw.Context context) {
+            return pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.center,
+              children: [
+                pw.Image(logoImage, height: 50, width: 50),
+                pw.SizedBox(height: 15.0),
                 pw.Text(
-                  "No data available.",
+                  "DISTRICT RAKIYA KENDRAYA - MONTHLY PROGRESS REPORT",
                   style: pw.TextStyle(
-                    fontSize: 16,
-                    fontWeight: pw.FontWeight.normal,
-                  ),
-                )
-              else ...[
-                // If data is not empty, render the data tables
-                _createProviderSummaryTable(
-                    data_), // Your function to create summary
+                      fontSize: 15, fontWeight: pw.FontWeight.bold),
+                ),
+                pw.Text(
+                  "COMPANY DETAILS",
+                  style: pw.TextStyle(
+                      fontSize: 15, fontWeight: pw.FontWeight.bold),
+                ),
                 pw.SizedBox(height: 20),
-                _createProviderTable(
-                    data), // Your function to create the detailed table
+                if (data == null || data.isEmpty)
+                  pw.Text(
+                    "No data available.",
+                    style: pw.TextStyle(
+                        fontSize: 16, fontWeight: pw.FontWeight.normal),
+                  )
+                else ...[
+                  _createProviderSummaryTable(data_),
+                  pw.SizedBox(height: 20),
+                  _createProviderTable(data),
+                ],
               ],
-            ],
-          );
-        },
-      ),
-    );
+            );
+          },
+        ),
+      );
 
-    await Printing.sharePdf(
-      bytes: await pdf.save(),
-      filename: 'Provider_$_providerMonth.pdf',
-    );
+      await Printing.sharePdf(
+        bytes: await pdf.save(),
+        filename:
+            'Provider_Report_${_providerStartDate!.year}-${_providerStartDate!.month}-${_providerStartDate!.day}_to_${_providerEndDate!.year}-${_providerEndDate!.month}-${_providerEndDate!.day}.pdf',
+      );
+    } else {
+      print("Start date or end date not selected");
+    }
   }
 
   List<Map<String, String>>? convertToListOfStringMaps(
@@ -716,44 +708,57 @@ class _ReportState extends State<Report> {
   }
 
   // Seeker reprot*********************************
+  Widget _seekerStartMonthPicker() {
+    return ElevatedButton(
+      onPressed: () => _selectStartDate(context, 'seeker'),
+      style: ElevatedButton.styleFrom(
+        foregroundColor: Colors.black,
+        backgroundColor: backgroundColor3,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
+      child: Text.rich(
+        TextSpan(
+          text: 'From: ',
+          style: const TextStyle(fontWeight: FontWeight.bold),
+          children: [
+            TextSpan(
+                text: _seekerStartDate != null
+                    ? DateFormat('yyyy-MMM-dd').format(_seekerStartDate!)
+                    : 'Select Start Date',
+                style: const TextStyle(fontWeight: FontWeight.normal)),
+          ],
+        ),
+      ),
+    );
+  }
 
-  // Widget _seekerMonthList() {
-  //   List<DropdownMenuItem<String>> _items = _monthList
-  //       .map(
-  //         (e) => DropdownMenuItem(
-  //           value: e,
-  //           child: Text(
-  //             e,
-  //             style: const TextStyle(
-  //               color: Colors.black,
-  //               //fontSize: _widthXheight! * 0.7,
-  //               fontWeight: FontWeight.w600,
-  //             ),
-  //           ),
-  //         ),
-  //       )
-  //       .toList();
-
-  //   return Center(
-  //     child: DropdownButton(
-  //       value: _seekerMonth,
-  //       items: _items,
-  //       onChanged: (_value) {
-  //         setState(() {
-  //           _seekerMonth = _value!;
-  //         });
-  //       },
-  //       dropdownColor: backgroundColor3,
-  //       borderRadius: BorderRadius.circular(10),
-  //       iconSize: 20,
-  //       icon: const Icon(
-  //         Icons.arrow_drop_down_sharp,
-  //         color: Colors.black,
-  //       ),
-  //       underline: Container(),
-  //     ),
-  //   );
-  // }
+  Widget _seekerEndMonthPicker() {
+    return ElevatedButton(
+      onPressed: () => _selectEndDate(context, 'seeker'),
+      style: ElevatedButton.styleFrom(
+        foregroundColor: Colors.black,
+        backgroundColor: backgroundColor3,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
+      child: Text.rich(
+        TextSpan(
+          text: 'To: ',
+          style: const TextStyle(fontWeight: FontWeight.bold),
+          children: [
+            TextSpan(
+                text: _seekerEndDate != null
+                    ? DateFormat('yyyy-MMM-dd').format(_seekerEndDate!)
+                    : 'Select End Date',
+                style: const TextStyle(fontWeight: FontWeight.normal)),
+          ],
+        ),
+      ),
+    );
+  }
 
   Widget _seekerGenerateButton() {
     return Stack(
@@ -787,116 +792,133 @@ class _ReportState extends State<Report> {
 
   void _generateSeekerPdf() async {
     final pdf = pw.Document();
-    int index = _monthList.indexOf(_seekerMonth);
-    int seekerCount = await _firebaseService!.getMonthlySeekerCount(index);
-    final data_ = {
-      'MONTH': _seekerMonth,
-      'TOTAL SEEKERS REGISTRATION': seekerCount.toString(), //modify this after
-    };
+    if (_seekerStartDate != null && _seekerEndDate != null) {
+      List<Map<String, dynamic>>? _data = await _firebaseService!
+          .getSeekerReport(_seekerStartDate!, _seekerEndDate!);
+      List<Map<String, String>>? data = convertToListOfStringMaps(_data);
 
-    // Load the logo image from assets
-    final logoBytes = await rootBundle.load('assets/images/logo.jpg');
-    final logoImage = pw.MemoryImage(
-      logoBytes.buffer.asUint8List(),
-    );
+      final DateFormat dateFormatter = DateFormat('yyyy-MMMM -dd');
+      final data_ = {
+        'FROM':
+            dateFormatter.format(_seekerStartDate!), // Format the start date
+        'TO': dateFormatter.format(_seekerEndDate!), // Format the end date
+        'TOTAL SEEKERS REGISTRATION':
+            data != null ? data.length.toString() : '0',
+      };
 
-    List<Map<String, String>>? data;
-    List<Map<String, dynamic>>? _data =
-        await _firebaseService!.getSeekerReport(index);
-    data = convertToListOfStringMaps(_data);
-    pdf.addPage(
-      pw.Page(
-        build: (pw.Context context) {
-          return pw.Column(
-            crossAxisAlignment: pw.CrossAxisAlignment.center,
-            children: [
-              // Add the logo at the top
-              pw.Image(logoImage, height: 50, width: 50),
-              pw.SizedBox(height: 15.0),
-              // Title at the top
-              pw.Text(
-                "DISTRICT RAKIYA KENDRAYA - MONTHLY PROGRESS REPORT",
-                style: pw.TextStyle(
-                  fontSize: 15,
-                  fontWeight: pw.FontWeight.bold,
-                ),
-              ),
-              pw.Text(
-                "SEEKER DETAILS AND SELECTED COMPANY DETAILS",
-                style: pw.TextStyle(
-                  fontSize: 15,
-                  fontWeight: pw.FontWeight.bold,
-                ),
-              ),
-              // Spacer to create some space between the title and the content
-              pw.SizedBox(height: 20),
-              if (data == null ||
-                  data.isEmpty) // Check if data is empty or null
+      // Load the logo image from assets
+      final logoBytes = await rootBundle.load('assets/images/logo.jpg');
+      final logoImage = pw.MemoryImage(logoBytes.buffer.asUint8List());
+
+      pdf.addPage(
+        pw.Page(
+          build: (pw.Context context) {
+            return pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.center,
+              children: [
+                // Add the logo at the top
+                pw.Image(logoImage, height: 50, width: 50),
+                pw.SizedBox(height: 15.0),
+                // Title at the top
                 pw.Text(
-                  "No data available.",
+                  "DISTRICT RAKIYA KENDRAYA - MONTHLY PROGRESS REPORT",
                   style: pw.TextStyle(
-                    fontSize: 16,
-                    fontWeight: pw.FontWeight.normal,
+                    fontSize: 15,
+                    fontWeight: pw.FontWeight.bold,
                   ),
-                )
-              else ...[
-                // If data is not empty, render the data tables
-                _createSeekerSummaryTable(
-                    data_), // Your function to create summary
+                ),
+                pw.Text(
+                  "SEEKER DETAILS AND SELECTED COMPANY DETAILS",
+                  style: pw.TextStyle(
+                    fontSize: 15,
+                    fontWeight: pw.FontWeight.bold,
+                  ),
+                ),
+                // Spacer to create some space between the title and the content
                 pw.SizedBox(height: 20),
-                _createSeekerTable(
-                    data), // Your function to create the detailed table
+                if (data == null ||
+                    data.isEmpty) // Check if data is empty or null
+                  pw.Text(
+                    "No data available.",
+                    style: pw.TextStyle(
+                      fontSize: 16,
+                      fontWeight: pw.FontWeight.normal,
+                    ),
+                  )
+                else ...[
+                  // If data is not empty, render the data tables
+                  _createSeekerSummaryTable(
+                      data_), // Your function to create summary
+                  pw.SizedBox(height: 20),
+                  _createSeekerTable(
+                      data), // Your function to create the detailed table
+                ],
               ],
-            ],
-          );
-        },
-      ),
-    );
+            );
+          },
+        ),
+      );
 
-    await Printing.sharePdf(
-      bytes: await pdf.save(),
-      filename: 'Seeker_$_seekerMonth.pdf',
-    );
+      await Printing.sharePdf(
+        bytes: await pdf.save(),
+        filename:
+            'Seeker_${_seekerStartDate!.year}-${_seekerStartDate!.month}-${_seekerStartDate!.day}_to_${_seekerEndDate!.year}-${_providerEndDate!.month}-${_seekerEndDate!.day}.pdf',
+      );
+    }
   }
 
   //-----Vacancy Report-------------
+  Widget _vacancyStartMonthPicker() {
+    return ElevatedButton(
+      onPressed: () => _selectStartDate(context, 'vacancy'),
+      style: ElevatedButton.styleFrom(
+        foregroundColor: Colors.black,
+        backgroundColor: backgroundColor3,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
+      child: Text.rich(
+        TextSpan(
+          text: 'From: ',
+          style: const TextStyle(fontWeight: FontWeight.bold),
+          children: [
+            TextSpan(
+                text: _vacancyStartDate != null
+                    ? DateFormat('yyyy-MMM-dd').format(_vacancyStartDate!)
+                    : 'Select Start Date',
+                style: const TextStyle(fontWeight: FontWeight.normal)),
+          ],
+        ),
+      ),
+    );
+  }
 
-  // Widget _vacancyMonthList() {
-  //   List<DropdownMenuItem<String>> _items = _monthList
-  //       .map(
-  //         (e) => DropdownMenuItem(
-  //           value: e,
-  //           child: Text(
-  //             e,
-  //             style: const TextStyle(
-  //               color: Colors.black,
-  //               fontWeight: FontWeight.w600,
-  //             ),
-  //           ),
-  //         ),
-  //       )
-  //       .toList();
-
-  //   return Center(
-  //     child: DropdownButton(
-  //       value: _vacancyMonth,
-  //       items: _items,
-  //       onChanged: (_value) {
-  //         setState(() {
-  //           _vacancyMonth = _value!;
-  //         });
-  //       },
-  //       dropdownColor: backgroundColor3,
-  //       borderRadius: BorderRadius.circular(10),
-  //       iconSize: 20,
-  //       icon: const Icon(
-  //         Icons.arrow_drop_down_sharp,
-  //         color: Colors.black,
-  //       ),
-  //       underline: Container(),
-  //     ),
-  //   );
-  // }
+  Widget _vacancyEndMonthPicker() {
+    return ElevatedButton(
+      onPressed: () => _selectEndDate(context, 'vacancy'),
+      style: ElevatedButton.styleFrom(
+        foregroundColor: Colors.black,
+        backgroundColor: backgroundColor3,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
+      child: Text.rich(
+        TextSpan(
+          text: 'To: ',
+          style: const TextStyle(fontWeight: FontWeight.bold),
+          children: [
+            TextSpan(
+                text: _vacancyEndDate != null
+                    ? DateFormat('yyyy-MMM-dd').format(_vacancyEndDate!)
+                    : 'Select End Date',
+                style: const TextStyle(fontWeight: FontWeight.normal)),
+          ],
+        ),
+      ),
+    );
+  }
 
   Widget _vacancyGenerateButton() {
     return Stack(
@@ -930,221 +952,85 @@ class _ReportState extends State<Report> {
 
   void _generateVacancyPdf() async {
     final pdf = pw.Document();
-    int index = _monthList.indexOf(_vacancyMonth);
-    int _vacancyCount = await _firebaseService!.getMonthlyVacancyCount(index);
-    final data_ = {
-      'MONTH': _vacancyMonth,
-      'TOTAL VANANCY REGISTRATION': _vacancyCount.toString(),
-    };
-    // Load the logo image from assets
-    final logoBytes = await rootBundle.load('assets/images/logo.jpg');
-    final logoImage = pw.MemoryImage(
-      logoBytes.buffer.asUint8List(),
-    );
 
-    //get VACANCY list from DB
-    // get String month list index,
-    List<Map<String, String>>? data;
-    List<Map<String, dynamic>>? _data =
-        await _firebaseService!.getVacancyReport(index);
-    data = convertToListOfStringMaps(_data);
-    pdf.addPage(
-      pw.Page(
-        build: (pw.Context context) {
-          return pw.Column(
-            crossAxisAlignment: pw.CrossAxisAlignment.center,
-            children: [
-              // Add the logo at the top
-              pw.Image(logoImage, height: 50, width: 50),
-              pw.SizedBox(height: 15.0),
-              // Title at the top
-              pw.Text(
-                "DISTRICT RAKIYA KENDRAYA - MONTHLY PROGRESS REPORT",
-                style: pw.TextStyle(
-                  fontSize: 15,
-                  fontWeight: pw.FontWeight.bold,
-                ),
-              ),
-              pw.Text(
-                "COMPANY AND VACANCIES DETAILS",
-                style: pw.TextStyle(
-                  fontSize: 15,
-                  fontWeight: pw.FontWeight.bold,
-                ),
-              ),
-              // Spacer to create some space between the title and the content
-              pw.SizedBox(height: 20),
-              if (data == null ||
-                  data.isEmpty) // Check if data is empty or null
+    if (_vacancyStartDate != null && _vacancyEndDate != null) {
+      List<Map<String, dynamic>>? _data = await _firebaseService!
+          .getVacancyReport(_vacancyStartDate!, _vacancyEndDate!);
+      List<Map<String, String>>? data = convertToListOfStringMaps(_data);
+
+      final DateFormat dateFormatter = DateFormat('yyyy-MMMM -dd');
+      final data_ = {
+        'FROM':
+            dateFormatter.format(_vacancyStartDate!), // Format the start date
+        'TO': dateFormatter.format(_vacancyEndDate!), // Format the end date
+        'TOTAL VACANCY REGISTRATION':
+            data != null ? data.length.toString() : '0',
+      };
+
+      // Load the logo image from assets
+      final logoBytes = await rootBundle.load('assets/images/logo.jpg');
+      final logoImage = pw.MemoryImage(
+        logoBytes.buffer.asUint8List(),
+      );
+
+      //get VACANCY list from DB
+
+      pdf.addPage(
+        pw.Page(
+          build: (pw.Context context) {
+            return pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.center,
+              children: [
+                // Add the logo at the top
+                pw.Image(logoImage, height: 50, width: 50),
+                pw.SizedBox(height: 15.0),
+                // Title at the top
                 pw.Text(
-                  "No data available.",
+                  "DISTRICT RAKIYA KENDRAYA - MONTHLY PROGRESS REPORT",
                   style: pw.TextStyle(
-                    fontSize: 16,
-                    fontWeight: pw.FontWeight.normal,
+                    fontSize: 15,
+                    fontWeight: pw.FontWeight.bold,
                   ),
-                )
-              else ...[
-                // If data is not empty, render the data tables
-                _createVacancySummaryTable(
-                    data_), // Your function to create summary
+                ),
+                pw.Text(
+                  "COMPANY AND VACANCIES DETAILS",
+                  style: pw.TextStyle(
+                    fontSize: 15,
+                    fontWeight: pw.FontWeight.bold,
+                  ),
+                ),
+                // Spacer to create some space between the title and the content
                 pw.SizedBox(height: 20),
-                _createVacancyTable(
-                    data), // Your function to create the detailed table
+                if (data == null ||
+                    data.isEmpty) // Check if data is empty or null
+                  pw.Text(
+                    "No data available.",
+                    style: pw.TextStyle(
+                      fontSize: 16,
+                      fontWeight: pw.FontWeight.normal,
+                    ),
+                  )
+                else ...[
+                  // If data is not empty, render the data tables
+                  _createVacancySummaryTable(
+                      data_), // Your function to create summary
+                  pw.SizedBox(height: 20),
+                  _createVacancyTable(
+                      data), // Your function to create the detailed table
+                ],
               ],
-            ],
-          );
-        },
-      ),
-    );
+            );
+          },
+        ),
+      );
 
-    await Printing.sharePdf(
-      bytes: await pdf.save(),
-      filename: 'Vacancy_$_vacancyMonth.pdf',
-    );
-  }
-
-  Widget _providerStartMonthPicker() {
-    return ElevatedButton(
-      onPressed: () => _selectDate(context, 'provider'),
-      style: ElevatedButton.styleFrom(
-        foregroundColor: Colors.black,
-        backgroundColor: backgroundColor3,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-      ),
-      child: Text.rich(
-        TextSpan(
-          text: 'From: ',
-          style: const TextStyle(fontWeight: FontWeight.bold),
-          children: [
-            TextSpan(
-              text: _providerMonth,
-              style: const TextStyle(fontWeight: FontWeight.normal),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _providerEndMonthPicker() {
-    return ElevatedButton(
-      onPressed: () => _selectDate(context, 'provider'),
-      style: ElevatedButton.styleFrom(
-        foregroundColor: Colors.black,
-        backgroundColor: backgroundColor3,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-      ),
-      child: Text.rich(
-        TextSpan(
-          text: 'To: ',
-          style: const TextStyle(fontWeight: FontWeight.bold),
-          children: [
-            TextSpan(
-                text: _providerMonth,
-                style: const TextStyle(fontWeight: FontWeight.normal)),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _seekerStartMonthPicker() {
-    return ElevatedButton(
-      onPressed: () => _selectDate(context, 'seeker'),
-      style: ElevatedButton.styleFrom(
-        foregroundColor: Colors.black,
-        backgroundColor: backgroundColor3,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-      ),
-      child: Text.rich(
-        TextSpan(
-          text: 'From: ',
-          style: const TextStyle(fontWeight: FontWeight.bold),
-          children: [
-            TextSpan(
-                text: _seekerMonth,
-                style: const TextStyle(fontWeight: FontWeight.normal)),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _seekerEndMonthPicker() {
-    return ElevatedButton(
-      onPressed: () => _selectDate(context, 'seeker'),
-      style: ElevatedButton.styleFrom(
-        foregroundColor: Colors.black,
-        backgroundColor: backgroundColor3,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-      ),
-      child: Text.rich(
-        TextSpan(
-          text: 'To: ',
-          style: const TextStyle(fontWeight: FontWeight.bold),
-          children: [
-            TextSpan(
-                text: _seekerMonth,
-                style: const TextStyle(fontWeight: FontWeight.normal)),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _vacancyStartMonthPicker() {
-    return ElevatedButton(
-      onPressed: () => _selectDate(context, 'vacancy'),
-      style: ElevatedButton.styleFrom(
-        foregroundColor: Colors.black,
-        backgroundColor: backgroundColor3,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-      ),
-      child: Text.rich(
-        TextSpan(
-          text: 'From: ',
-          style: const TextStyle(fontWeight: FontWeight.bold),
-          children: [
-            TextSpan(
-                text: _vacancyMonth,
-                style: const TextStyle(fontWeight: FontWeight.normal)),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _vacancyEndMonthPicker() {
-    return ElevatedButton(
-      onPressed: () => _selectDate(context, 'vacancy'),
-      style: ElevatedButton.styleFrom(
-        foregroundColor: Colors.black,
-        backgroundColor: backgroundColor3,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-      ),
-      child: Text.rich(
-        TextSpan(
-          text: 'To: ',
-          style: const TextStyle(fontWeight: FontWeight.bold),
-          children: [
-            TextSpan(
-                text: _vacancyMonth,
-                style: const TextStyle(fontWeight: FontWeight.normal)),
-          ],
-        ),
-      ),
-    );
+      await Printing.sharePdf(
+        bytes: await pdf.save(),
+        filename:
+            'Vacancy_${_vacancyStartDate!.year}-${_vacancyStartDate!.month}-${_vacancyStartDate!.day}_to_${_vacancyEndDate!.year}-${_vacancyEndDate!.month}-${_vacancyEndDate!.day}.pdf',
+      );
+    } else {
+      print("Start date or end date not selected");
+    }
   }
 }
