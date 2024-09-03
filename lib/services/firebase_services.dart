@@ -663,47 +663,11 @@ class FirebaseService {
   }
 
 // **********REPORT GENERATION PART*******************************
-  // Create month list
-  List<DateTime> _generateMonthList() {
-    DateTime currentDate = DateTime.now();
-    List<DateTime> monthList = [];
-    for (int i = 0; i < 12; i++) {
-      // Get a DateTime object for the past 12 months
-      DateTime pastDate = DateTime(
-        currentDate.year,
-        currentDate.month - i,
-      );
-      // Adjust year and month if it goes out of bounds
-      while (pastDate.month < 1) {
-        pastDate = DateTime(pastDate.year - 1, 12 + pastDate.month);
-      }
-      DateTime element = DateTime(pastDate.year, pastDate.month);
-      monthList.add(element);
-    }
-    return monthList;
-  }
-
-// create month end date
-  DateTime _getMonthEndDate(DateTime currentDate) {
-    // Determine the first day of the next month
-    var firstDayOfNextMonth = (currentDate.month < 12)
-        ? DateTime(currentDate.year, currentDate.month + 1, 1)
-        : DateTime(currentDate.year + 1, 1, 1);
-
-    // The last day of the current month is one day before the first day of the next month
-    var lastDayOfCurrentMonth = firstDayOfNextMonth.subtract(Duration(days: 1));
-
-    return lastDayOfCurrentMonth;
-  }
 
   // provider report
   //get provider detailes in company , use this details in provider report
-  Future<List<Map<String, dynamic>>?> getJobProviderReport(int index) async {
-    // Map String date type to Date time type
-    List<DateTime> monthList = _generateMonthList();
-    DateTime startDate = monthList[index];
-    DateTime endDate = _getMonthEndDate(startDate);
-
+  Future<List<Map<String, dynamic>>?> getJobProviderReport(
+      DateTime startDate, DateTime endDate) async {
     try {
       QuerySnapshot<Map<String, dynamic>>? querySnapshot = await _db
           .collection(PROVIDER_COLLECTION)
@@ -722,9 +686,12 @@ class FirebaseService {
       }
 
       if (providerList.isNotEmpty) {
+        // print("Start: $startDate");
+        // print("end: $endDate");
         // print(providerList);
         return providerList;
       } else {
+        // print("No Data");
         return null;
       }
     } catch (e) {
@@ -734,10 +701,8 @@ class FirebaseService {
   }
 
   // Get avalable provider count in this month
-  Future<int> getMonthlyProviderCount(int index) async {
-    List<DateTime> monthList = _generateMonthList();
-    DateTime startDate = monthList[index];
-    DateTime endDate = _getMonthEndDate(startDate);
+  Future<int> getMonthlyProviderCount(
+      DateTime startDate, DateTime endDate) async {
     try {
       QuerySnapshot<Map<String, dynamic>>? _querySnapshot = await _db
           .collection(PROVIDER_COLLECTION)
@@ -754,15 +719,8 @@ class FirebaseService {
 
   // Seeker report
   //get Seeker detailes in DB , use this details in seeker report
-  Future<List<Map<String, dynamic>>?> getSeekerReport(int index) async {
-    List<DateTime> monthList = _generateMonthList();
-    // Check if index is within the range of monthList
-    if (index < 0 || index >= monthList.length) {
-      print("Index out of range");
-      return null;
-    }
-    DateTime startDate = monthList[index];
-    DateTime endDate = _getMonthEndDate(startDate);
+  Future<List<Map<String, dynamic>>?> getSeekerReport(
+      DateTime startDate, DateTime endDate) async {
     try {
       QuerySnapshot<Map<String, dynamic>>? querySnapshot = await _db
           .collection(SEEKER_COLLECTION)
@@ -781,6 +739,7 @@ class FirebaseService {
       }
 
       if (seekerList.isNotEmpty) {
+        print(seekerList);
         return seekerList;
       } else {
         return null;
@@ -792,10 +751,8 @@ class FirebaseService {
   }
 
   //count the seeker in this month
-  Future<int> getMonthlySeekerCount(int index) async {
-    List<DateTime> monthList = _generateMonthList();
-    DateTime startDate = monthList[index];
-    DateTime endDate = _getMonthEndDate(startDate);
+  Future<int> getMonthlySeekerCount(
+      DateTime startDate, DateTime endDate) async {
     try {
       QuerySnapshot<Map<String, dynamic>>? querySnapshot = await _db
           .collection(SEEKER_COLLECTION)
@@ -812,15 +769,8 @@ class FirebaseService {
 
   // Vacancy report
   //get vacancy detailes in DB , use this details in Vacancy report
-  Future<List<Map<String, dynamic>>?> getVacancyReport(int index) async {
-    List<DateTime> monthList = _generateMonthList();
-    // Check if index is within the range of monthList
-    if (index < 0 || index >= monthList.length) {
-      print("Index out of range");
-      return null;
-    }
-    DateTime startDate = monthList[index];
-    DateTime endDate = _getMonthEndDate(startDate);
+  Future<List<Map<String, dynamic>>?> getVacancyReport(
+      DateTime startDate, DateTime endDate) async {
     try {
       QuerySnapshot<Map<String, dynamic>>? querySnapshot = await _db
           .collection(VACANCY_COLLECTION)
@@ -852,10 +802,8 @@ class FirebaseService {
   }
 
   //count the vacancy in this month
-  Future<int> getMonthlyVacancyCount(int index) async {
-    List<DateTime> monthList = _generateMonthList();
-    DateTime startDate = monthList[index];
-    DateTime endDate = _getMonthEndDate(startDate);
+  Future<int> getMonthlyVacancyCount(
+      DateTime startDate, DateTime endDate) async {
     try {
       QuerySnapshot<Map<String, dynamic>>? querySnapshot = await _db
           .collection(VACANCY_COLLECTION)
