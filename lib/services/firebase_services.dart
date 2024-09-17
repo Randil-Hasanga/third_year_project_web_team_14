@@ -13,6 +13,7 @@ const String SEEKER_COLLECTION = 'profileJobSeeker';
 const String CV_COLLECTION = 'CVDetails';
 const String NOTIFICATION = 'notifications';
 const String APPROVAL_COLLECTION = 'provider_approval_data';
+const String INTERVIEW_PROGRESS = 'interview_progress';
 
 class FirebaseService {
   FirebaseService();
@@ -722,7 +723,8 @@ class FirebaseService {
   Future<List<Map<String, dynamic>>?> getSeekerReport(
       DateTime startDate, DateTime endDate) async {
     try {
-      QuerySnapshot<Map<String, dynamic>>? querySnapshot = await _db
+      // Fetch seeker data based on the registration date range
+      QuerySnapshot<Map<String, dynamic>> seekerSnapshot = await _db
           .collection(SEEKER_COLLECTION)
           .where('registered_date', isGreaterThanOrEqualTo: startDate)
           .where('registered_date', isLessThanOrEqualTo: endDate)
@@ -730,22 +732,142 @@ class FirebaseService {
 
       List<Map<String, dynamic>> seekerList = [];
 
-      for (QueryDocumentSnapshot<Map<String, dynamic>> doc
-          in querySnapshot.docs) {
-        // Fetch basic data
-        Map<String, dynamic> seekerData = doc.data();
+      // Loop through the seeker documents
+      for (QueryDocumentSnapshot<Map<String, dynamic>> seekerDoc
+          in seekerSnapshot.docs) {
+        Map<String, dynamic> seekerData = seekerDoc.data();
 
-        seekerList.add(seekerData);
+        // Initialize a map to store combined data for each seeker
+        Map<String, dynamic> combinedData = {};
+
+        // Check if essential fields (fullname, address, gender, contact) are present
+        if (seekerData.containsKey('fullname') &&
+            seekerData.containsKey('address') &&
+            seekerData.containsKey('gender') &&
+            seekerData.containsKey('contact')) {
+          combinedData['fullname'] = seekerData['fullname'];
+          combinedData['address'] = seekerData['address'];
+          combinedData['gender'] = seekerData['gender'];
+          combinedData['contact'] = seekerData['contact'];
+          combinedData['uid'] = seekerDoc.id; // Add seeker UID
+        } else {
+          print("Incomplete seeker data for UID: ${seekerDoc.id}");
+          continue;
+        }
+
+        // Fetch interview progress for the current seeker
+        try {
+          QuerySnapshot<Map<String, dynamic>> interviewSnapshot = await _db
+              .collection(INTERVIEW_PROGRESS)
+              .where('applicantId', isEqualTo: seekerDoc.id)
+              .where('application_received', isEqualTo: true)
+              .where('initial_interview_passed', isEqualTo: true)
+              .where('select_Status', isEqualTo: true)
+              .get();
+
+          for (QueryDocumentSnapshot<Map<String, dynamic>> interviewDoc
+              in interviewSnapshot.docs) {
+            Map<String, dynamic> interviewProgressData = interviewDoc.data();
+
+            // Check if essential fields (vacancyId, feedback) are present
+            if (interviewProgressData.containsKey('vacancyId') &&
+                interviewProgressData.containsKey('feedback')) {
+              combinedData['vacancyId'] = interviewProgressData['vacancyId'];
+              combinedData['feedback'] = interviewProgressData['feedback'];
+            } else {
+              print(
+                  "Empty interview progress data for applicantId: ${seekerDoc.id}");
+              continue;
+            }
+
+            // Fetch vacancy data
+            String? vacancyId = interviewProgressData['vacancyId'];
+            // print('Vacancy ID: $vacancyId');
+
+            if (vacancyId != null && vacancyId.isNotEmpty) {
+              try {
+                QuerySnapshot<Map<String, dynamic>> vacancySnapshot = await _db
+                    .collection(VACANCY_COLLECTION)
+                    .where('vacancy_id', isEqualTo: vacancyId)
+                    .get();
+
+                for (QueryDocumentSnapshot<Map<String, dynamic>> vacancyDoc
+                    in vacancySnapshot.docs) {
+                  Map<String, dynamic> vacancyData = vacancyDoc.data();
+
+                  // Check if essential fields (company_name, job_position) are present
+                  if (vacancyData.containsKey('company_name') &&
+                      vacancyData.containsKey('job_position')) {
+                    combinedData['company_name'] = vacancyData['company_name'];
+                    combinedData['job_position'] = vacancyData['job_position'];
+                  } else {
+                    print("Empty vacancy data for vacancy_id: $vacancyId");
+                    continue;
+                  }
+
+                  // Fetch provider details
+                  String? providerId = vacancyData['uid'];
+                  // print('Provider ID: $providerId');
+
+                  if (providerId != null && providerId.isNotEmpty) {
+                    try {
+                      DocumentSnapshot<Map<String, dynamic>> providerSnapshot =
+                          await _db
+                              .collection(PROVIDER_COLLECTION)
+                              .doc(providerId)
+                              .get();
+
+                      if (providerSnapshot.exists) {
+                        Map<String, dynamic>? providerData =
+                            providerSnapshot.data();
+                        if (providerData != null &&
+                            providerData.containsKey('repTelephone') &&
+                            providerData['repTelephone'] != null &&
+                            providerData['repTelephone']
+                                .toString()
+                                .isNotEmpty) {
+                          combinedData['repTelephone'] =
+                              providerData['repTelephone'];
+                        } else {
+                          print(
+                              "Empty or missing 'repTelephone' for providerId: $providerId");
+                        }
+                      } else {
+                        print(
+                            "No provider document found for providerId: $providerId");
+                      }
+                    } catch (e) {
+                      print(
+                          "Error getting provider data for providerId: $providerId: $e");
+                    }
+                  }
+                }
+              } catch (e) {
+                print(
+                    "Error getting vacancy data for vacancy_id $vacancyId: $e");
+              }
+            }
+          }
+        } catch (e) {
+          print(
+              "Error getting interview progress data for seeker ${seekerDoc.id}: $e");
+        }
+
+        // Add the combined data to the seeker list
+        if (combinedData.isNotEmpty) {
+          seekerList.add(combinedData);
+        }
       }
 
       if (seekerList.isNotEmpty) {
-        print(seekerList);
+        // print('Seeker List: $seekerList');
         return seekerList;
       } else {
+        print("No seekers found in the given date range.");
         return null;
       }
     } catch (e) {
-      print("Error getting seeker data : $e");
+      print("Error getting seeker data: $e");
       return null;
     }
   }
@@ -772,7 +894,7 @@ class FirebaseService {
   Future<List<Map<String, dynamic>>?> getVacancyReport(
       DateTime startDate, DateTime endDate) async {
     try {
-      QuerySnapshot<Map<String, dynamic>>? querySnapshot = await _db
+      QuerySnapshot<Map<String, dynamic>>? vacancySnapshot = await _db
           .collection(VACANCY_COLLECTION)
           .where('created_at', isGreaterThanOrEqualTo: startDate)
           .where('created_at', isLessThanOrEqualTo: endDate)
@@ -780,16 +902,61 @@ class FirebaseService {
 
       List<Map<String, dynamic>> vacancyList = [];
 
-      for (QueryDocumentSnapshot<Map<String, dynamic>> doc
-          in querySnapshot.docs) {
+      for (QueryDocumentSnapshot<Map<String, dynamic>> vacancyDoc
+          in vacancySnapshot.docs) {
         // Fetch basic data
-        Map<String, dynamic> vacancyData = doc.data();
+        Map<String, dynamic> vacancyData = vacancyDoc.data();
 
-        vacancyList.add(vacancyData);
+        // Initialize a map to store combined data for each seeker
+        Map<String, dynamic> combinedData = {};
+
+        // Check if essential fields (campany_name, address, job_position, job_type, minimum_salary, uid) are present
+        if (vacancyData.containsKey('company_name') &&
+            vacancyData.containsKey('address') &&
+            vacancyData.containsKey('job_position') &&
+            vacancyData.containsKey('minimum_salary') &&
+            vacancyData.containsKey('uid')) {
+          combinedData['company_name'] = vacancyData['company_name'];
+          combinedData['address'] = vacancyData['address'];
+          combinedData['job_position'] = vacancyData['job_position'];
+          combinedData['job_type'] = vacancyData['job_type'];
+          combinedData['minimum_salary'] = vacancyData['minimum_salary'];
+          combinedData['uid'] = vacancyData['uid'];
+        }
+
+        String? providerId = vacancyData['uid'];
+
+        if (providerId != null && providerId.isNotEmpty) {
+          try {
+            DocumentSnapshot<Map<String, dynamic>> providerSnapshot =
+                await _db.collection(PROVIDER_COLLECTION).doc(providerId).get();
+
+            if (providerSnapshot.exists) {
+              Map<String, dynamic>? providerData = providerSnapshot.data();
+              if (providerData != null &&
+                  providerData.containsKey('repTelephone') &&
+                  providerData['repTelephone'] != null &&
+                  providerData['repTelephone'].toString().isNotEmpty) {
+                combinedData['repTelephone'] = providerData['repTelephone'];
+                combinedData['repName'] = providerData['repName'];
+              } else {
+                print(
+                    "Empty or missing 'repTelephone' for providerId: $providerId");
+              }
+            } else {
+              print("No provider document found for providerId: $providerId");
+            }
+          } catch (e) {
+            print(
+                "Error getting provider data for providerId: $providerId: $e");
+          }
+        }
+
+        vacancyList.add(combinedData);
       }
 
       if (vacancyList.isNotEmpty) {
-        print(vacancyList);
+        // print(vacancyList);
         return vacancyList;
       } else {
         print("Empty");
