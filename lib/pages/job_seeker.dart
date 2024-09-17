@@ -1,14 +1,16 @@
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:intl/intl.dart';
-import 'package:jms_desktop/pages/PDFViewPage.dart';
+
 import 'package:path_provider/path_provider.dart';
 
 import 'package:http/http.dart' as http;
-
+import 'package:url_launcher/url_launcher.dart';
 
 class JobSeeker extends StatefulWidget {
   const JobSeeker({Key? key}) : super(key: key);
@@ -22,7 +24,7 @@ class _JobSeekerState extends State<JobSeeker> {
   Map<String, dynamic>? _selectedJobSeeker;
   Map<String, dynamic>? _cvDetails;
   List<Map<String, dynamic>>? _interviewDetailsList;
-  get http => null; // To store CVDetails for selected job seeker
+  String uid = FirebaseAuth.instance.currentUser!.uid;
 
   @override
   void initState() {
@@ -31,169 +33,165 @@ class _JobSeekerState extends State<JobSeeker> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Job Seekers'),
-      ),
-      body: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Left Panel: User List
-          Expanded(
-            flex: 1,
-            child: Container(
-              color: Color.fromRGBO(
-                  255, 195, 162, 1), // Set background color for left panel
-              padding: const EdgeInsets.all(16.0),
-              child: FutureBuilder<List<Map<String, dynamic>>?>(
-                future: _futureJobSeekers,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  if (snapshot.hasError) {
-                    return Center(child: Text('Error: ${snapshot.error}'));
-                  }
-                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return const Center(child: Text('No job seekers found.'));
-                  }
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      title: const Text('Job Seekers'),
+    ),
+    body: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Left Panel: User List
+        Expanded(
+          flex: 1,
+          child: Container(
+            color: Color.fromRGBO(255, 195, 162, 1), // Set background color for left panel
+            padding: const EdgeInsets.all(16.0),
+            child: FutureBuilder<List<Map<String, dynamic>>?>(
+              future: _futureJobSeekers,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                }
+                if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Center(child: Text('No job seekers found.'));
+                }
 
-                  // Display List of Job Seekers
-                  return ListView.builder(
-                    itemCount: snapshot.data!.length,
-                    itemBuilder: (context, index) {
-                      var jobSeeker = snapshot.data![index];
-                      return GestureDetector(
-                        onTap: () async {
-                          setState(() {
-                            _selectedJobSeeker = jobSeeker;
-                            _cvDetails = null;
+                // Display List of Job Seekers
+                return ListView.builder(
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (context, index) {
+                    var jobSeeker = snapshot.data![index];
+                    return GestureDetector(
+                      onTap: () async {
+                        setState(() {
+                          _selectedJobSeeker = jobSeeker;
+                          _cvDetails = null;
+                          _interviewDetailsList = null; // Clear previous interview details list
+                        });
 
-                            _interviewDetailsList =
-                                null; // Clear previous interview details list
-                          });
+                        // Load CVDetails for the selected job seeker
+                        if (_selectedJobSeeker != null) {
+                          String userId = _selectedJobSeeker!['id'];
 
-                          // Load CVDetails for the selected job seeker
-                          if (_selectedJobSeeker != null) {
-                            String userId = _selectedJobSeeker!['id'];
-
-                            // Fetch CV Details
-                            Map<String, dynamic>? cvDetails =
-                                await getCVDetails(userId);
-                            if (cvDetails != null) {
-                              setState(() {
-                                _cvDetails = cvDetails;
-                              });
-                            }
-
-                            // Fetch Interview Details List
-                            List<Map<String, dynamic>>? interviewDetailsList =
-                                await getInterviewDetailsList(userId);
-                            if (interviewDetailsList != null) {
-                              setState(() {
-                                _interviewDetailsList = interviewDetailsList;
-                              });
-                            }
+                          // Fetch CV Details
+                          Map<String, dynamic>? cvDetails = await getCVDetails(userId);
+                          if (cvDetails != null) {
+                            setState(() {
+                              _cvDetails = cvDetails;
+                            });
                           }
-                        },
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(vertical: 8.0),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(16.0),
-                          ),
-                          child: ListTile(
-                            leading: const Icon(
-                                Icons.person), // Icon in front of username
-                            title:
-                                Text(jobSeeker['username'] ?? 'Name not found'),
-                            trailing: IconButton(
-                              icon: const Icon(Icons.delete),
-                              onPressed: () {
-                                _deleteJobSeeker(jobSeeker[
-                                    'id']); // Assuming 'id' is the document ID
-                              },
-                            ),
+
+                          // Fetch Interview Details List
+                          List<Map<String, dynamic>>? interviewDetailsList = await getInterviewDetailsList(userId);
+                          if (interviewDetailsList != null) {
+                            setState(() {
+                              _interviewDetailsList = interviewDetailsList;
+                            });
+                          }
+                        }
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(vertical: 8.0),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16.0),
+                        ),
+                        child: ListTile(
+                          leading: const Icon(Icons.person), // Icon in front of username
+                          title: Text(jobSeeker['username'] ?? 'Name not found'),
+                          trailing: IconButton(
+                            icon: const Icon(Icons.delete),
+                            onPressed: () {
+                              _deleteJobSeeker(jobSeeker['id']); // Assuming 'id' is the document ID
+                            },
                           ),
                         ),
-                      );
-                    },
-                  );
-                },
-              ),
+                      ),
+                    );
+                  },
+                );
+              },
             ),
           ),
+        ),
 
-          // Right Panel: User Details
-          Expanded(
-            flex: 2,
-            child: Container(
-              color: Color.fromARGB(
-                  232, 255, 223, 211), // Set background color for right panel
-              padding: const EdgeInsets.all(16.0),
-              child: _selectedJobSeeker != null
-                  ? SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Details of Selected Job Seeker',
-                            style: TextStyle(
-                                fontSize: 24, fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(height: 16.0),
-                          _buildSectionContainer(
+        // Right Panel: User Details
+        Expanded(
+          flex: 2,
+          child: Container(
+            color: Color.fromARGB(232, 255, 223, 211), // Set background color for right panel
+            padding: const EdgeInsets.all(16.0),
+            child: _selectedJobSeeker != null
+                ? SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Details of Selected Job Seeker',
+                          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 16.0),
+                        _buildSectionContainer(
                             'Basic Data',
                             [
-                              _buildDetailRow(
-                                  'Username:',
-                                  _selectedJobSeeker!['username'] ??
-                                      'Not found'),
-                              _buildDetailRow('Email:',
-                                  _selectedJobSeeker!['email'] ?? 'Not found'),
+                              _buildDetailRow('Username:', _selectedJobSeeker!['username'] ?? 'Not found'),
+                              _buildDetailRow('Email:', _selectedJobSeeker!['email'] ?? 'Not found'),
                             ],
-                          Color.fromARGB(255, 255, 209, 172)
+                            Color.fromARGB(255, 255, 209, 172)),
+                        const SizedBox(height: 16.0),
+                        _buildSectionContainer(
+                          'Personal Details',
+                          [
+                            _buildDetailRow('Full Name:', _cvDetails?['fullname'] ?? 'Not found'),
+                            _buildDetailRow('Gender:', _cvDetails?['gender'] ?? 'Not found'),
+                            _buildDetailRow('Home Contact:', _cvDetails?['ContactHome'] ?? 'Not found'),
+                            _buildDetailRow('Mobile Contact:', _cvDetails?['contactMobile'] ?? 'Not found'),
+                            _buildDetailRow('Address:', _cvDetails?['address'] ?? 'Not found'),
+                            _buildDetailRow('Age:', _cvDetails?['age'] != null ? _cvDetails!['age'].toString() : 'Not found'),
+                          ],
+                          Color.fromARGB(255, 255, 209, 172),
+                        ),
+                        const SizedBox(height: 16.0),
+                        _buildAppliedJobsSection(),
+                        const SizedBox(height: 16.0),
+                        _buildInterviewDetailsSection(),
+                        const SizedBox(height: 16.0),
+                        
+                        // View CV Button
+                        if (_selectedJobSeeker?['cv'] != null)
+                          ElevatedButton(
+                            onPressed: () async {
+                              String? cvUrl = _selectedJobSeeker!['cv'];
+                              if (cvUrl != null) {
+                                // Launch the CV URL
+                                await launchUrl(cvUrl as String);
+                              }
+                            },
+                            child: const Text('View CV'),
                           ),
-                          const SizedBox(height: 16.0),
-                          _buildSectionContainer(
-                            'Personal Details',
-                            [
-                              _buildDetailRow('Full Name:',
-                                  _cvDetails?['fullname'] ?? 'Not found'),
-                              _buildDetailRow('Gender:',
-                                  _cvDetails?['gender'] ?? 'Not found'),
-                              _buildDetailRow('Home Contact:',
-                                  _cvDetails?['ContactHome'] ?? 'Not found'),
-                              _buildDetailRow('Mobile Contact:',
-                                  _cvDetails?['contactMobile'] ?? 'Not found'),
-                              _buildDetailRow('Address:',
-                                  _cvDetails?['address'] ?? 'Not found'),
-                              _buildDetailRow(
-                                  'Age:',
-                                  _cvDetails?['age'] != null
-                                      ? _cvDetails!['age'].toString()
-                                      : 'Not found'),
-                            ],
-                            Color.fromARGB(255, 255, 209, 172),
-                          ),
-                          const SizedBox(height: 16.0),
-                          _buildAppliedJobsSection(),
-                          const SizedBox(height: 16.0),
-                          _buildInterviewDetailsSection(),
-                          _buildCVViewSection(),
-                        ],
-                      ),
-                    )
-                  : const Center(
-                      child: Text('Select a job seeker to view details'),
+                      ],
                     ),
-            ),
+                  )
+                : const Center(child: Text('Select a job seeker to view details')),
           ),
-        ],
-      ),
-    );
+        ),
+      ],
+    ),
+  );
+}
+Future<void> launchUrl(String url) async {
+  if (await canLaunch(url)) {
+    await launch(url);
+  } else {
+    throw 'Could not launch $url';
   }
+}
+
+ 
 
   Future<List<Map<String, dynamic>>?> getInterviewDetailsList(
       String userId) async {
@@ -273,7 +271,7 @@ class _JobSeekerState extends State<JobSeeker> {
           ],
         );
       }).toList(),
-     Color.fromARGB(255, 255, 209, 172),
+      Color.fromARGB(255, 255, 209, 172),
     );
   }
 
@@ -318,95 +316,6 @@ class _JobSeekerState extends State<JobSeeker> {
     );
   }
 
-Widget _buildCVViewSection() {
-  return _cvDetails != null
-      ? _buildSectionContainer(
-          'CV View',
-          [
-            ElevatedButton(
-              onPressed: () async {
-                if (_selectedJobSeeker != null) {
-                  String userId = _selectedJobSeeker!['id'];
-                  String? cvUrl = await _getCVUrl(userId); // Fetch CV URL
-                  
-                  if (cvUrl != null) {
-                    // If CV URL is found, open the PDF
-                    await _openPDF(context, cvUrl);
-                  } else {
-                    // Display error message if CV is not found
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('CV not found')),
-                    );
-                  }
-                }
-              },
-              child: const Text('View CV'),
-            ),
-          ],
-          Color.fromARGB(255, 255, 209, 172),
-        )
-      : const SizedBox.shrink(); // Hide CV View section if no CV details are loaded
-}
-Future<void> _openPDF(BuildContext context, String url) async {
-  try {
-    // Print the CV URL for debugging
-    print('CV URL: $url');
-    
-    // Fetch the PDF from the URL using HTTP
-    var response = await http.get(Uri.parse(url));
-    
-    // Print the HTTP response status for debugging
-    print('Response status: ${response.statusCode}');
-    
-    // Check if the request was successful
-    if (response.statusCode == 200) {
-      // Get the application documents directory
-      var dir = await getApplicationDocumentsDirectory();
-      
-      // Create a temporary file path for the PDF
-      File file = File('${dir.path}/temp.pdf');
-      
-      // Write the PDF bytes to the file
-      await file.writeAsBytes(response.bodyBytes);
-      
-      // Navigate to the PDFViewPage to display the PDF
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => PDFViewPage(filePath: file.path),
-        ),
-      );
-    } else {
-      // Handle cases where the response is not successful
-      print('Error: Failed to fetch the PDF. Status code: ${response.statusCode}');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to fetch CV.')),
-      );
-    }
-  } catch (e) {
-    print('Error opening PDF: $e');
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Error opening PDF')),
-    );
-  }
-}
-
-
-
-Future<String?> _getCVUrl(String userId) async {
-  try {
-    FirebaseStorage storage = FirebaseStorage.instance;
-    String filePath = 'CVs/$userId.pdf'; // Ensure this path is correct
-    String downloadURL = await storage.ref(filePath).getDownloadURL();
-    return downloadURL;
-  } catch (e) {
-    print('Error fetching CV URL: $e');
-    return null;
-  }
-}
-
-
-
   Widget _buildAppliedJobsSection() {
     if (_selectedJobSeeker == null) {
       return const SizedBox.shrink();
@@ -430,7 +339,7 @@ Future<String?> _getCVUrl(String userId) async {
                 child: Text('No applied job found.'),
               ),
             ],
-           Color.fromARGB(255, 255, 209, 172),
+            Color.fromARGB(255, 255, 209, 172),
           );
         }
 
