@@ -214,19 +214,21 @@ class _ReportState extends State<Report> {
         'Contact No',
         'Name of the Placed Company',
         'Job Position',
-        'Company Contact'
+        'Company Contact',
+        'Feed Back'
       ], // Table headers
     ];
 
     for (var row in data) {
       tableData.add([
-        row['fullname'] ?? 'N/A',
-        row['address'] ?? 'N/A',
-        row['gender'] ?? 'N/A',
-        row['contact'] ?? 'N/A',
-        row['placed_company_name'] ?? 'N/A',
-        row['job_position'] ?? 'N/A',
-        row['company_contact'] ?? 'N/A',
+        row['fullname']!,
+        row['address']!,
+        row['gender']!,
+        row['contact']!,
+        row['company_name'] ?? 'Not Yet',
+        row['job_position'] ?? 'Not Yet',
+        row['repTelephone'] ?? 'Not Yet',
+        row['feedback'] ?? 'Not Yet',
       ]);
     }
 
@@ -303,18 +305,16 @@ class _ReportState extends State<Report> {
           'Position',
           'Vacancy Type',
           'Salary Level',
-          'No:of'
         ], // Table headers
         for (var row in data)
           [
             row['company_name'] ?? 'N/A',
             row['address'] ?? 'N/A',
-            row['contactNo'] ?? 'N/A',
-            row['applied_by'] ?? 'N/A',
+            row['repTelephone'] ?? 'N/A',
+            row['repName'] ?? 'N/A',
             row['job_position'] ?? 'N/A',
             row['job_type'] ?? 'N/A',
             row['minimum_salary'] ?? 'N/A',
-            row['noOf'] ?? 'N/A',
           ],
       ],
     );
@@ -359,7 +359,7 @@ class _ReportState extends State<Report> {
                         child: Row(
                           children: [
                             Expanded(
-                              flex: 1,
+                              flex: 2,
                               child: Column(
                                 children: [
                                   _richTextWidget!.simpleText(
@@ -428,7 +428,7 @@ class _ReportState extends State<Report> {
                         child: Row(
                           children: [
                             Expanded(
-                              flex: 1,
+                              flex: 2,
                               child: Column(
                                 children: [
                                   _richTextWidget!.simpleText(
@@ -438,13 +438,19 @@ class _ReportState extends State<Report> {
                                       FontWeight.w600),
                                   const Divider(),
                                   _richTextWidget!.simpleText(
-                                      "Select Date Range",
-                                      15,
-                                      Colors.black,
-                                      FontWeight.w600),
-                                  _seekerStartMonthPicker(),
-                                  const SizedBox(height: 2),
-                                  _seekerEndMonthPicker(),
+                                    "Select Date Range",
+                                    15,
+                                    Colors.black,
+                                    FontWeight.w600,
+                                  ),
+                                  Column(
+                                    children: [
+                                      _seekerStartMonthPicker(),
+                                      const SizedBox(height: 2),
+                                      _seekerEndMonthPicker(),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 5),
                                 ],
                               ),
                             ),
@@ -490,7 +496,7 @@ class _ReportState extends State<Report> {
                         child: Row(
                           children: [
                             Expanded(
-                              flex: 1,
+                              flex: 2,
                               child: Column(
                                 children: [
                                   _richTextWidget!.simpleText(
@@ -500,13 +506,21 @@ class _ReportState extends State<Report> {
                                       FontWeight.w600),
                                   const Divider(),
                                   _richTextWidget!.simpleText(
-                                      "Select Date Range",
-                                      15,
-                                      Colors.black,
-                                      FontWeight.w600),
-                                  _vacancyStartMonthPicker(),
-                                  const SizedBox(height: 2),
-                                  _vacancyEndMonthPicker(),
+                                    "Select Date Range",
+                                    15,
+                                    Colors.black,
+                                    FontWeight.w600,
+                                  ),
+                                  Column(
+                                    children: [
+                                      _vacancyStartMonthPicker(),
+                                      const SizedBox(height: 2),
+                                      _vacancyEndMonthPicker(),
+                                    ],
+                                  ),
+                                  const SizedBox(
+                                    height: 5,
+                                  ),
                                 ],
                               ),
                             ),
@@ -600,7 +614,7 @@ class _ReportState extends State<Report> {
           padding: const EdgeInsets.all(16.0),
           child: MaterialButton(
             elevation: 0, // Set elevation to 0 to hide the button background
-            color: const Color.fromARGB(255, 150, 255, 124),
+            color: const Color.fromARGB(255, 91, 243, 71),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
             ),
@@ -767,7 +781,7 @@ class _ReportState extends State<Report> {
           padding: const EdgeInsets.all(16.0),
           child: MaterialButton(
             elevation: 0, // Set elevation to 0 to hide the button background
-            color: const Color.fromARGB(255, 150, 255, 124),
+            color: const Color.fromARGB(255, 91, 243, 71),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
             ),
@@ -927,7 +941,7 @@ class _ReportState extends State<Report> {
           padding: const EdgeInsets.all(16.0),
           child: MaterialButton(
             elevation: 0, // Set elevation to 0 to hide the button background
-            color: const Color.fromARGB(255, 150, 255, 124),
+            color: const Color.fromARGB(255, 91, 243, 71),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
             ),
